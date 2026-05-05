@@ -1,0 +1,12 @@
+{
+  "name": "secure-recipes-greta92",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build-css": "tailwindcss -i ./public/assets/css/input.css -o ./public/assets/css/output.css --minify",
+    "watch-css": "tailwindcss -i ./public/assets/css/input.css -o ./public/assets/css/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

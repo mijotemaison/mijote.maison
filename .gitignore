@@ -1,0 +1,8 @@
+.env
+node_modules/
+vendor/
+.DS_Store
+storage/logs/*.log
+!storage/logs/.gitkeep
+public/uploads/recipes/*
+!public/uploads/recipes/.gitkeep
