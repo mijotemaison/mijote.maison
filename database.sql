@@ -52,8 +52,8 @@ TRUNCATE TABLE recipes;
 INSERT INTO recipes (title, slug, short_description, description, ingredients, preparation_steps, image_path, created_at, updated_at)
 VALUES
 (
-  'Veloute de potimarron protege',
-  'veloute-de-potimarron-protege',
+  'Veloute de potimarron',
+  'veloute-de-potimarron',
   'Une entree douce et epicee pour lancer le repas tout en douceur.',
   'Un veloute de potimarron onctueux avec creme, graines grillees et pain croustillant. Une recette simple, chaude et parfaite pour une table familiale.',
   '1 potimarron\n1 oignon\n2 gousses d ail\n70 cl de bouillon\n10 cl de creme\nSel, poivre, muscade',

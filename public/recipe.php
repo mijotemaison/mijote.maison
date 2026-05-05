@@ -10,7 +10,7 @@ $recipe = null;
 $error = null;
 
 $recipeMeta = [
-    'veloute-de-potimarron-protege' => ['label' => 'Entrée', 'time' => '35 min', 'level' => 'Très facile', 'servings' => '4 bols', 'season' => 'Automne'],
+    'veloute-de-potimarron' => ['label' => 'Entrée', 'time' => '35 min', 'level' => 'Très facile', 'servings' => '4 bols', 'season' => 'Automne'],
     'poulet-citron-et-herbes' => ['label' => 'Plat', 'time' => '30 min', 'level' => 'Facile', 'servings' => '4 personnes', 'season' => 'Toute saison'],
     'tarte-fine-aux-pommes' => ['label' => 'Dessert', 'time' => '40 min', 'level' => 'Facile', 'servings' => '6 parts', 'season' => 'Goûter'],
     'pates-cremeuses-aux-champignons' => ['label' => 'Plat', 'time' => '25 min', 'level' => 'Facile', 'servings' => '4 assiettes', 'season' => 'Réconfort'],
@@ -30,7 +30,7 @@ try {
         $recipe = $repo->findBySlug((string) $_GET['slug']);
     }
 } catch (Throwable $exception) {
-    $error = 'Base de données indisponible.';
+    $error = 'Impossible de charger la recette pour le moment.';
 }
 
 $meta = $recipe ? ($recipeMeta[$recipe['slug']] ?? ['label' => 'Recette', 'time' => '30 min', 'level' => 'Facile', 'servings' => '4 personnes', 'season' => 'Maison']) : null;
@@ -85,8 +85,8 @@ public_header($recipe['title'] ?? 'Recette');
                     </div>
 
                     <div class="rounded-[2rem] border border-emerald-100 bg-emerald-50 p-6 text-herb">
-                        <p class="text-sm font-extrabold uppercase tracking-[0.16em]">Sécurité discrète</p>
-                        <p class="mt-3 leading-7">Cette recette est affichée avec échappement HTML côté serveur pour éviter l'exécution de contenu injecté.</p>
+                        <p class="text-sm font-extrabold uppercase tracking-[0.16em]">Astuce maison</p>
+                        <p class="mt-3 leading-7">Préparez les ingrédients avant de commencer : la recette devient plus fluide et la cuisson plus régulière.</p>
                     </div>
                 </aside>
 

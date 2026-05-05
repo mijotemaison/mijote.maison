@@ -50,7 +50,7 @@ function nav_link(string $href, string $label): string
 
 function public_header(string $title): void
 {
-    $pageTitle = e($title . ' - Mijoté & Protégé');
+    $pageTitle = e($title . ' - Mijoté Maison');
     echo <<<HTML
 <!doctype html>
 <html lang="fr">
@@ -66,20 +66,20 @@ function public_header(string $title): void
 <header class="sticky top-0 z-40 border-b border-orange-100 bg-cream/95 shadow-sm backdrop-blur">
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <a href="/" class="flex items-center gap-3 text-stone-950">
-            <img class="h-12 w-12 rounded-2xl" src="/assets/img/logo-mijote-protege.svg" alt="">
+            <img class="h-12 w-12 rounded-2xl" src="/assets/img/logo-mijote-maison.svg" alt="">
             <span class="leading-tight">
-                <span class="block font-serif text-xl font-bold">Mijoté & Protégé</span>
-                <span class="block text-xs font-extrabold uppercase tracking-[0.18em] text-herb">Recettes sécurisées</span>
+                <span class="block font-serif text-xl font-bold">Mijoté Maison</span>
+                <span class="block text-xs font-extrabold uppercase tracking-[0.18em] text-herb">Recettes de saison</span>
             </span>
         </a>
         <div class="flex items-center gap-5 text-sm">
 HTML;
     echo nav_link('/', 'Accueil');
-    echo nav_link('/presentation.php', 'Presentation');
+    echo '<a class="text-stone-700 font-extrabold transition hover:text-tomato" href="/#recettes">Recettes</a>';
     if (isset($_SESSION['admin_id'])) {
-        echo nav_link('/admin/dashboard.php', 'Dashboard');
+        echo nav_link('/admin/dashboard.php', 'Espace équipe');
     } else {
-        echo nav_link('/login.php', 'Connexion admin');
+        echo nav_link('/login.php', 'Espace équipe');
     }
     echo <<<HTML
         </div>
@@ -95,8 +95,8 @@ function public_footer(): void
 </main>
 <footer class="border-t border-orange-100 bg-[#fff1dc]">
     <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-8 text-sm text-stone-600 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <p><strong class="text-stone-900">Mijoté & Protégé</strong> - Projet final GRETA 92 cybersécurité.</p>
-        <p>Recettes familiales · PDO · XSS · CSRF · Upload sécurisé</p>
+        <p><strong class="text-stone-900">Mijoté Maison</strong> - Des recettes simples pour cuisiner avec plaisir.</p>
+        <p>Recettes familiales · Plats maison · Desserts gourmands</p>
     </div>
 </footer>
 </body>
@@ -106,7 +106,7 @@ HTML;
 
 function admin_header(string $title): void
 {
-    $pageTitle = e($title . ' - Administration');
+    $pageTitle = e($title . ' - Espace équipe');
     echo <<<HTML
 <!doctype html>
 <html lang="fr">
@@ -121,8 +121,8 @@ function admin_header(string $title): void
     <aside class="border-b border-white/10 bg-slate-950/95 lg:min-h-screen lg:w-72 lg:border-b-0 lg:border-r">
         <div class="flex items-center justify-between px-5 py-5 lg:block">
             <a class="flex items-center gap-3 font-semibold text-white" href="/admin/dashboard.php">
-                <img class="h-10 w-10 rounded-xl bg-white" src="/assets/img/logo-mijote-protege.svg" alt="">
-                <span>Back-office</span>
+                <img class="h-10 w-10 rounded-xl bg-white" src="/assets/img/logo-mijote-maison.svg" alt="">
+                <span>Espace équipe</span>
             </a>
             <a class="text-sm text-slate-400 hover:text-white lg:hidden" href="/logout.php">Sortir</a>
         </div>

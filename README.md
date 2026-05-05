@@ -1,6 +1,6 @@
-# Mijoté & Protégé - Secure Recipes GRETA 92
+# Mijoté Maison - Secure Recipes GRETA 92
 
-Projet final GRETA 92 cybersécurité : site web securise de recettes de cuisine avec front-office public sous l'identite **Mijoté & Protégé**, back-office administrateur, CRUD recettes, CRUD administrateurs et protections applicatives documentees.
+Projet final GRETA 92 cybersécurité : site web securise de recettes de cuisine avec front-office public sous l'identite **Mijoté Maison**, back-office administrateur, CRUD recettes, CRUD administrateurs et protections applicatives documentees.
 
 ## Contexte
 

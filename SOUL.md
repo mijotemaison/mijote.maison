@@ -2,7 +2,7 @@
 
 ## Vision
 
-Mijoté & Protégé presente une application simple en apparence, un site de recettes de cuisine chaleureux et familial, traitee avec le serieux d'une application exposee a Internet. Le projet montre qu'une fonctionnalite classique peut devenir un support concret pour expliquer la securite applicative.
+Mijoté Maison presente une application simple en apparence, un site de recettes de cuisine chaleureux et familial, traitee avec le serieux d'une application exposee a Internet. Le projet montre qu'une fonctionnalite classique peut devenir un support concret pour expliquer la securite applicative.
 
 ## Objectif pedagogique
 
@@ -26,8 +26,8 @@ Le projet combine cuisine et cybersécurité avec une identite plus grand public
 
 ## Identite visuelle
 
-- Nom public : Mijoté & Protégé.
-- Logo : marmite, vapeur et bouclier/cadenas.
+- Nom public : Mijoté Maison.
+- Logo : marmite, vapeur et coeur vegetal.
 - Couleurs publiques : creme, tomate, vert herbes, ambre doux.
 - Cartes recettes gourmandes avec grandes photos.
 - Dashboard admin dense mais clair.

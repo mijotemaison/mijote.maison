@@ -2,7 +2,7 @@
 
 ## Role du projet
 
-Secure Recipes GRETA 92 est le projet final d'une formation GRETA 92 cybersécurité. Son nom public est Mijoté & Protégé. Il doit demontrer la capacite a construire une application web PHP/MySQL complete, lisible, documentee et securisee.
+Secure Recipes GRETA 92 est le projet final d'une formation GRETA 92 cybersécurité. Son nom public est Mijoté Maison. Il doit demontrer la capacite a construire une application web PHP/MySQL complete, lisible, documentee et securisee.
 
 ## Resume du sujet
 

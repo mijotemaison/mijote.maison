@@ -44,7 +44,7 @@ public_header('Présentation');
             <?php foreach ($slides as $index => [$title, $body]): ?>
                 <article class="<?= $index === 0 ? 'grid' : 'hidden' ?> min-h-[440px] place-items-center text-center" data-slide>
                     <div class="max-w-4xl">
-                        <img class="mx-auto h-20 w-20 rounded-3xl" src="/assets/img/logo-mijote-protege.svg" alt="">
+                        <img class="mx-auto h-20 w-20 rounded-3xl" src="/assets/img/logo-mijote-maison.svg" alt="">
                         <span class="mt-8 inline-flex rounded-full bg-orange-50 px-4 py-2 text-sm font-extrabold text-tomato">Slide <?= $index + 1 ?></span>
                         <h2 class="mt-7 font-serif text-5xl font-bold text-stone-950 sm:text-7xl"><?= e($title) ?></h2>
                         <p class="mt-7 text-xl leading-9 text-stone-700"><?= e($body) ?></p>
