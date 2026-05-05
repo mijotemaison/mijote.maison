@@ -9,6 +9,19 @@ require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
 $recipe = null;
 $error = null;
 
+$recipeMeta = [
+    'veloute-de-potimarron-protege' => ['label' => 'Entrée', 'time' => '35 min', 'level' => 'Très facile', 'servings' => '4 bols', 'season' => 'Automne'],
+    'poulet-citron-et-herbes' => ['label' => 'Plat', 'time' => '30 min', 'level' => 'Facile', 'servings' => '4 personnes', 'season' => 'Toute saison'],
+    'tarte-fine-aux-pommes' => ['label' => 'Dessert', 'time' => '40 min', 'level' => 'Facile', 'servings' => '6 parts', 'season' => 'Goûter'],
+    'pates-cremeuses-aux-champignons' => ['label' => 'Plat', 'time' => '25 min', 'level' => 'Facile', 'servings' => '4 assiettes', 'season' => 'Réconfort'],
+    'salade-mediterraneenne' => ['label' => 'Entrée', 'time' => '15 min', 'level' => 'Très facile', 'servings' => '4 assiettes', 'season' => 'Été'],
+    'saumon-au-four-et-legumes' => ['label' => 'Plat', 'time' => '35 min', 'level' => 'Facile', 'servings' => '4 personnes', 'season' => 'Équilibré'],
+    'curry-de-legumes-coco' => ['label' => 'Végétarien', 'time' => '35 min', 'level' => 'Facile', 'servings' => '4 bols', 'season' => 'Parfumé'],
+    'burger-maison-gourmand' => ['label' => 'Plat', 'time' => '45 min', 'level' => 'Moyen', 'servings' => '4 burgers', 'season' => 'Week-end'],
+    'risotto-parmesan-et-champignons' => ['label' => 'Plat', 'time' => '35 min', 'level' => 'Moyen', 'servings' => '4 assiettes', 'season' => 'Crémeux'],
+    'fondant-au-chocolat' => ['label' => 'Dessert', 'time' => '22 min', 'level' => 'Facile', 'servings' => '6 fondants', 'season' => 'Gourmand'],
+];
+
 try {
     $repo = new RecipeRepository(db());
     if (isset($_GET['id'])) {
@@ -17,40 +30,86 @@ try {
         $recipe = $repo->findBySlug((string) $_GET['slug']);
     }
 } catch (Throwable $exception) {
-    $error = 'Base de donnees indisponible.';
+    $error = 'Base de données indisponible.';
 }
+
+$meta = $recipe ? ($recipeMeta[$recipe['slug']] ?? ['label' => 'Recette', 'time' => '30 min', 'level' => 'Facile', 'servings' => '4 personnes', 'season' => 'Maison']) : null;
 
 public_header($recipe['title'] ?? 'Recette');
 ?>
-<section class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-    <a class="text-sm font-medium text-cyan-200 hover:text-cyan-100" href="/">Retour aux recettes</a>
+<section class="bg-[#fff1dc]">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <a class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-herb shadow-sm hover:text-tomato" href="/#recettes">← Retour aux recettes</a>
+    </div>
+</section>
 
-    <?php if ($error): ?>
-        <div class="panel-card mt-6 p-5 text-amber-100"><?= e($error) ?></div>
-    <?php elseif (!$recipe): ?>
-        <div class="panel-card mt-6 p-8">
-            <h1 class="text-3xl font-bold text-white">Recette introuvable</h1>
-            <p class="mt-3 text-slate-300">La recette demandee n'existe pas ou n'est plus disponible.</p>
+<?php if ($error): ?>
+    <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-amber-900"><?= e($error) ?></div>
+    </section>
+<?php elseif (!$recipe): ?>
+    <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="rounded-[2rem] border border-orange-100 bg-white p-8 shadow-sm">
+            <h1 class="font-serif text-4xl font-bold text-stone-950">Recette introuvable</h1>
+            <p class="mt-3 text-stone-600">La recette demandée n'existe pas ou n'est plus disponible.</p>
         </div>
-    <?php else: ?>
-        <article class="mt-6 overflow-hidden rounded-lg border border-white/10 bg-white/[0.06]">
-            <img class="h-72 w-full object-cover sm:h-96" src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
-            <div class="p-6 sm:p-8">
-                <span class="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-sm text-cyan-100">Donnees echappees contre XSS</span>
-                <h1 class="mt-5 text-4xl font-bold text-white"><?= e($recipe['title']) ?></h1>
-                <p class="mt-4 text-lg leading-8 text-slate-300"><?= e($recipe['description']) ?></p>
-                <div class="mt-8 grid gap-6 lg:grid-cols-2">
-                    <section class="rounded-lg border border-white/10 bg-slate-950/50 p-5">
-                        <h2 class="text-xl font-semibold text-white">Ingredients</h2>
-                        <p class="mt-4 whitespace-pre-line leading-7 text-slate-300"><?= e($recipe['ingredients']) ?></p>
+    </section>
+<?php else: ?>
+    <article>
+        <section class="bg-[#fff1dc] pb-12">
+            <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:px-8">
+                <div>
+                    <div class="flex flex-wrap gap-2 text-sm font-extrabold">
+                        <span class="rounded-full bg-white px-4 py-2 text-tomato shadow-sm"><?= e($meta['label']) ?></span>
+                        <span class="rounded-full bg-white px-4 py-2 text-herb shadow-sm"><?= e($meta['time']) ?></span>
+                        <span class="rounded-full bg-white px-4 py-2 text-amber-700 shadow-sm"><?= e($meta['level']) ?></span>
+                    </div>
+                    <h1 class="mt-6 max-w-4xl font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-7xl"><?= e($recipe['title']) ?></h1>
+                    <p class="mt-5 max-w-2xl text-xl leading-9 text-stone-700"><?= e($recipe['description']) ?></p>
+                </div>
+                <img class="aspect-[4/3] w-full rounded-[2rem] object-cover shadow-2xl shadow-orange-900/20" src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
+            </div>
+        </section>
+
+        <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+            <div class="grid gap-8 lg:grid-cols-[.82fr_1.18fr]">
+                <aside class="space-y-6">
+                    <div class="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-sm">
+                        <h2 class="font-serif text-3xl font-bold text-stone-950">En bref</h2>
+                        <dl class="mt-5 grid gap-3 text-sm">
+                            <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Temps</dt><dd class="font-extrabold text-tomato"><?= e($meta['time']) ?></dd></div>
+                            <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Difficulté</dt><dd class="font-extrabold text-herb"><?= e($meta['level']) ?></dd></div>
+                            <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Portions</dt><dd class="font-extrabold text-stone-900"><?= e($meta['servings']) ?></dd></div>
+                            <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Ambiance</dt><dd class="font-extrabold text-amber-700"><?= e($meta['season']) ?></dd></div>
+                        </dl>
+                    </div>
+
+                    <div class="rounded-[2rem] border border-emerald-100 bg-emerald-50 p-6 text-herb">
+                        <p class="text-sm font-extrabold uppercase tracking-[0.16em]">Sécurité discrète</p>
+                        <p class="mt-3 leading-7">Cette recette est affichée avec échappement HTML côté serveur pour éviter l'exécution de contenu injecté.</p>
+                    </div>
+                </aside>
+
+                <div class="space-y-8">
+                    <section class="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-sm sm:p-8">
+                        <h2 class="font-serif text-3xl font-bold text-stone-950">Ingrédients</h2>
+                        <div class="mt-6 whitespace-pre-line rounded-3xl bg-orange-50 p-6 text-lg leading-9 text-stone-700"><?= e($recipe['ingredients']) ?></div>
                     </section>
-                    <section class="rounded-lg border border-white/10 bg-slate-950/50 p-5">
-                        <h2 class="text-xl font-semibold text-white">Preparation</h2>
-                        <p class="mt-4 whitespace-pre-line leading-7 text-slate-300"><?= e($recipe['preparation_steps']) ?></p>
+                    <section class="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-sm sm:p-8">
+                        <h2 class="font-serif text-3xl font-bold text-stone-950">Préparation</h2>
+                        <div class="mt-6 space-y-4">
+                            <?php foreach (preg_split('/\R+/', (string) $recipe['preparation_steps']) as $index => $step): ?>
+                                <?php if (trim($step) === '') { continue; } ?>
+                                <div class="grid gap-4 rounded-3xl bg-[#fff7ed] p-5 sm:grid-cols-[3rem_1fr]">
+                                    <span class="grid h-12 w-12 place-items-center rounded-full bg-tomato text-lg font-extrabold text-white"><?= e($index + 1) ?></span>
+                                    <p class="text-lg leading-8 text-stone-700"><?= e($step) ?></p>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
                     </section>
                 </div>
             </div>
-        </article>
-    <?php endif; ?>
-</section>
+        </section>
+    </article>
+<?php endif; ?>
 <?php public_footer(); ?>

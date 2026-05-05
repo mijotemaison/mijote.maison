@@ -1,6 +1,6 @@
-# Secure Recipes GRETA 92
+# Mijoté & Protégé - Secure Recipes GRETA 92
 
-Projet final GRETA 92 cybersécurité : site web securise de recettes de cuisine avec front-office public, back-office administrateur, CRUD recettes, CRUD administrateurs et protections applicatives documentees.
+Projet final GRETA 92 cybersécurité : site web securise de recettes de cuisine avec front-office public sous l'identite **Mijoté & Protégé**, back-office administrateur, CRUD recettes, CRUD administrateurs et protections applicatives documentees.
 
 ## Contexte
 
@@ -24,6 +24,7 @@ Adaptation demandee : Tailwind CSS remplace Bootstrap et le CSS classique. Le re
 - Page de connexion administrateur.
 - Page `/presentation.php` sous forme de carrousel type PowerPoint.
 - Donnees issues de la base echappees avec `e()`.
+- Design public chaleureux inspire des sites de recettes grand public, avec 10 photos WebP et logo SVG original.
 
 ## Fonctionnalites back-office
 

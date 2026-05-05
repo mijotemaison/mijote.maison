@@ -9,6 +9,7 @@
 
   body {
     text-rendering: optimizeLegibility;
+    font-family: Nunito, "Avenir Next", ui-sans-serif, system-ui, sans-serif;
   }
 }
 
@@ -22,11 +23,11 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-cyan-300 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200;
+    @apply inline-flex items-center justify-center rounded-full bg-tomato px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-red-700;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-100 transition hover:bg-white/10;
+    @apply inline-flex items-center justify-center rounded-full border border-orange-200 bg-white px-5 py-3 text-sm font-extrabold text-stone-800 shadow-sm transition hover:bg-orange-50;
   }
 
   .btn-danger {

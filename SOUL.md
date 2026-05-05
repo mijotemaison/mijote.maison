@@ -2,7 +2,7 @@
 
 ## Vision
 
-Secure Recipes GRETA 92 presente une application simple en apparence, un site de recettes de cuisine, traitee avec le serieux d'une application exposee a Internet. Le projet montre qu'une fonctionnalite classique peut devenir un support concret pour expliquer la securite applicative.
+Mijoté & Protégé presente une application simple en apparence, un site de recettes de cuisine chaleureux et familial, traitee avec le serieux d'une application exposee a Internet. Le projet montre qu'une fonctionnalite classique peut devenir un support concret pour expliquer la securite applicative.
 
 ## Objectif pedagogique
 
@@ -22,20 +22,21 @@ La securite est integree dans la structure :
 
 ## Positionnement cybersécurité
 
-Le projet combine cuisine et cybersécurité avec un vocabulaire professionnel : recettes protegees, back-office verrouille, controles serveur, traces de connexion, hygiene des entrees. L'identite doit rester sobre, credible et presentable devant un jury.
+Le projet combine cuisine et cybersécurité avec une identite plus grand public : recettes maison, table conviviale, visuels appetissants, et protections discrètes. Le back-office conserve un vocabulaire professionnel : acces verrouille, controles serveur, traces de connexion, hygiene des entrees.
 
 ## Identite visuelle
 
-- Theme sombre premium.
-- Couleurs principales : bleu nuit, cyan, violet, gris fonce.
-- Cartes nettes, contrastes lisibles, badges securite.
+- Nom public : Mijoté & Protégé.
+- Logo : marmite, vapeur et bouclier/cadenas.
+- Couleurs publiques : creme, tomate, vert herbes, ambre doux.
+- Cartes recettes gourmandes avec grandes photos.
 - Dashboard admin dense mais clair.
 - Formulaires propres et messages d'erreur visibles.
 - Experience responsive sur mobile et desktop.
 
 ## Experience utilisateur
 
-Le public doit pouvoir parcourir les recettes sans friction. Les recettes doivent etre lisibles, illustrees, avec une navigation simple. Aucune action sensible ne doit apparaitre dans la zone publique.
+Le public doit avoir l'impression d'etre sur un vrai site de recettes : accueil chaleureux, recherche visuelle, categories, photos appetissantes et fiches recettes tres lisibles. Aucune action sensible ne doit apparaitre dans la zone publique.
 
 ## Experience admin
 

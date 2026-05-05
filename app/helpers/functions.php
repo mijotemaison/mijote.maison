@@ -44,13 +44,13 @@ function recipe_image_url(?string $imagePath): string
 
 function nav_link(string $href, string $label): string
 {
-    $active = current_path() === $href ? 'text-cyan-300' : 'text-slate-300 hover:text-white';
-    return '<a class="' . $active . ' transition" href="' . e($href) . '">' . e($label) . '</a>';
+    $active = current_path() === $href ? 'text-tomato' : 'text-stone-700 hover:text-tomato';
+    return '<a class="' . $active . ' font-extrabold transition" href="' . e($href) . '">' . e($label) . '</a>';
 }
 
 function public_header(string $title): void
 {
-    $pageTitle = e($title . ' - Secure Recipes GRETA 92');
+    $pageTitle = e($title . ' - Mijoté & Protégé');
     echo <<<HTML
 <!doctype html>
 <html lang="fr">
@@ -60,14 +60,17 @@ function public_header(string $title): void
     <title>{$pageTitle}</title>
     <link rel="stylesheet" href="/assets/css/output.css">
     <script src="/assets/js/presentation.js" defer></script>
+    <script src="/assets/js/recipes.js" defer></script>
 </head>
-<body class="min-h-screen bg-night text-slate-100 antialiased">
-<div class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,.12),transparent_32%),linear-gradient(135deg,#07111f,#111827_55%,#170f2f)]"></div>
-<header class="border-b border-white/10 bg-night/80 backdrop-blur">
-    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <a href="/" class="flex items-center gap-3 font-semibold tracking-wide text-white">
-            <span class="grid h-10 w-10 place-items-center rounded-lg border border-cyan-300/40 bg-cyan-300/10 text-cyan-200">SR</span>
-            <span>Secure Recipes</span>
+<body class="min-h-screen bg-cream text-stone-900 antialiased">
+<header class="sticky top-0 z-40 border-b border-orange-100 bg-cream/95 shadow-sm backdrop-blur">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <a href="/" class="flex items-center gap-3 text-stone-950">
+            <img class="h-12 w-12 rounded-2xl" src="/assets/img/logo-mijote-protege.svg" alt="">
+            <span class="leading-tight">
+                <span class="block font-serif text-xl font-bold">Mijoté & Protégé</span>
+                <span class="block text-xs font-extrabold uppercase tracking-[0.18em] text-herb">Recettes sécurisées</span>
+            </span>
         </a>
         <div class="flex items-center gap-5 text-sm">
 HTML;
@@ -90,10 +93,10 @@ function public_footer(): void
 {
     echo <<<HTML
 </main>
-<footer class="border-t border-white/10 bg-night/70">
-    <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <p>Secure Recipes GRETA 92 - Projet final cybersécurité.</p>
-        <p>XSS · SQLi · CSRF · CSP · Brute force · Upload sécurisé</p>
+<footer class="border-t border-orange-100 bg-[#fff1dc]">
+    <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-8 text-sm text-stone-600 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <p><strong class="text-stone-900">Mijoté & Protégé</strong> - Projet final GRETA 92 cybersécurité.</p>
+        <p>Recettes familiales · PDO · XSS · CSRF · Upload sécurisé</p>
     </div>
 </footer>
 </body>
@@ -118,7 +121,7 @@ function admin_header(string $title): void
     <aside class="border-b border-white/10 bg-slate-950/95 lg:min-h-screen lg:w-72 lg:border-b-0 lg:border-r">
         <div class="flex items-center justify-between px-5 py-5 lg:block">
             <a class="flex items-center gap-3 font-semibold text-white" href="/admin/dashboard.php">
-                <span class="grid h-10 w-10 place-items-center rounded-lg border border-cyan-300/40 bg-cyan-300/10 text-cyan-200">SR</span>
+                <img class="h-10 w-10 rounded-xl bg-white" src="/assets/img/logo-mijote-protege.svg" alt="">
                 <span>Back-office</span>
             </a>
             <a class="text-sm text-slate-400 hover:text-white lg:hidden" href="/logout.php">Sortir</a>
