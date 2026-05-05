@@ -32,3 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   render();
 });
+
+document.addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-copy-code]');
+  if (!button) return;
+
+  const code = document.getElementById(button.dataset.copyCode);
+  if (!code) return;
+
+  try {
+    await navigator.clipboard.writeText(code.textContent.trim());
+    const previous = button.textContent;
+    button.textContent = 'Copié';
+    setTimeout(() => {
+      button.textContent = previous;
+    }, 1400);
+  } catch {
+    button.textContent = 'Sélectionnez le code';
+  }
+});
