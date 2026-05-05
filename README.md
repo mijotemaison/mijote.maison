@@ -19,8 +19,9 @@ Adaptation demandee : Tailwind CSS remplace Bootstrap et le CSS classique. Le re
 
 ## Fonctionnalites front-office
 
-- Page d'accueil avec presentation et liste des recettes.
-- Page detail recette avec titre, image, description, ingredients et etapes.
+- Page d'accueil `/` avec presentation du site, aperçu des recettes et navigation.
+- Page liste `/recipes.php` avec toutes les recettes, recherche et filtres.
+- Page detail `/recipe.php` avec titre, image, description, ingredients et etapes.
 - Page de connexion administrateur.
 - Page `/presentation.php` sous forme de carrousel type PowerPoint.
 - Donnees issues de la base echappees avec `e()`.

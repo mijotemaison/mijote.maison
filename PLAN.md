@@ -73,6 +73,7 @@ Le sujet officiel PDF est present dans le dossier sous le nom `00-sujet-final-an
 ### Phase 3 - Front-office
 
 - [x] Accueil public.
+- [x] Liste complete des recettes sur `/recipes.php`.
 - [x] Detail recette.
 - [x] Design responsive.
 - [x] Echappement systematique.
@@ -171,3 +172,4 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Back-office verifie : dashboard protege, CRUD recettes, CRUD administrateurs, suppression dernier admin refusee.
 - [x] Protections verifiees : CSRF invalide refuse, XSS echappee, upload image valide accepte, upload `.php` et fichier trop lourd refuses, brute force bloquee apres 5 echecs.
 - [x] Resultat suite MySQL : 29 tests passes / 29.
+- [x] Conformite PDF front-office verifiee : accueil `/`, liste recettes `/recipes.php`, detail separe `/recipe.php`, page de connexion nommee explicitement.

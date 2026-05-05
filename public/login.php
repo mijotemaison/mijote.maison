@@ -42,15 +42,19 @@ if (is_post()) {
     }
 }
 
-public_header('Espace équipe');
+public_header('Page de connexion');
 ?>
 <section class="relative overflow-hidden bg-[#fff1dc]">
     <div class="mx-auto grid min-h-[calc(100vh-10rem)] max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_.9fr] lg:items-center lg:px-8">
         <div class="hidden lg:block">
             <img class="aspect-[4/3] w-full rounded-[2rem] object-cover shadow-2xl shadow-orange-900/20" src="/assets/img/recipes/ingredients-frais.webp" alt="Ingrédients frais">
             <div class="mt-6 rounded-[2rem] bg-white p-6 shadow-sm">
-                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-herb">Espace équipe</p>
-                <p class="mt-2 text-stone-700">Connectez-vous pour ajouter, modifier et organiser les recettes du site.</p>
+                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-herb">Page de connexion</p>
+                <p class="mt-2 text-stone-700">Formulaire de connexion permettant l'accès au back-office.</p>
+                <div class="mt-4 flex flex-wrap gap-2 text-sm font-extrabold">
+                    <span class="rounded-full bg-orange-50 px-4 py-2 text-tomato">Rôle : admin</span>
+                    <span class="rounded-full bg-emerald-50 px-4 py-2 text-herb">Aucune inscription publique</span>
+                </div>
             </div>
         </div>
         <div class="mx-auto w-full max-w-md">
@@ -58,9 +62,13 @@ public_header('Espace équipe');
             <form class="rounded-[2rem] border border-orange-100 bg-white p-7 shadow-xl shadow-orange-900/10" method="post" action="/login.php" novalidate>
                 <?= csrf_field() ?>
                 <img class="h-16 w-16 rounded-2xl" src="/assets/img/logo-mijote-maison.svg" alt="">
-                <span class="mt-6 inline-flex rounded-full bg-orange-50 px-4 py-2 text-sm font-extrabold text-tomato">Espace équipe</span>
-                <h1 class="mt-4 font-serif text-4xl font-bold text-stone-950">Connexion</h1>
-                <p class="mt-2 text-sm leading-6 text-stone-600">Accès réservé à l’équipe du site Mijoté Maison.</p>
+                <span class="mt-6 inline-flex rounded-full bg-orange-50 px-4 py-2 text-sm font-extrabold text-tomato">Accès back-office</span>
+                <h1 class="mt-4 font-serif text-4xl font-bold text-stone-950">Page de connexion</h1>
+                <p class="mt-2 text-sm leading-6 text-stone-600">Formulaire de connexion permettant l'accès au back-office.</p>
+                <div class="mt-4 grid gap-2 text-sm text-stone-700">
+                    <p class="rounded-2xl bg-orange-50 px-4 py-3"><strong>Rôle :</strong> admin</p>
+                    <p class="rounded-2xl bg-emerald-50 px-4 py-3"><strong>Inscription publique :</strong> non disponible</p>
+                </div>
                 <div class="mt-6">
                     <label class="mb-2 block text-sm font-extrabold text-stone-700" for="email">Email</label>
                     <input class="w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-tomato focus:ring-4 focus:ring-orange-200" id="email" name="email" type="email" autocomplete="email" required>
@@ -69,7 +77,7 @@ public_header('Espace équipe');
                     <label class="mb-2 block text-sm font-extrabold text-stone-700" for="password">Mot de passe</label>
                     <input class="w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-tomato focus:ring-4 focus:ring-orange-200" id="password" name="password" type="password" autocomplete="current-password" required>
                 </div>
-                <button class="btn-primary mt-6 w-full" type="submit">Se connecter</button>
+                <button class="btn-primary mt-6 w-full" type="submit">Se connecter au back-office</button>
             </form>
         </div>
     </div>

@@ -42,6 +42,34 @@ function recipe_image_url(?string $imagePath): string
     return asset($imagePath);
 }
 
+function recipe_public_meta(?string $slug): array
+{
+    $default = [
+        'category' => 'plats',
+        'label' => 'Recette',
+        'time' => '30 min',
+        'level' => 'Facile',
+        'tag' => 'Maison',
+        'servings' => '4 personnes',
+        'season' => 'Maison',
+    ];
+
+    $meta = [
+        'veloute-de-potimarron' => ['category' => 'entrees', 'label' => 'Entrée', 'time' => '35 min', 'level' => 'Très facile', 'tag' => 'Douceur automne', 'servings' => '4 bols', 'season' => 'Automne'],
+        'poulet-citron-et-herbes' => ['category' => 'plats', 'label' => 'Plat', 'time' => '30 min', 'level' => 'Facile', 'tag' => 'Familial', 'servings' => '4 personnes', 'season' => 'Toute saison'],
+        'tarte-fine-aux-pommes' => ['category' => 'desserts', 'label' => 'Dessert', 'time' => '40 min', 'level' => 'Facile', 'tag' => 'Croustillant', 'servings' => '6 parts', 'season' => 'Goûter'],
+        'pates-cremeuses-aux-champignons' => ['category' => 'plats', 'label' => 'Plat', 'time' => '25 min', 'level' => 'Facile', 'tag' => 'Réconfort', 'servings' => '4 assiettes', 'season' => 'Réconfort'],
+        'salade-mediterraneenne' => ['category' => 'entrees', 'label' => 'Entrée', 'time' => '15 min', 'level' => 'Très facile', 'tag' => 'Fraîcheur', 'servings' => '4 assiettes', 'season' => 'Été'],
+        'saumon-au-four-et-legumes' => ['category' => 'plats', 'label' => 'Plat', 'time' => '35 min', 'level' => 'Facile', 'tag' => 'Équilibré', 'servings' => '4 personnes', 'season' => 'Équilibré'],
+        'curry-de-legumes-coco' => ['category' => 'vegetarien', 'label' => 'Végétarien', 'time' => '35 min', 'level' => 'Facile', 'tag' => 'Parfumé', 'servings' => '4 bols', 'season' => 'Parfumé'],
+        'burger-maison-gourmand' => ['category' => 'plats', 'label' => 'Plat', 'time' => '45 min', 'level' => 'Moyen', 'tag' => 'Week-end', 'servings' => '4 burgers', 'season' => 'Week-end'],
+        'risotto-parmesan-et-champignons' => ['category' => 'plats', 'label' => 'Plat', 'time' => '35 min', 'level' => 'Moyen', 'tag' => 'Crémeux', 'servings' => '4 assiettes', 'season' => 'Crémeux'],
+        'fondant-au-chocolat' => ['category' => 'desserts', 'label' => 'Dessert', 'time' => '22 min', 'level' => 'Facile', 'tag' => 'Gourmand', 'servings' => '6 fondants', 'season' => 'Gourmand'],
+    ];
+
+    return array_merge($default, $meta[$slug ?? ''] ?? []);
+}
+
 function nav_link(string $href, string $label): string
 {
     $active = current_path() === $href ? 'text-tomato' : 'text-stone-700 hover:text-tomato';
@@ -75,11 +103,11 @@ function public_header(string $title): void
         <div class="flex items-center gap-5 text-sm">
 HTML;
     echo nav_link('/', 'Accueil');
-    echo '<a class="text-stone-700 font-extrabold transition hover:text-tomato" href="/#recettes">Recettes</a>';
+    echo nav_link('/recipes.php', 'Recettes');
     if (isset($_SESSION['admin_id'])) {
-        echo nav_link('/admin/dashboard.php', 'Espace équipe');
+        echo nav_link('/admin/dashboard.php', 'Back-office');
     } else {
-        echo nav_link('/login.php', 'Espace équipe');
+        echo nav_link('/login.php', 'Connexion');
     }
     echo <<<HTML
         </div>

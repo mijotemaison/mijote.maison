@@ -9,19 +9,6 @@ require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
 $recipe = null;
 $error = null;
 
-$recipeMeta = [
-    'veloute-de-potimarron' => ['label' => 'Entrée', 'time' => '35 min', 'level' => 'Très facile', 'servings' => '4 bols', 'season' => 'Automne'],
-    'poulet-citron-et-herbes' => ['label' => 'Plat', 'time' => '30 min', 'level' => 'Facile', 'servings' => '4 personnes', 'season' => 'Toute saison'],
-    'tarte-fine-aux-pommes' => ['label' => 'Dessert', 'time' => '40 min', 'level' => 'Facile', 'servings' => '6 parts', 'season' => 'Goûter'],
-    'pates-cremeuses-aux-champignons' => ['label' => 'Plat', 'time' => '25 min', 'level' => 'Facile', 'servings' => '4 assiettes', 'season' => 'Réconfort'],
-    'salade-mediterraneenne' => ['label' => 'Entrée', 'time' => '15 min', 'level' => 'Très facile', 'servings' => '4 assiettes', 'season' => 'Été'],
-    'saumon-au-four-et-legumes' => ['label' => 'Plat', 'time' => '35 min', 'level' => 'Facile', 'servings' => '4 personnes', 'season' => 'Équilibré'],
-    'curry-de-legumes-coco' => ['label' => 'Végétarien', 'time' => '35 min', 'level' => 'Facile', 'servings' => '4 bols', 'season' => 'Parfumé'],
-    'burger-maison-gourmand' => ['label' => 'Plat', 'time' => '45 min', 'level' => 'Moyen', 'servings' => '4 burgers', 'season' => 'Week-end'],
-    'risotto-parmesan-et-champignons' => ['label' => 'Plat', 'time' => '35 min', 'level' => 'Moyen', 'servings' => '4 assiettes', 'season' => 'Crémeux'],
-    'fondant-au-chocolat' => ['label' => 'Dessert', 'time' => '22 min', 'level' => 'Facile', 'servings' => '6 fondants', 'season' => 'Gourmand'],
-];
-
 try {
     $repo = new RecipeRepository(db());
     if (isset($_GET['id'])) {
@@ -33,13 +20,13 @@ try {
     $error = 'Impossible de charger la recette pour le moment.';
 }
 
-$meta = $recipe ? ($recipeMeta[$recipe['slug']] ?? ['label' => 'Recette', 'time' => '30 min', 'level' => 'Facile', 'servings' => '4 personnes', 'season' => 'Maison']) : null;
+$meta = $recipe ? recipe_public_meta($recipe['slug'] ?? null) : null;
 
 public_header($recipe['title'] ?? 'Recette');
 ?>
 <section class="bg-[#fff1dc]">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <a class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-herb shadow-sm hover:text-tomato" href="/#recettes">← Retour aux recettes</a>
+        <a class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-herb shadow-sm hover:text-tomato" href="/recipes.php">← Retour aux recettes</a>
     </div>
 </section>
 
