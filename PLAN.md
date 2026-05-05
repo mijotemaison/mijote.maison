@@ -164,4 +164,10 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Accueil accessible et headers securite presents.
 - [x] Page presentation accessible avec `Slide 1 / 16`.
 - [x] Acces `/admin/dashboard.php` sans session redirige vers `/login.php`.
-- [ ] Tests CRUD reels contre MySQL : non executes car le serveur MySQL local n'est pas demarre (`Can't connect to local MySQL server through socket '/tmp/mysql.sock'`). Le schema `database.sql` et le code PDO sont prets.
+- [x] Tests MySQL reels executes sur instance temporaire isolee `127.0.0.1:3307`.
+- [x] Import `database.sql` verifie : tables `admins`, `recipes`, `login_attempts`, admin initial et recettes seed.
+- [x] Front-office verifie depuis MySQL : accueil, detail recette, presentation, CSP.
+- [x] Authentification verifiee : mauvais login refuse, SQLi login sans effet, login valide, regeneration de session.
+- [x] Back-office verifie : dashboard protege, CRUD recettes, CRUD administrateurs, suppression dernier admin refusee.
+- [x] Protections verifiees : CSRF invalide refuse, XSS echappee, upload image valide accepte, upload `.php` et fichier trop lourd refuses, brute force bloquee apres 5 echecs.
+- [x] Resultat suite MySQL : 29 tests passes / 29.
