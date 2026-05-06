@@ -22,7 +22,41 @@ try {
 
 $meta = $recipe ? recipe_public_meta($recipe['slug'] ?? null) : null;
 
-public_header($recipe['title'] ?? 'Recette');
+$og = null;
+$jsonLd = null;
+if ($recipe) {
+    $og = [
+        'type' => 'article',
+        'title' => $recipe['title'] . ' — Mijoté Maison',
+        'description' => $recipe['short_description'],
+        'image' => recipe_image_url($recipe['image_path']),
+    ];
+    $ingredients = preg_split('/\r?\n/', (string) ($recipe['ingredients'] ?? ''));
+    $ingredients = array_values(array_filter(array_map('trim', $ingredients), 'strlen'));
+    $steps = preg_split('/\r?\n/', (string) ($recipe['preparation_steps'] ?? ''));
+    $steps = array_values(array_filter(array_map('trim', $steps), 'strlen'));
+    $jsonLd = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Recipe',
+        'name' => $recipe['title'],
+        'image' => [recipe_image_url($recipe['image_path'])],
+        'description' => $recipe['short_description'],
+        'author' => ['@type' => 'Organization', 'name' => 'Mijoté Maison'],
+        'recipeCategory' => $meta['label'] ?? 'Recette',
+        'recipeYield' => $meta['servings'] ?? null,
+        'totalTime' => isset($meta['time']) ? 'PT' . preg_replace('/\D/', '', $meta['time']) . 'M' : null,
+        'recipeIngredient' => $ingredients,
+        'recipeInstructions' => array_map(static function ($step) {
+            return ['@type' => 'HowToStep', 'text' => $step];
+        }, $steps),
+    ];
+    $jsonLd = array_filter($jsonLd, static function ($v) { return $v !== null && $v !== ''; });
+}
+
+public_header($recipe['title'] ?? 'Recette', $og);
+if ($jsonLd) {
+    echo '<script type="application/ld+json" nonce="' . e(csp_nonce()) . '">' . json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
+}
 ?>
 <section class="bg-[#fff1dc]">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

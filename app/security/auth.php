@@ -58,3 +58,8 @@ function current_admin_email(): string
 {
     return (string) ($_SESSION['admin_email'] ?? '');
 }
+
+function current_admin_id(): int
+{
+    return (int) ($_SESSION['admin_id'] ?? 0);
+}

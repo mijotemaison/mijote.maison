@@ -24,15 +24,22 @@ La securite est integree dans la structure :
 
 Le projet combine cuisine et cybersécurité avec une identite plus grand public : recettes maison, table conviviale, visuels appetissants, et protections discrètes. Le back-office conserve un vocabulaire professionnel : acces verrouille, controles serveur, traces de connexion, hygiene des entrees.
 
-## Identite visuelle
+## Identité visuelle
 
 - Nom public : Mijoté Maison.
-- Logo : marmite, vapeur et coeur vegetal.
-- Couleurs publiques : creme, tomate, vert herbes, ambre doux.
-- Cartes recettes gourmandes avec grandes photos.
-- Dashboard admin dense mais clair.
-- Formulaires propres et messages d'erreur visibles.
-- Experience responsive sur mobile et desktop.
+- Logo : marmite, vapeur et cœur végétal.
+- **Direction artistique éditoriale premium** (référence : *Bon Appétit*, *NYT Cooking*, *Eleven Madison Park*).
+- **Palette élargie** : `parchment` (fond global chaud), `ivory` (cartes), `ink` (texte, jamais pur noir), `tomato` + `copper` (accents principaux), `saffron` (filets dorés), `herb` + `olive` (accents végétaux), `fog` (sépia clair).
+- **Typographie double** : `Fraunces` (display, italique expressif) pour les titres ; `Inter` (humaniste UI) pour le corps ; `JetBrains Mono` pour les extraits de code.
+- **Profondeur** : ombres multi-couches (`soft-1` à `soft-4`, `editorial`), grain papier subtil (4–6 % d'opacité via SVG `<feTurbulence>`), filets dorés horizontaux et verticaux.
+- **Header** sticky en verre dépoli (`backdrop-blur-xl`), filet doré en bas, lien actif souligné par un dégradé tomato → saffron.
+- **Cartes recettes** en lévitation au hover (-6 px translate + ombre `editorial` + saturation image +8 %).
+- **Boutons signature** : dégradé `tomato → copper` avec ombre colorée et lift au hover.
+- **Dashboard admin** : fond `ink` avec radial chaud désaturé, sidebar verre dépoli, cartes `panel-card` avec halo subtil.
+- **Notes orales de présentation** étiquetées « En quelques mots » (libellé discret, ne révèle pas le rôle de prompteur), masquées par défaut hors mode présentateur.
+- Formulaires propres et messages d'erreur visibles via toasts auto-dismiss.
+- Expérience responsive sur mobile et desktop.
+- **Accessibilité** : skip link, focus visible, `prefers-reduced-motion`, contrastes AA.
 
 ## Experience utilisateur
 

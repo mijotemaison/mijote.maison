@@ -173,3 +173,61 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Protections verifiees : CSRF invalide refuse, XSS echappee, upload image valide accepte, upload `.php` et fichier trop lourd refuses, brute force bloquee apres 5 echecs.
 - [x] Resultat suite MySQL : 29 tests passes / 29.
 - [x] Conformite PDF front-office verifiee : accueil `/`, liste recettes `/recipes.php`, detail separe `/recipe.php`, page de connexion nommee explicitement.
+
+## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
+
+### Design system éditorial
+
+- [x] Tokens élargis dans `tailwind.config.js` : palette parchment/ivory/ink/copper/saffron/olive/fog/embers, fontFamily double Fraunces+Inter+JetBrains Mono, ombres `soft-1..4` + `editorial` + `glow-*`, backgrounds décoratifs (grain, paper, warm-radial, gold-hairline), keyframes `fade-up`/`shimmer`/`pulse-warm`.
+- [x] Refonte complète de `public/assets/css/input.css` : base éditoriale, composants AAA (boutons signature avec dégradés et lift, cartes recipe en lévitation, kickers à point doré, code-panel premium, header verre dépoli, footer dégradé sépia, admin shell verre dépoli sur ink-radial), utilities (text-balance, smallcaps, tabular, gold-line).
+- [x] Création de `public/assets/img/textures/grain.svg` et `paper.svg` (SVG `<feTurbulence>` < 1 KB).
+- [x] Helpers PHP : `<body>` public en `bg-parchment text-ink font-sans`, `nav_link` raffiné, footer enrichi avec logo signature en small-caps.
+- [x] Mémoire `project_mijote_maison_design.md` mise à jour avec la grammaire complète.
+
+### Sécurité & UX confirmations
+
+- [x] Nouveau helper `current_admin_id()` dans `app/security/auth.php`.
+- [x] Pattern `data-confirm="<message>"` sur tous les `<form>` admin sensibles.
+- [x] Modale de confirmation custom (focus trap, Escape, Enter, accessible) construite par DOM API dans `public/assets/js/admin.js` (pas d'`innerHTML` dynamique).
+- [x] Self-delete admin bloqué côté UI (badge « Vous » sur la ligne du compte courant) ET côté serveur.
+
+### Toasts auto-dismiss
+
+- [x] `render_flash()` produit un `.flash-stack` de toasts : slide-in 420 ms, auto-fermeture 4.5 s, bouton ✕, barre de progression, `aria-live="polite"`, `role="alert"`.
+- [x] Fichier `public/assets/js/toasts.js` (auto-dismiss + Escape pour fermer le dernier).
+
+### Pagination + recherche admin
+
+- [x] Sur `/admin/recipes/index.php` et `/admin/admins/index.php` : barre de recherche live + pagination 10/page (100 % JS, dégrade gracefully si JS off).
+- [x] Pattern réutilisable : `<table data-table="<key>" data-page-size="10">` + `<tr data-search="<haystack>">` + toolbar `[data-table-toolbar="<key>"]`.
+
+### Mode présentateur
+
+- [x] Toggle `🎙️ Mode présentateur` sur `/presentation.php` (notes orales cachées par défaut, visibles en mode ON).
+- [x] Chronomètre auto-démarré au premier changement de slide.
+- [x] Bouton plein écran (`requestFullscreen()`).
+- [x] Bouton reset chrono.
+- [x] Persistance dans `localStorage`.
+- [x] Transitions fade entre slides (200 ms / 250 ms).
+- [x] Focus management (tabindex="-1" + .focus() sur l'`<article>` actif).
+- [x] `aria-live="polite"` sur le compteur de slides.
+
+### Sécurité CSP
+
+- [x] Nonce CSP par requête (`csp_nonce()` dans `app/security/headers.php`, génération via `random_bytes(16)`).
+- [x] CSP étendue pour autoriser Google Fonts (`style-src 'self' https://fonts.googleapis.com`, `font-src 'self' data: https://fonts.gstatic.com`).
+- [x] Aucun `<script>` inline sans nonce.
+
+### SEO + a11y
+
+- [x] Skip link `Aller au contenu` dans `public_header()` (visible au focus).
+- [x] `public_header(string $title, ?array $og = null)` : signature étendue rétro-compatible.
+- [x] Open Graph complet (`og:type/title/description/image/url/site_name`) sur toutes les pages publiques.
+- [x] Twitter Card `summary_large_image`.
+- [x] JSON-LD `Recipe` complet sur `/recipe.php` (name, image, description, ingredients[], instructions[], totalTime, recipeYield, author, recipeCategory) avec nonce CSP.
+- [x] `<meta name="description">` dynamique par page.
+- [x] `prefers-reduced-motion: reduce` honoré (transitions désactivées globalement).
+
+### Configuration locale
+
+- [x] Création de `.env` pointant vers MySQL local sur port 3307 (instance dédiée au projet déjà en place sur la machine).

@@ -72,38 +72,71 @@ function recipe_public_meta(?string $slug): array
 
 function nav_link(string $href, string $label): string
 {
-    $active = current_path() === $href ? 'text-tomato' : 'text-stone-700 hover:text-tomato';
-    return '<a class="' . $active . ' font-extrabold transition" href="' . e($href) . '">' . e($label) . '</a>';
+    $isActive = current_path() === $href;
+    $state = $isActive
+        ? 'text-tomato nav-link-active'
+        : 'text-ink/70 hover:text-tomato';
+    return '<a class="' . $state . ' relative font-sans text-[0.95rem] font-bold tracking-wide transition-colors duration-200" href="' . e($href) . '">' . e($label) . '</a>';
 }
 
-function public_header(string $title): void
+function public_header(string $title, ?array $og = null): void
 {
     $pageTitle = e($title . ' - Mijoté Maison');
+    $ogType = e($og['type'] ?? 'website');
+    $ogTitle = e($og['title'] ?? ($title . ' — Mijoté Maison'));
+    $ogDesc = e($og['description'] ?? 'Mijoté Maison rassemble des recettes maison généreuses : entrées, plats, desserts et idées de saison.');
+    $ogImage = e($og['image'] ?? '/assets/img/recipes/hero-cuisine-familiale.webp');
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = (string) ($_SERVER['HTTP_HOST'] ?? 'localhost');
+    $reqUri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+    $ogUrl = e($scheme . '://' . $host . $reqUri);
+    if (str_starts_with($ogImage, '/')) {
+        $ogImage = e($scheme . '://' . $host) . $ogImage;
+    }
     echo <<<HTML
 <!doctype html>
 <html lang="fr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fbf3e3">
+    <meta name="description" content="{$ogDesc}">
     <title>{$pageTitle}</title>
+    <meta property="og:type" content="{$ogType}">
+    <meta property="og:title" content="{$ogTitle}">
+    <meta property="og:description" content="{$ogDesc}">
+    <meta property="og:image" content="{$ogImage}">
+    <meta property="og:url" content="{$ogUrl}">
+    <meta property="og:site_name" content="Mijoté Maison">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{$ogTitle}">
+    <meta name="twitter:description" content="{$ogDesc}">
+    <meta name="twitter:image" content="{$ogImage}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
     <link rel="stylesheet" href="/assets/css/output.css">
     <script src="/assets/js/presentation.js" defer></script>
     <script src="/assets/js/recipes.js" defer></script>
+    <script src="/assets/js/toasts.js" defer></script>
 </head>
-<body class="min-h-screen bg-cream text-stone-900 antialiased">
-<header class="sticky top-0 z-40 border-b border-orange-100 bg-cream/95 shadow-sm backdrop-blur">
-    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <a href="/" class="flex items-center gap-3 text-stone-950">
-            <img class="h-12 w-12 rounded-2xl" src="/assets/img/logo-mijote-maison.svg" alt="">
-            <span class="leading-tight">
-                <span class="block font-serif text-xl font-bold">Mijoté Maison</span>
-                <span class="block text-xs font-extrabold uppercase tracking-[0.18em] text-herb">Recettes de saison</span>
+<body class="min-h-screen bg-parchment text-ink antialiased font-sans">
+<a class="skip-link" href="#main">Aller au contenu</a>
+<header class="sticky top-0 z-40 border-b border-orange-100/60 bg-parchment/80 backdrop-blur-xl supports-[backdrop-filter]:bg-parchment/70">
+    <nav class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <a href="/" class="group flex items-center gap-3 text-ink">
+            <img class="h-12 w-12 rounded-2xl shadow-soft-2 ring-1 ring-embers-100 transition-transform duration-300 ease-editorial group-hover:rotate-[-3deg]" src="/assets/img/logo-mijote-maison.svg" alt="">
+            <span class="leading-snug">
+                <span class="block font-display text-2xl font-bold tracking-tight text-ink">Mijoté Maison</span>
+                <span class="mt-1 block text-[0.7rem] font-extrabold uppercase tracking-[0.22em] text-herb">Recettes de saison</span>
             </span>
         </a>
-        <div class="flex items-center gap-5 text-sm">
+        <div class="flex flex-wrap items-center gap-x-7 gap-y-2 text-sm">
 HTML;
     echo nav_link('/', 'Accueil');
     echo nav_link('/recipes.php', 'Recettes');
+    echo nav_link('/presentation.php', 'Présentation');
+    echo nav_link('/stack.php', 'Stack');
     if (isset($_SESSION['admin_id'])) {
         echo nav_link('/admin/dashboard.php', 'Back-office');
     } else {
@@ -113,7 +146,7 @@ HTML;
         </div>
     </nav>
 </header>
-<main>
+<main id="main">
 HTML;
 }
 
@@ -121,10 +154,16 @@ function public_footer(): void
 {
     echo <<<HTML
 </main>
-<footer class="border-t border-orange-100 bg-[#fff1dc]">
-    <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-8 text-sm text-stone-600 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <p><strong class="text-stone-900">Mijoté Maison</strong> - Des recettes simples pour cuisiner avec plaisir.</p>
-        <p>Recettes familiales · Plats maison · Desserts gourmands</p>
+<footer class="border-t border-orange-100/80 bg-gradient-to-b from-parchment to-fog">
+    <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-12 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3">
+            <img class="h-10 w-10 rounded-xl ring-1 ring-embers-100 shadow-soft-1" src="/assets/img/logo-mijote-maison.svg" alt="">
+            <div>
+                <p class="font-display text-base font-bold text-ink">Mijoté Maison</p>
+                <p class="text-xs text-ink/60">Des recettes simples pour cuisiner avec plaisir.</p>
+            </div>
+        </div>
+        <p class="smallcaps text-xs font-semibold text-ink/55">Recettes familiales · Plats maison · Desserts gourmands</p>
     </div>
 </footer>
 </body>
@@ -141,10 +180,15 @@ function admin_header(string $title): void
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0a0a12">
     <title>{$pageTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
     <link rel="stylesheet" href="/assets/css/output.css">
+    <script src="/assets/js/toasts.js" defer></script>
 </head>
-<body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
+<body class="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans">
 <div class="min-h-screen lg:flex">
     <aside class="border-b border-white/10 bg-slate-950/95 lg:min-h-screen lg:w-72 lg:border-b-0 lg:border-r">
         <div class="flex items-center justify-between px-5 py-5 lg:block">
@@ -173,6 +217,7 @@ function admin_footer(): void
         </div>
     </main>
 </div>
+<script src="/assets/js/admin.js" defer></script>
 </body>
 </html>
 HTML;
@@ -181,12 +226,18 @@ HTML;
 function render_flash(): void
 {
     $messages = flash_get_all();
+    if (empty($messages)) {
+        return;
+    }
+    echo '<div class="flash-stack" aria-live="polite" role="status">';
     foreach ($messages as $type => $items) {
-        $classes = $type === 'success'
-            ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-100'
-            : 'border-rose-400/40 bg-rose-400/10 text-rose-100';
+        $variant = $type === 'success' ? 'flash-toast-success' : 'flash-toast-error';
         foreach ($items as $message) {
-            echo '<div class="mb-4 rounded-lg border px-4 py-3 text-sm ' . $classes . '">' . e($message) . '</div>';
+            echo '<div class="flash-toast ' . $variant . '" role="alert">'
+                . '<span>' . e($message) . '</span>'
+                . '<button type="button" class="flash-toast-close" aria-label="Fermer la notification">×</button>'
+                . '</div>';
         }
     }
+    echo '</div>';
 }

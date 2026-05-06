@@ -131,21 +131,52 @@ Limite restante : si un jour du HTML enrichi est autorise, il faudra ajouter une
 
 ### D. Content Security Policy
 
-Technique : header CSP centralise.
+Technique : header CSP centralisé avec **nonce par requête** pour autoriser uniquement les scripts inline explicitement étiquetés.
 
-Menace : execution de scripts externes ou injection de contenu actif.
+Menace : exécution de scripts externes, injection de contenu actif, exfiltration via inline script forgé par un attaquant.
 
-Solution appliquee : CSP `default-src 'self'`, scripts et styles locaux, images locales/data, objets interdits, framing interdit.
+Solution appliquée : CSP `default-src 'self'`, `script-src 'self' 'nonce-{nonce}'`, styles autorisés sur `'self'` + Google Fonts, fonts autorisées sur `'self' data:` + Google Fonts, images locales/data, objets interdits, framing interdit, `form-action 'self'`.
 
-Fichiers concernes : `app/security/headers.php`, `app/bootstrap.php`.
+Le nonce est généré via `random_bytes(16)` à chaque requête (helper `csp_nonce()`) et n'est jamais réutilisé. Les rares scripts inline indispensables (JSON-LD `Recipe`) portent l'attribut `nonce="<?= e(csp_nonce()) ?>"` ; tout script inline non noncé est rejeté par le navigateur.
 
-Extrait reel :
+Fichiers concernés : `app/security/headers.php`, `app/bootstrap.php`, `public/recipe.php` (JSON-LD avec nonce).
+
+Extrait réel :
 
 ```php
-header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
+function csp_nonce(): string
+{
+    static $nonce = null;
+    if ($nonce === null) {
+        $nonce = base64_encode(random_bytes(16));
+    }
+    return $nonce;
+}
+
+function apply_security_headers(): void
+{
+    if (headers_sent()) return;
+    $nonce = csp_nonce();
+    header(
+        "Content-Security-Policy: default-src 'self'; "
+        . "script-src 'self' 'nonce-{$nonce}'; "
+        . "style-src 'self' https://fonts.googleapis.com; "
+        . "img-src 'self' data:; "
+        . "font-src 'self' data: https://fonts.gstatic.com; "
+        . "object-src 'none'; base-uri 'self'; "
+        . "frame-ancestors 'none'; form-action 'self'"
+    );
+}
 ```
 
-Limite restante : verifier les headers depuis l'URL finale Railway apres deploiement.
+```php
+// public/recipe.php — JSON-LD Recipe SEO avec nonce CSP
+echo '<script type="application/ld+json" nonce="' . e(csp_nonce()) . '">'
+    . json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+    . '</script>';
+```
+
+Limite restante : vérifier les headers depuis l'URL finale Railway après déploiement.
 
 ### E. Protection injection SQL
 
@@ -329,18 +360,112 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 190) {
 
 Limite restante : ajouter des tests automatises de validation.
 
+### K. Protection contre l'auto-suppression d'administrateur
+
+Technique : double protection UI + serveur.
+
+Menace : un administrateur (ou un attaquant ayant volé sa session) supprime son propre compte, provoquant un déni de service applicatif sur le back-office.
+
+Solution appliquée :
+
+- **Côté UI** : le bouton « Supprimer » est remplacé par un badge inerte « ● Vous » sur la ligne correspondant au compte connecté. L'admin ne peut donc pas déclencher l'action depuis l'interface.
+- **Côté serveur** : `admin/admins/delete.php` rejette toute requête où `id` correspond à `$_SESSION['admin_id']`, indépendamment de l'origine (formulaire forgé, curl, etc.).
+- **Garde-fou supplémentaire** : la suppression du dernier administrateur restant est également bloquée par `$repo->count() <= 1`.
+
+Fichiers concernés : `app/security/auth.php` (helper `current_admin_id()`), `admin/admins/index.php` (UI), `admin/admins/delete.php` (serveur).
+
+Extrait réel :
+
+```php
+// app/security/auth.php
+function current_admin_id(): int
+{
+    return (int) ($_SESSION['admin_id'] ?? 0);
+}
+```
+
+```php
+// admin/admins/delete.php
+if ($repo->count() <= 1) {
+    flash('error', 'Impossible de supprimer le dernier administrateur.');
+    redirect('/admin/admins/index.php');
+}
+if ($id === (int) ($_SESSION['admin_id'] ?? 0)) {
+    flash('error', 'Suppression de votre propre compte refusee pendant la session active.');
+    redirect('/admin/admins/index.php');
+}
+```
+
+```php
+// admin/admins/index.php — UI conditionnelle
+if ((int) $admin['id'] === $currentAdminId): ?>
+    <span class="badge-self" title="Vous ne pouvez pas supprimer votre propre compte.">● Vous</span>
+<?php else: ?>
+    <form method="post" action="/admin/admins/delete.php" data-confirm="Êtes-vous sûr de vouloir supprimer définitivement l'administrateur « <?= e($admin['username']) ?> » ?">
+        <?= csrf_field() ?>
+        <input type="hidden" name="id" value="<?= e($admin['id']) ?>">
+        <button class="btn-danger" type="submit">Supprimer</button>
+    </form>
+<?php endif;
+```
+
+Limite restante : un audit log persistant (qui a tenté de supprimer qui, quand, depuis quelle IP) renforcerait la traçabilité.
+
+### L. Confirmations explicites pour les actions destructives
+
+Technique : pattern `data-confirm="<message>"` + modale custom avec focus trap.
+
+Menace : suppression accidentelle de recette ou d'administrateur (clic mal placé, raccourci clavier).
+
+Solution appliquée : tout `<form>` exécutant une action destructive porte un attribut `data-confirm` contenant un message qui inclut **l'identité précise de l'élément** (titre de recette, nom + email d'admin). Un handler JS injecté par `admin_footer()` (`/assets/js/admin.js`) intercepte le `submit`, ouvre une modale `role="alertdialog"` avec focus trap, gestion `Escape` et `Enter`, et résout le submit uniquement après confirmation explicite.
+
+La modale est construite par DOM API (`document.createElement` + `textContent`) — aucun `innerHTML` avec contenu dynamique, donc zéro surface d'XSS même si le message contient des caractères spéciaux.
+
+Fichiers concernés : `public/assets/js/admin.js`, `admin/recipes/index.php`, `admin/admins/index.php`, `app/helpers/functions.php` (`admin_footer` charge `admin.js`).
+
+Extrait réel :
+
+```php
+// admin/recipes/index.php
+<form method="post" action="/admin/recipes/delete.php"
+      data-confirm="Êtes-vous sûr de vouloir supprimer définitivement la recette « <?= e($recipe['title']) ?> » ? Cette action est irréversible.">
+    <?= csrf_field() ?>
+    <input type="hidden" name="id" value="<?= e($recipe['id']) ?>">
+    <button class="btn-danger" type="submit">Supprimer</button>
+</form>
+```
+
+```js
+// public/assets/js/admin.js — extrait
+document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+    var confirmed = false;
+    form.addEventListener('submit', function (event) {
+        if (confirmed) return;
+        event.preventDefault();
+        openConfirm(form.getAttribute('data-confirm')).then(function (ok) {
+            if (ok) { confirmed = true; form.submit(); }
+        });
+    });
+});
+```
+
+Limite restante : étendre le pattern aux mises à jour à risque (changement d'email admin, par exemple) si nécessaire.
+
 ## 5. Tests de securite realises
 
-- Tentative XSS dans titre recette : affichee comme texte avec `e()`.
-- Tentative SQLi dans login : requete preparee, pas de concatenation SQL.
-- Suppression recette sans CSRF : refusee par `require_valid_csrf()`.
-- Acces `/admin/dashboard.php` sans connexion : redirection login.
-- Upload fichier `.php` : extension refusee.
+- Tentative XSS dans titre recette : affichée comme texte avec `e()`.
+- Tentative SQLi dans login : requête préparée, pas de concaténation SQL.
+- Suppression recette sans CSRF : refusée par `require_valid_csrf()`.
+- Accès `/admin/dashboard.php` sans connexion : redirection login.
+- Upload fichier `.php` : extension refusée.
 - Upload image trop lourde : limite 2 Mo.
-- Plusieurs echecs login : blocage apres 5 echecs recents.
-- Mot de passe stocke : hash present dans `database.sql`, aucun mot de passe clair en table.
-- CSP presente : header centralise dans `headers.php`.
-- Navigation responsive : Tailwind compile localement.
+- Plusieurs échecs login : blocage après 5 échecs récents.
+- Mot de passe stocké : hash présent dans `database.sql`, aucun mot de passe clair en table.
+- **CSP avec nonce vérifiée** : `curl -I` montre un nonce différent à chaque requête.
+- **Script inline sans nonce refusé** par le navigateur (vérifié dans la console DevTools).
+- **Tentative d'auto-suppression admin** (curl POST avec id du compte courant) : refusée serveur avec flash explicite.
+- **Confirmation modale** : Escape annule, Enter confirme, Tab reste dans la modale (focus trap), bouton Annuler n'envoie aucune requête.
+- Navigation responsive : Tailwind compilé localement.
 
 ## 6. Conclusion
 

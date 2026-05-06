@@ -12,30 +12,105 @@ function render_code_panel(string $title, string $file, string $code): void
     echo '<div><p class="text-sm font-extrabold text-white">' . e($title) . '</p><p class="text-xs text-slate-400">' . e($file) . '</p></div>';
     echo '<button class="rounded-full border border-slate-700 px-3 py-1.5 text-xs font-extrabold text-slate-200 transition hover:bg-slate-800" type="button" data-copy-code="' . e($id) . '">Copier</button>';
     echo '</div>';
-    echo '<pre class="max-h-[26rem] overflow-auto p-4 text-[0.78rem] leading-6 text-slate-100"><code id="' . e($id) . '">' . e(trim($code)) . '</code></pre>';
+    echo '<pre class="max-h-72 overflow-auto p-4 text-[0.78rem] leading-6 text-slate-100"><code id="' . e($id) . '">' . e(trim($code)) . '</code></pre>';
     echo '</div>';
 }
 
 $slides = [
-    ['Mijoté Maison', 'Un site public de recettes qui ressemble à un vrai produit, avec une administration sécurisée en arrière-plan.'],
-    ['Problème traité', 'Une application exposée à Internet reçoit des données utilisateur, des connexions admin et des uploads. Chaque entrée peut devenir une attaque.'],
-    ['Architecture', 'Le code est séparé entre pages publiques, back-office, repositories PDO, validation et fichiers app/security.'],
-    ['Authentification', 'Les mots de passe sont hachés, vérifiés avec password_verify et la session est régénérée après connexion.'],
-    ['Injection SQL', 'Les requêtes passent par PDO prepare/execute. Les variables utilisateur ne sont jamais concaténées dans le SQL.'],
-    ['XSS', 'Les données stockées sont échappées au moment de l’affichage avec e() et une CSP limite l’exécution de scripts.'],
-    ['CSRF', 'Les formulaires sensibles contiennent un token aléatoire vérifié côté serveur avant l’action.'],
-    ['Brute force', 'Les tentatives de connexion sont journalisées et le login est bloqué après plusieurs échecs récents.'],
-    ['Upload', 'Les images sont filtrées par extension, MIME, taille, nom aléatoire et stockage contrôlé.'],
-    ['Conclusion', 'Le projet montre une application complète, présentable au public, et défendable techniquement devant le jury.'],
-];
-
-$sections = [
     [
-        'id' => 'auth',
+        'kicker' => 'Ouverture',
+        'title' => 'Mijoté Maison',
+        'lead' => 'Projet final GRETA 92 : un site de recettes public avec un back-office administrateur sécurisé.',
+        'oral' => 'Je présente une application complète, pas seulement une maquette. Le visiteur consulte les recettes, et l’administrateur gère le contenu dans une zone protégée.',
+        'points' => ['Front-office public orienté recettes.', 'Back-office réservé aux administrateurs.', 'Sécurité intégrée dans le code PHP, la base et les formulaires.'],
+        'files' => ['public/index.php', 'public/recipes.php', 'admin/dashboard.php'],
+        'test' => 'Vérification : accueil, liste recettes, détail recette, login et dashboard répondent correctement.',
+    ],
+    [
+        'kicker' => 'Contexte',
+        'title' => 'Le sujet demandé',
+        'lead' => 'Le PDF demande une page d’accueil, une page recette, une page de connexion et un back-office admin.',
+        'oral' => 'Le site respecte la séparation attendue : la partie publique ne permet que la consultation, tandis que les actions sensibles sont dans le back-office.',
+        'points' => ['Page d’accueil avec présentation et aperçu de recettes.', 'Page liste pour naviguer vers chaque recette.', 'Page recette détaillée séparée.', 'Page de connexion clairement nommée.'],
+        'files' => ['public/index.php', 'public/recipes.php', 'public/recipe.php', 'public/login.php'],
+        'test' => 'Vérification : /, /recipes.php, /recipe.php?slug=veloute-de-potimarron et /login.php répondent en HTTP 200.',
+    ],
+    [
+        'kicker' => 'Objectif',
+        'title' => 'Développer un vrai site sécurisé',
+        'lead' => 'L’objectif est de montrer un produit utilisable et de prouver que les protections web sont comprises.',
+        'oral' => 'Chaque protection est visible dans le projet : il y a un fichier ou une fonction identifiable pour l’authentification, SQLi, XSS, CSRF, brute force et upload.',
+        'points' => ['Fonctionnalités réelles : CRUD recettes et admins.', 'Données stockées en MySQL.', 'Explications techniques appuyées par des extraits réels.'],
+        'files' => ['app/security/*', 'app/repositories/*', 'docs/rapport-securite.md'],
+        'test' => 'Vérification : le rapport PDF et cette présentation citent les mêmes protections que le code.',
+    ],
+    [
+        'kicker' => 'Stack',
+        'title' => 'PHP, MySQL, Tailwind et JavaScript',
+        'lead' => 'La stack reste conforme au sujet : PHP, HTML, JavaScript et MySQL. Bootstrap est remplacé par Tailwind CSS.',
+        'oral' => 'PHP orchestre les pages, PDO sécurise l’accès à MySQL, Tailwind construit l’interface, et JavaScript ajoute l’interaction du carrousel et des filtres.',
+        'points' => ['PHP natif structuré, sans framework lourd.', 'MySQL avec PDO et requêtes préparées.', 'Tailwind compilé localement pour le design.', 'JavaScript vanilla pour les interactions.'],
+        'files' => ['package.json', 'tailwind.config.js', 'app/config/database.php'],
+        'code' => [
+            [
+                'title' => 'Connexion PDO centralisée',
+                'file' => 'app/config/database.php',
+                'body' => <<<'PHP'
+$pdo = new PDO($dsn, $user, $password, [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES => false,
+]);
+PHP,
+            ],
+        ],
+        'test' => 'Vérification : npm run build-css compile Tailwind et les routes PHP utilisent la connexion PDO.',
+    ],
+    [
+        'kicker' => 'Architecture',
+        'title' => 'Une séparation lisible',
+        'lead' => 'Le projet est organisé entre pages publiques, back-office, configuration, sécurité, repositories et validation.',
+        'oral' => 'Cette architecture permet au jury de retrouver rapidement où chaque responsabilité est gérée. Les pages appellent les repositories, et les repositories parlent à MySQL.',
+        'points' => ['public/ contient les pages accessibles au visiteur.', 'admin/ contient les écrans réservés aux administrateurs.', 'app/security/ contient les protections.', 'app/repositories/ centralise les requêtes SQL.'],
+        'files' => ['public/*', 'admin/*', 'app/security/*', 'app/repositories/*'],
+        'test' => 'Vérification : les pages admin appellent require_admin() et les requêtes SQL sont dans les repositories.',
+    ],
+    [
+        'kicker' => 'Front-office',
+        'title' => 'La partie publique',
+        'lead' => 'Le visiteur voit une page d’accueil, une liste de recettes et une page détaillée par recette.',
+        'oral' => 'Le front-office ressemble à un vrai site de recettes. Il affiche les données en lecture seule et ne propose aucune action sensible.',
+        'points' => ['Accueil avec présentation du site.', 'Liste complète avec recherche et filtres.', 'Détail recette avec image, ingrédients et étapes.', 'Échappement systématique à l’affichage.'],
+        'files' => ['public/index.php', 'public/recipes.php', 'public/recipe.php'],
+        'code' => [
+            [
+                'title' => 'Lien de carte vers la page recette séparée',
+                'file' => 'public/recipes.php',
+                'body' => <<<'PHP'
+<a href="/recipe.php?slug=<?= e($recipe['slug']) ?>" class="block">
+    <h3><?= e($recipe['title']) ?></h3>
+    <p><?= e($recipe['short_description']) ?></p>
+</a>
+PHP,
+            ],
+        ],
+        'test' => 'Vérification : la page /recipes.php affiche 10 cartes et chaque carte ouvre une page /recipe.php dédiée.',
+    ],
+    [
+        'kicker' => 'Back-office',
+        'title' => 'La partie administrateur',
+        'lead' => 'Le back-office permet de gérer les recettes et les administrateurs après connexion.',
+        'oral' => 'Toutes les actions sensibles passent par des formulaires POST avec CSRF. Le public ne peut pas créer, modifier ou supprimer.',
+        'points' => ['Dashboard avec statistiques.', 'CRUD recettes avec upload image.', 'CRUD administrateurs avec hash de mot de passe.', 'Suppression du dernier admin bloquée.'],
+        'files' => ['admin/dashboard.php', 'admin/recipes/*', 'admin/admins/*'],
+        'test' => 'Vérification : accès /admin/dashboard.php sans session redirige vers /login.php.',
+    ],
+    [
         'kicker' => 'Authentification',
-        'title' => 'Empêcher l’accès au back-office sans compte valide',
-        'attack' => 'Un attaquant tente de deviner un mot de passe, voler une session ou accéder directement aux pages admin.',
-        'solution' => 'Le login vérifie le hash du mot de passe, régénère l’identifiant de session et chaque page admin appelle require_admin().',
+        'title' => 'Protéger l’accès admin',
+        'lead' => 'Le mot de passe n’est jamais stocké en clair, et la session est régénérée après connexion.',
+        'oral' => 'La connexion vérifie un hash avec password_verify. Ensuite login_admin() régénère l’identifiant de session pour limiter la fixation de session.',
+        'points' => ['password_hash() utilisé pour créer les mots de passe.', 'password_verify() utilisé au login.', 'session_regenerate_id(true) après succès.', 'require_admin() protège les pages admin.'],
         'files' => ['public/login.php', 'app/security/auth.php', 'admin/*'],
         'code' => [
             [
@@ -44,7 +119,6 @@ $sections = [
                 'body' => <<<'PHP'
 $admin = filter_var($email, FILTER_VALIDATE_EMAIL) ? $repo->findByEmail($email) : null;
 $valid = $admin && password_verify($password, (string) $admin['password_hash']);
-record_login_attempt($pdo, $email, (bool) $valid);
 
 if (!$valid) {
     flash('error', 'Identifiants invalides.');
@@ -55,7 +129,7 @@ login_admin($admin);
 PHP,
             ],
             [
-                'title' => 'Session régénérée et accès admin protégé',
+                'title' => 'Session régénérée et accès protégé',
                 'file' => 'app/security/auth.php',
                 'body' => <<<'PHP'
 function login_admin(array $admin): void
@@ -63,32 +137,25 @@ function login_admin(array $admin): void
     session_regenerate_id(true);
     $_SESSION['admin_id'] = (int) $admin['id'];
     $_SESSION['admin_email'] = (string) $admin['email'];
-    $_SESSION['admin_username'] = (string) $admin['username'];
 }
 
 function require_admin(): void
 {
     if (!is_admin_authenticated()) {
-        flash('error', 'Acces reserve aux administrateurs authentifies.');
         redirect('/login.php');
     }
 }
 PHP,
             ],
         ],
-        'explanation' => [
-            'password_verify() compare le mot de passe saisi au hash stocké, sans jamais stocker le mot de passe en clair.',
-            'session_regenerate_id(true) limite la fixation de session après connexion.',
-            'require_admin() centralise la protection des pages admin : sans session, l’utilisateur est renvoyé vers le login.',
-        ],
-        'test' => 'Test réalisé : /admin/dashboard.php sans session redirige vers /login.php, login valide arrive au dashboard.',
+        'test' => 'Vérification : mauvais login refusé, login admin valide redirige vers le dashboard.',
     ],
     [
-        'id' => 'sqli',
         'kicker' => 'Injection SQL',
-        'title' => 'Bloquer les requêtes SQL manipulées par l’utilisateur',
-        'attack' => 'Un attaquant saisit une valeur comme \' OR 1=1 pour modifier une requête SQL.',
-        'solution' => 'Les accès base sont regroupés dans des repositories qui utilisent PDO prepare/execute et des paramètres.',
+        'title' => 'Empêcher une saisie de devenir du SQL',
+        'lead' => 'Les variables utilisateur ne sont jamais concaténées dans les requêtes.',
+        'oral' => 'Les repositories utilisent PDO prepare et execute. Le SQL garde des marqueurs comme :slug, et les valeurs sont envoyées séparément.',
+        'points' => ['prepare() prépare la requête.', 'execute() injecte les valeurs comme paramètres.', 'PDO::ATTR_EMULATE_PREPARES désactivé.', 'Même logique pour lecture, création, modification et suppression.'],
         'files' => ['app/repositories/RecipeRepository.php', 'app/repositories/AdminRepository.php'],
         'code' => [
             [
@@ -105,43 +172,19 @@ public function findBySlug(string $slug): ?array
 }
 PHP,
             ],
-            [
-                'title' => 'Création de recette avec paramètres nommés',
-                'file' => 'app/repositories/RecipeRepository.php',
-                'body' => <<<'PHP'
-$stmt = $this->pdo->prepare(
-    'INSERT INTO recipes (title, slug, short_description, description, ingredients, preparation_steps, image_path, created_at, updated_at)
-     VALUES (:title, :slug, :short_description, :description, :ingredients, :preparation_steps, :image_path, NOW(), NOW())'
-);
-$stmt->execute([
-    'title' => $data['title'],
-    'slug' => $data['slug'],
-    'short_description' => $data['short_description'],
-    'description' => $data['description'],
-    'ingredients' => $data['ingredients'],
-    'preparation_steps' => $data['preparation_steps'],
-    'image_path' => $data['image_path'],
-]);
-PHP,
-            ],
         ],
-        'explanation' => [
-            'Le SQL contient des marqueurs comme :slug au lieu de concaténer la saisie utilisateur.',
-            'PDO transmet les valeurs séparément de la requête, ce qui empêche une saisie de devenir du SQL exécutable.',
-            'La même logique est utilisée pour lire, créer, modifier et supprimer.',
-        ],
-        'test' => 'Test réalisé : tentative SQLi sur le login refusée sans casser la requête.',
+        'test' => 'Vérification : tentative SQLi sur le login refusée sans contourner l’authentification.',
     ],
     [
-        'id' => 'xss',
-        'kicker' => 'XSS',
-        'title' => 'Empêcher l’exécution de scripts injectés',
-        'attack' => 'Un attaquant tente de stocker <script>alert(1)</script> dans une recette pour l’exécuter chez les visiteurs.',
-        'solution' => 'Les données venant de la base sont échappées avec e() avant affichage HTML. Une CSP limite aussi les sources de scripts.',
-        'files' => ['app/helpers/functions.php', 'public/index.php', 'public/recipe.php', 'app/security/headers.php'],
+        'kicker' => 'XSS et CSP',
+        'title' => 'Afficher les données sans exécuter de script',
+        'lead' => 'Les données issues de la base sont échappées avec e() et la CSP limite les scripts.',
+        'oral' => 'La protection XSS se fait au moment de l’affichage. Si une recette contient du HTML ou du JavaScript, il est transformé en texte visible et non exécuté.',
+        'points' => ['htmlspecialchars avec ENT_QUOTES.', 'Aucun HTML brut autorisé dans les recettes.', 'CSP centralisée dans headers.php.', 'Scripts limités aux fichiers locaux.'],
+        'files' => ['app/helpers/functions.php', 'public/recipe.php', 'app/security/headers.php'],
         'code' => [
             [
-                'title' => 'Helper d’échappement HTML',
+                'title' => 'Helper d’échappement',
                 'file' => 'app/helpers/functions.php',
                 'body' => <<<'PHP'
 function e(mixed $value): string
@@ -151,43 +194,25 @@ function e(mixed $value): string
 PHP,
             ],
             [
-                'title' => 'Affichage échappé dans une fiche recette',
-                'file' => 'public/recipe.php',
-                'body' => <<<'PHP'
-<h1 class="mt-6 max-w-4xl font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-7xl">
-    <?= e($recipe['title']) ?>
-</h1>
-
-<p class="mt-5 max-w-2xl text-xl leading-9 text-stone-700">
-    <?= e($recipe['description']) ?>
-</p>
-PHP,
-            ],
-            [
-                'title' => 'Content Security Policy',
+                'title' => 'CSP centralisée',
                 'file' => 'app/security/headers.php',
                 'body' => <<<'PHP'
 header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
 PHP,
             ],
         ],
-        'explanation' => [
-            'htmlspecialchars transforme les caractères dangereux en entités HTML.',
-            'ENT_QUOTES protège aussi les guillemets dans les attributs HTML.',
-            'La CSP ajoute une deuxième barrière en limitant les scripts aux fichiers locaux.',
-        ],
-        'test' => 'Test réalisé : un titre contenant un script est affiché comme texte, pas exécuté.',
+        'test' => 'Vérification : tentative XSS affichée comme texte et CSP présente dans les headers HTTP.',
     ],
     [
-        'id' => 'csrf',
         'kicker' => 'CSRF',
-        'title' => 'Empêcher une action admin déclenchée depuis un autre site',
-        'attack' => 'Un attaquant pousse un admin connecté à envoyer une requête de suppression ou modification sans son accord.',
-        'solution' => 'Chaque formulaire sensible contient un token CSRF stocké en session et vérifié avant l’action.',
+        'title' => 'Vérifier l’intention avant une action sensible',
+        'lead' => 'Chaque formulaire sensible contient un token aléatoire vérifié côté serveur.',
+        'oral' => 'Un site externe ne peut pas deviner le token stocké en session. Sans token valide, l’action est refusée avant toute modification.',
+        'points' => ['Token généré avec random_bytes().', 'Champ caché csrf_token dans les formulaires.', 'hash_equals() pour comparer.', 'Suppressions uniquement en POST.'],
         'files' => ['app/security/csrf.php', 'admin/recipes/delete.php', 'admin/admins/delete.php'],
         'code' => [
             [
-                'title' => 'Génération et champ caché',
+                'title' => 'Token CSRF',
                 'file' => 'app/security/csrf.php',
                 'body' => <<<'PHP'
 function generate_csrf_token(): string
@@ -199,55 +224,31 @@ function generate_csrf_token(): string
     return (string) $_SESSION['csrf_token'];
 }
 
-function csrf_field(): string
-{
-    return '<input type="hidden" name="csrf_token" value="' . e(generate_csrf_token()) . '">';
-}
-PHP,
-            ],
-            [
-                'title' => 'Vérification serveur',
-                'file' => 'app/security/csrf.php',
-                'body' => <<<'PHP'
 function verify_csrf_token(?string $token): bool
 {
     return is_string($token)
         && isset($_SESSION['csrf_token'])
         && hash_equals((string) $_SESSION['csrf_token'], $token);
 }
-
-function require_valid_csrf(): void
-{
-    if (!verify_csrf_token($_POST['csrf_token'] ?? null)) {
-        flash('error', 'Jeton CSRF invalide. Action refusee.');
-        redirect($_SERVER['HTTP_REFERER'] ?? '/');
-    }
-}
 PHP,
             ],
         ],
-        'explanation' => [
-            'random_bytes génère un token imprévisible.',
-            'hash_equals évite les comparaisons fragiles.',
-            'Sans token valide, l’action est refusée avant la modification en base.',
-        ],
-        'test' => 'Test réalisé : suppression recette avec token invalide refusée, nombre de recettes inchangé.',
+        'test' => 'Vérification : suppression avec token absent ou invalide refusée.',
     ],
     [
-        'id' => 'bruteforce',
         'kicker' => 'Brute force',
         'title' => 'Limiter les essais répétés sur le login',
-        'attack' => 'Un robot tente de deviner le mot de passe admin avec des centaines d’essais.',
-        'solution' => 'Chaque tentative est enregistrée et la connexion est temporairement bloquée après 5 échecs récents.',
+        'lead' => 'Les tentatives de connexion sont journalisées et le login est bloqué après plusieurs échecs récents.',
+        'oral' => 'Le but est de ralentir un robot qui teste beaucoup de mots de passe. Le blocage se base sur les échecs récents liés à l’email et à l’IP.',
+        'points' => ['Table login_attempts.', 'Email, IP, user agent, succès ou échec.', 'Blocage après 5 échecs sur 15 minutes.', 'Message générique au login.'],
         'files' => ['app/security/brute_force.php', 'app/repositories/LoginAttemptRepository.php', 'public/login.php'],
         'code' => [
             [
-                'title' => 'Seuil et fenêtre temporelle',
+                'title' => 'Seuil de blocage',
                 'file' => 'app/security/brute_force.php',
                 'body' => <<<'PHP'
 const MAX_LOGIN_FAILURES = 5;
 const LOGIN_WINDOW_MINUTES = 15;
-const LOGIN_BLOCK_MINUTES = 15;
 
 function login_is_blocked(PDO $pdo, string $email): bool
 {
@@ -258,36 +259,15 @@ function login_is_blocked(PDO $pdo, string $email): bool
 }
 PHP,
             ],
-            [
-                'title' => 'Journalisation d’une tentative',
-                'file' => 'app/security/brute_force.php',
-                'body' => <<<'PHP'
-function record_login_attempt(PDO $pdo, string $email, bool $success): void
-{
-    $repo = new LoginAttemptRepository($pdo);
-    $repo->create([
-        'email' => $email,
-        'ip_address' => client_ip(),
-        'user_agent' => user_agent(),
-        'success' => $success ? 1 : 0,
-    ]);
-}
-PHP,
-            ],
         ],
-        'explanation' => [
-            'La protection combine l’email tenté et l’adresse IP.',
-            'Le message côté login reste générique pour ne pas confirmer si le compte existe.',
-            'Les tentatives abusives deviennent visibles dans le dashboard.',
-        ],
-        'test' => 'Test réalisé : après 5 échecs récents, une connexion valide est temporairement refusée.',
+        'test' => 'Vérification : après 5 échecs récents, la connexion est temporairement bloquée.',
     ],
     [
-        'id' => 'upload',
         'kicker' => 'Upload sécurisé',
-        'title' => 'Empêcher l’envoi de fichiers exécutables',
-        'attack' => 'Un attaquant essaie d’envoyer un fichier .php déguisé en image pour exécuter du code sur le serveur.',
-        'solution' => 'L’upload vérifie l’erreur PHP, la taille, l’extension, le MIME réel et renomme le fichier aléatoirement.',
+        'title' => 'Accepter seulement de vraies images',
+        'lead' => 'L’upload contrôle la taille, l’extension, le type MIME réel et le nom du fichier.',
+        'oral' => 'On ne réutilise jamais le nom envoyé par l’utilisateur. Le fichier est renommé avec random_bytes et seules les extensions image autorisées passent.',
+        'points' => ['Extensions autorisées : jpg, jpeg, png, webp.', 'MIME réel vérifié avec finfo.', 'Taille limitée à 2 Mo.', 'Nom de fichier aléatoire.'],
         'files' => ['app/security/upload.php', 'public/uploads/recipes/.htaccess'],
         'code' => [
             [
@@ -309,38 +289,19 @@ $finfo = new finfo(FILEINFO_MIME_TYPE);
 $mime = $finfo->file($tmpPath) ?: '';
 PHP,
             ],
-            [
-                'title' => 'Nom aléatoire',
-                'file' => 'app/security/upload.php',
-                'body' => <<<'PHP'
-$filename = bin2hex(random_bytes(16)) . '.' . $extension;
-$destination = UPLOAD_RECIPE_DIR . '/' . $filename;
-
-if (!move_uploaded_file($tmpPath, $destination)) {
-    return ['path' => null, 'error' => 'Impossible de sauvegarder l’image.'];
-}
-
-return ['path' => 'uploads/recipes/' . $filename, 'error' => null];
-PHP,
-            ],
         ],
-        'explanation' => [
-            'Le nom original envoyé par l’utilisateur n’est jamais réutilisé.',
-            'finfo lit le type réel du fichier, pas seulement son extension.',
-            'La taille est limitée à 2 Mo pour éviter les abus simples.',
-        ],
-        'test' => 'Test réalisé : upload .php refusé, image WebP/PNG valide acceptée.',
+        'test' => 'Vérification : upload .php refusé, image valide acceptée, fichier trop lourd refusé.',
     ],
     [
-        'id' => 'validation',
         'kicker' => 'Validation serveur',
-        'title' => 'Refuser les données incohérentes avant la base',
-        'attack' => 'Un utilisateur envoie des champs vides, trop longs ou mal formés en contournant le navigateur.',
-        'solution' => 'La validation est faite côté serveur avant création ou modification.',
+        'title' => 'Refuser les données incohérentes',
+        'lead' => 'La validation côté serveur protège même si le navigateur est contourné.',
+        'oral' => 'Les champs obligatoires et les longueurs sont contrôlés avant insertion ou modification en base. C’est complémentaire à l’échappement.',
+        'points' => ['Titre obligatoire et limité.', 'Description courte limitée.', 'Ingrédients et étapes obligatoires.', 'Email admin validé côté serveur.'],
         'files' => ['app/validation/recipe_validation.php', 'app/validation/admin_validation.php'],
         'code' => [
             [
-                'title' => 'Validation d’une recette',
+                'title' => 'Validation recette',
                 'file' => 'app/validation/recipe_validation.php',
                 'body' => <<<'PHP'
 if ($title === '' || mb_strlen($title) > 150) {
@@ -355,111 +316,113 @@ if ($steps === '' || mb_strlen($steps) > 7000) {
 PHP,
             ],
         ],
-        'explanation' => [
-            'La validation côté serveur reste obligatoire car le HTML peut être contourné.',
-            'Les limites de longueur réduisent les entrées abusives et protègent l’affichage.',
-            'Les erreurs sont renvoyées proprement à l’admin.',
-        ],
-        'test' => 'Test réalisé : formulaires incomplets refusés, erreurs affichées sans insertion.',
+        'test' => 'Vérification : formulaire incomplet refusé avec message propre.',
+    ],
+    [
+        'kicker' => 'Tests',
+        'title' => 'Ce qui a été vérifié',
+        'lead' => 'Les tests manuels et techniques couvrent les routes principales, les CRUD et les protections.',
+        'oral' => 'J’ai testé l’application avec une vraie base MySQL temporaire, puis vérifié les routes publiques, le login, les CRUD et les attaques attendues.',
+        'points' => ['29 tests MySQL réels passés.', 'Lint PHP complet sans erreur.', 'CSS Tailwind reconstruit.', 'CSP vérifiée dans les headers.'],
+        'files' => ['PLAN.md', 'README.md', 'docs/rapport-securite.md'],
+        'test' => 'Vérification : npm run build-css, lint PHP complet, HTTP 200 sur les pages publiques et login admin fonctionnel.',
+    ],
+    [
+        'kicker' => 'Conclusion',
+        'title' => 'Résultat final',
+        'lead' => 'Le projet démontre une application web complète, structurée, présentable et défendable techniquement.',
+        'oral' => 'La partie visible ressemble à un site de recettes, et la partie technique montre les protections demandées par le sujet. Chaque point important peut être relié à un fichier et à un extrait de code.',
+        'points' => ['Sujet PDF respecté côté front-office et back-office.', 'Sécurité documentée avec extraits réels.', 'Design public cohérent avec un site de recettes.', 'Projet prêt à être présenté et testé.'],
+        'files' => ['README.md', 'PLAN.md', 'docs/rapport-securite-projet-final-greta92.pdf'],
+        'test' => 'Vérification : présentation exploitable en mode carrousel, slide par slide.',
     ],
 ];
 
 public_header('Présentation');
 ?>
 <section class="bg-[#fff1dc]">
-    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
             <div>
                 <span class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato" data-counter>Slide 1 / <?= count($slides) ?></span>
                 <h1 class="mt-2 font-serif text-4xl font-bold text-stone-950">Présentation jury</h1>
             </div>
-            <div class="flex gap-3">
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="presenter-bar" data-presenter-bar>
+                    <button type="button" class="presenter-bar__btn" data-presenter-toggle aria-pressed="false" title="Active les notes orales (visibles uniquement quand activé)">🎙️ Mode présentateur</button>
+                    <span class="presenter-bar__timer tabular" data-presenter-timer aria-label="Chronomètre">00:00</span>
+                    <button type="button" class="presenter-bar__btn" data-presenter-reset title="Réinitialiser le chrono">↺</button>
+                    <button type="button" class="presenter-bar__btn" data-presenter-fullscreen title="Plein écran">⛶</button>
+                </div>
                 <a class="btn-secondary" href="/">Accueil</a>
+                <a class="btn-secondary" href="/stack.php">Stack</a>
                 <?php if (is_admin_authenticated()): ?>
-                    <a class="btn-secondary" href="/admin/dashboard.php">Espace équipe</a>
+                    <a class="btn-secondary" href="/admin/dashboard.php">Back-office</a>
                 <?php endif; ?>
             </div>
         </div>
+
         <progress class="mb-5 h-2 w-full overflow-hidden rounded-full bg-white accent-tomato" value="1" max="<?= count($slides) ?>" data-progress></progress>
-        <div class="min-h-[520px] overflow-hidden rounded-[2rem] border border-orange-100 bg-white p-6 shadow-xl shadow-orange-900/10 sm:p-10" data-deck>
-            <?php foreach ($slides as $index => [$title, $body]): ?>
-                <article class="<?= $index === 0 ? 'grid' : 'hidden' ?> min-h-[440px] place-items-center text-center" data-slide>
-                    <div class="max-w-4xl">
-                        <img class="mx-auto h-20 w-20 rounded-3xl" src="/assets/img/logo-mijote-maison.svg" alt="">
-                        <span class="mt-8 inline-flex rounded-full bg-orange-50 px-4 py-2 text-sm font-extrabold text-tomato">Slide <?= $index + 1 ?></span>
-                        <h2 class="mt-7 font-serif text-5xl font-bold text-stone-950 sm:text-7xl"><?= e($title) ?></h2>
-                        <p class="mt-7 text-xl leading-9 text-stone-700"><?= e($body) ?></p>
-                    </div>
-                </article>
-            <?php endforeach; ?>
-        </div>
-        <div class="mt-6 flex justify-between">
-            <button class="btn-secondary" type="button" data-prev>Précédent</button>
-            <button class="btn-primary" type="button" data-next>Suivant</button>
-        </div>
-    </div>
-</section>
 
-<section class="bg-cream py-14">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-10 grid gap-6 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
-            <div>
-                <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Dossier technique</p>
-                <h2 class="mt-3 font-serif text-5xl font-bold leading-tight text-stone-950">Quelle partie du code protège quelle attaque ?</h2>
-            </div>
-            <p class="text-lg leading-8 text-stone-700">Cette section sert pour l’oral : elle relie chaque menace à une décision technique, cite le fichier concerné et montre l’extrait réel du projet.</p>
-        </div>
-
-        <div class="mb-8 flex flex-wrap gap-2">
-            <?php foreach ($sections as $section): ?>
-                <a class="rounded-full border border-orange-200 bg-white px-4 py-2 text-sm font-extrabold text-stone-700 shadow-sm transition hover:border-tomato hover:text-tomato" href="#<?= e($section['id']) ?>"><?= e($section['kicker']) ?></a>
-            <?php endforeach; ?>
-        </div>
-
-        <div class="space-y-10">
-            <?php foreach ($sections as $section): ?>
-                <article id="<?= e($section['id']) ?>" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-orange-100 bg-white shadow-xl shadow-orange-900/10">
-                    <div class="grid gap-8 p-6 lg:grid-cols-[.75fr_1.25fr] lg:p-8">
+        <div class="overflow-hidden rounded-[2rem] border border-orange-100 bg-white shadow-xl shadow-orange-900/10" data-deck>
+            <?php foreach ($slides as $index => $slide): ?>
+                <article class="<?= $index === 0 ? 'grid' : 'hidden' ?> min-h-[620px] gap-8 p-6 lg:grid-cols-[.82fr_1.18fr] lg:p-9" data-slide>
+                    <div class="flex flex-col justify-between gap-8">
                         <div>
-                            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato"><?= e($section['kicker']) ?></p>
-                            <h3 class="mt-3 font-serif text-4xl font-bold leading-tight text-stone-950"><?= e($section['title']) ?></h3>
-                            <div class="mt-6 space-y-4 text-stone-700">
-                                <div class="rounded-2xl bg-red-50 p-4">
-                                    <p class="font-extrabold text-red-900">Menace</p>
-                                    <p class="mt-1 leading-7"><?= e($section['attack']) ?></p>
+                            <img class="h-16 w-16 rounded-3xl" src="/assets/img/logo-mijote-maison.svg" alt="">
+                            <span class="mt-8 inline-flex rounded-full bg-orange-50 px-4 py-2 text-sm font-extrabold text-tomato">Slide <?= $index + 1 ?></span>
+                            <p class="mt-6 text-sm font-extrabold uppercase tracking-[0.18em] text-herb"><?= e($slide['kicker']) ?></p>
+                            <h2 class="mt-3 font-serif text-4xl font-bold leading-tight text-stone-950 sm:text-6xl"><?= e($slide['title']) ?></h2>
+                            <p class="mt-5 text-xl leading-9 text-stone-700"><?= e($slide['lead']) ?></p>
+                        </div>
+                        <div class="rounded-3xl bg-[#fff7ed] p-5" data-presenter-only>
+                            <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">En quelques mots</p>
+                            <p class="mt-3 leading-7 text-stone-700"><?= e($slide['oral']) ?></p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div class="rounded-3xl border border-orange-100 bg-orange-50 p-5">
+                                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Points clés</p>
+                                <ul class="mt-4 space-y-3 text-sm leading-6 text-stone-700">
+                                    <?php foreach ($slide['points'] as $point): ?>
+                                        <li class="flex gap-3"><span class="mt-2 h-2 w-2 flex-none rounded-full bg-tomato"></span><span><?= e($point) ?></span></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                            <div class="rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
+                                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-herb">Fichiers concernés</p>
+                                <div class="mt-4 flex flex-wrap gap-2">
+                                    <?php foreach ($slide['files'] as $file): ?>
+                                        <span class="rounded-full bg-white px-3 py-1.5 text-xs font-extrabold text-stone-700 shadow-sm"><?= e($file) ?></span>
+                                    <?php endforeach; ?>
                                 </div>
-                                <div class="rounded-2xl bg-emerald-50 p-4">
-                                    <p class="font-extrabold text-herb">Solution appliquée</p>
-                                    <p class="mt-1 leading-7"><?= e($section['solution']) ?></p>
-                                </div>
-                                <div class="rounded-2xl bg-orange-50 p-4">
-                                    <p class="font-extrabold text-stone-900">Fichiers cités</p>
-                                    <p class="mt-1 text-sm leading-7"><?= e(implode(' · ', $section['files'])) ?></p>
-                                </div>
+                                <p class="mt-5 text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Preuve de test</p>
+                                <p class="mt-2 text-sm leading-6 text-stone-700"><?= e($slide['test']) ?></p>
                             </div>
                         </div>
-                        <div class="space-y-5">
-                            <?php foreach ($section['code'] as $block): ?>
-                                <?php render_code_panel($block['title'], $block['file'], $block['body']); ?>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <div class="grid gap-5 border-t border-orange-100 bg-[#fffaf2] p-6 lg:grid-cols-[1fr_.75fr] lg:p-8">
-                        <div>
-                            <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-herb">Explication orale</p>
-                            <ul class="mt-4 space-y-3 text-stone-700">
-                                <?php foreach ($section['explanation'] as $item): ?>
-                                    <li class="flex gap-3 leading-7"><span class="mt-2 h-2 w-2 flex-none rounded-full bg-tomato"></span><span><?= e($item) ?></span></li>
+
+                        <?php if (!empty($slide['code'])): ?>
+                            <div class="space-y-4">
+                                <?php foreach ($slide['code'] as $block): ?>
+                                    <?php render_code_panel($block['title'], $block['file'], $block['body']); ?>
                                 <?php endforeach; ?>
-                            </ul>
-                        </div>
-                        <div class="rounded-2xl bg-white p-5 shadow-sm">
-                            <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Preuve de test</p>
-                            <p class="mt-3 leading-7 text-stone-700"><?= e($section['test']) ?></p>
-                        </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="rounded-3xl border border-orange-100 bg-white p-6 shadow-sm">
+                                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Lecture de la slide</p>
+                                <p class="mt-3 leading-7 text-stone-700">Cette slide sert à poser le contexte et à relier la démonstration au sujet officiel. Les slides sécurité suivantes affichent directement les extraits de code.</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </article>
             <?php endforeach; ?>
+        </div>
+
+        <div class="mt-6 flex justify-between gap-3">
+            <button class="btn-secondary" type="button" data-prev>Précédent</button>
+            <button class="btn-primary" type="button" data-next>Suivant</button>
         </div>
     </div>
 </section>

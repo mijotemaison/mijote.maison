@@ -31,21 +31,32 @@ admin_header('Recettes');
 <?php if ($error): ?>
     <div class="panel-card p-5 text-amber-100"><?= e($error) ?></div>
 <?php else: ?>
+    <div class="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-slate-950/40 p-3" data-table-toolbar="recipes">
+        <label class="relative flex-1 min-w-[220px]">
+            <span class="sr-only">Rechercher une recette</span>
+            <input class="field" type="search" placeholder="Rechercher (titre, slug)..." data-table-search>
+        </label>
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
+            <button type="button" class="btn-secondary !px-4 !py-2 !text-xs" data-table-prev aria-label="Page précédente">‹ Précédent</button>
+            <span data-table-indicator class="tabular px-2 text-slate-300">—</span>
+            <button type="button" class="btn-secondary !px-4 !py-2 !text-xs" data-table-next aria-label="Page suivante">Suivant ›</button>
+        </div>
+    </div>
     <div class="overflow-hidden rounded-lg border border-white/10">
-        <table class="w-full min-w-[760px] divide-y divide-white/10 text-left text-sm">
+        <table class="w-full min-w-[760px] divide-y divide-white/10 text-left text-sm" data-table="recipes" data-page-size="10">
             <thead class="bg-white/5 text-slate-300">
                 <tr><th class="px-4 py-3">Titre</th><th class="px-4 py-3">Slug</th><th class="px-4 py-3">Mis a jour</th><th class="px-4 py-3">Actions</th></tr>
             </thead>
             <tbody class="divide-y divide-white/10">
                 <?php foreach ($recipes as $recipe): ?>
-                    <tr class="bg-slate-950/40">
+                    <tr class="bg-slate-950/40" data-search="<?= e($recipe['title'] . ' ' . $recipe['slug']) ?>">
                         <td class="px-4 py-3 font-medium text-white"><?= e($recipe['title']) ?></td>
                         <td class="px-4 py-3 text-slate-400"><?= e($recipe['slug']) ?></td>
                         <td class="px-4 py-3 text-slate-400"><?= e($recipe['updated_at']) ?></td>
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-2">
                                 <a class="btn-secondary" href="/admin/recipes/edit.php?id=<?= e($recipe['id']) ?>">Modifier</a>
-                                <form method="post" action="/admin/recipes/delete.php" onsubmit="return confirm('Supprimer cette recette ?');">
+                                <form method="post" action="/admin/recipes/delete.php" data-confirm="Êtes-vous sûr de vouloir supprimer définitivement la recette « <?= e($recipe['title']) ?> » ? Cette action est irréversible.">
                                     <?= csrf_field() ?>
                                     <input type="hidden" name="id" value="<?= e($recipe['id']) ?>">
                                     <button class="btn-danger" type="submit">Supprimer</button>
@@ -56,6 +67,7 @@ admin_header('Recettes');
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <div class="hidden p-6 text-center text-sm text-slate-400" data-table-empty>Aucune recette ne correspond à votre recherche.</div>
     </div>
 <?php endif; ?>
 <?php admin_footer(); ?>
