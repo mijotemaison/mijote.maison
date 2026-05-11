@@ -1,0 +1,17 @@
+{
+  "name": "greta92/mijote-maison",
+  "description": "Projet final GRETA 92 - site securise de recettes de cuisine.",
+  "type": "project",
+  "require": {
+    "php": ">=8.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.0"
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

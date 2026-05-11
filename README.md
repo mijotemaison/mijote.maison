@@ -219,9 +219,19 @@ php scripts/cleanup_security_data.php --days=90 --dry-run
 
 Le script supprime les entrées anciennes de `security_logs` et `login_attempts`, puis journalise l'action avec l'événement `maintenance_cleanup`. La valeur par défaut vient de `LOG_RETENTION_DAYS`.
 
+## Tests automatisés
+
+Le projet contient une suite PHPUnit couvrant les validations, la sécurité et les repositories d'audit :
+
+```bash
+composer install
+composer test
+```
+
+La suite vérifie notamment `admin_password_hash()`, `password_verify()`, le rehash Argon2id, les tokens CSRF, les validations recettes/admins, le filtrage `security_logs` et le nettoyage des anciennes tentatives de connexion.
+
 ## Prochaines améliorations
 
-- Ajouter tests PHPUnit (Repository + Security).
 - Audit Lighthouse complet (cible : Perf > 90, A11y > 95, SEO > 95).
 - 2FA TOTP pour les admins.
 - Journal externe type SIEM pour une vraie production.

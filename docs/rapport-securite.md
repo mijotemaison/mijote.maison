@@ -648,6 +648,7 @@ Limite restante : envoyer ces logs vers un service externe en production pour é
 - **Export CSV journal** : `/admin/security-logs/index.php?export=csv` renvoie un fichier CSV après authentification admin avec les mêmes filtres que l'écran.
 - **Nettoyage journal** : l'action de nettoyage est en POST + CSRF et supprime les logs/tentatives anciennes via requêtes préparées.
 - **Maintenance CLI** : `php scripts/cleanup_security_data.php --dry-run` compte les entrées anciennes et `php scripts/cleanup_security_data.php --days=90` les supprime puis journalise `maintenance_cleanup`.
+- **Tests automatisés PHPUnit** : `composer test` exécute 12 tests / 25 assertions sur hash admin, CSRF, HTTPS, validation serveur, repositories de logs et nettoyage.
 - **Timeout session** : la session admin expire après 30 minutes d'inactivité.
 - **HTTPS production** : `APP_ENV=production` redirige les requêtes GET/HEAD HTTP vers HTTPS et refuse les POST HTTP.
 - **Argon2id / rehash** : connexion admin valide avec ancien hash déclenche un rehash vers l'algorithme courant si nécessaire.

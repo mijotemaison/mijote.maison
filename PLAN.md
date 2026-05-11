@@ -266,6 +266,16 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] `database.sql` remet aussi `admins` et `login_attempts` a zero pour des tests reproductibles.
 - [x] Tests finaux : dry-run, suppression reelle sur donnees anciennes, lint, PDF, commit/push.
 
+## Phase 20 - Tests automatises PHPUnit
+
+- [x] Ajout de `composer.json`, `composer.lock` et `phpunit.xml.dist`.
+- [x] Bootstrap de test `tests/bootstrap.php`.
+- [x] Tests securite : hash admin, rehash Argon2id, CSRF, detection HTTPS.
+- [x] Tests validation : admin, recette, categorie et statut.
+- [x] Tests repositories : filtrage `security_logs`, suppression logs anciens, suppression tentatives login anciennes.
+- [x] Execution `composer test` : 12 tests / 25 assertions OK.
+- [x] Tests finaux : lint, build CSS, PDF, commit/push.
+
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 
 ### Design system éditorial

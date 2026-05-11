@@ -26,6 +26,7 @@ $responsibilities = [
     ['Repositories', 'Classes PHP qui exécutent les requêtes SQL préparées avec PDO.'],
     ['Validation', 'Contrôles serveur sur les champs recettes et administrateurs avant écriture en base.'],
     ['Sécurité', 'Protection XSS, SQLi, CSRF, brute force, sessions et upload image.'],
+    ['Tests', 'PHPUnit vérifie les validations, protections, repositories de logs et nettoyage automatique.'],
     ['Assets', 'Images WebP, logo SVG, CSS généré et JavaScript local.'],
     ['Documentation', 'README, PLAN et rapport sécurité avec extraits réels du projet.'],
 ];

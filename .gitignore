@@ -1,6 +1,7 @@
 .env
 node_modules/
 vendor/
+.phpunit.cache/
 .DS_Store
 images /
 storage/logs/*.log
