@@ -18,6 +18,8 @@ Le sujet officiel PDF est present dans le dossier sous le nom `00-sujet-final-an
 ## Architecture attendue
 
 - `public/` : front-office, connexion, deconnexion, presentation, assets publics.
+- `public/router.php` : front controller leger pour les URLs propres.
+- `public/.htaccess` : reecriture Apache/MAMP vers le routeur pour les URLs non-fichiers.
 - `admin/` : back-office protege.
 - `app/config/` : configuration application et base de donnees.
 - `app/helpers/` : helpers d'affichage, flash messages et chemins.
@@ -73,7 +75,7 @@ Le sujet officiel PDF est present dans le dossier sous le nom `00-sujet-final-an
 ### Phase 3 - Front-office
 
 - [x] Accueil public.
-- [x] Liste complete des recettes sur `/recipes.php`.
+- [x] Liste complete des recettes sur `/recettes` (`/recipes.php` reste compatible).
 - [x] Detail recette.
 - [x] Design responsive.
 - [x] Echappement systematique.
@@ -164,7 +166,7 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Serveur local `php -S 127.0.0.1:8000 -t public`.
 - [x] Accueil accessible et headers securite presents.
 - [x] Page presentation accessible avec `Slide 1 / 16`.
-- [x] Acces `/admin/dashboard.php` sans session redirige vers `/login.php`.
+- [x] Acces `/admin/dashboard.php` sans session redirige vers `/connexion`.
 - [x] Tests MySQL reels executes sur instance temporaire isolee `127.0.0.1:3307`.
 - [x] Import `database.sql` verifie : tables `admins`, `recipes`, `login_attempts`, admin initial et recettes seed.
 - [x] Front-office verifie depuis MySQL : accueil, detail recette, presentation, CSP.
@@ -173,6 +175,23 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Protections verifiees : CSRF invalide refuse, XSS echappee, upload image valide accepte, upload `.php` et fichier trop lourd refuses, brute force bloquee apres 5 echecs.
 - [x] Resultat suite MySQL : 29 tests passes / 29.
 - [x] Conformite PDF front-office verifiee : accueil `/`, liste recettes `/recipes.php`, detail separe `/recipe.php`, page de connexion nommee explicitement.
+- [x] Conformite PDF front-office maintenue avec URLs propres : accueil `/`, liste `/recettes`, detail `/recette/{slug}`, connexion `/connexion`.
+
+## Phase 12 - Alignement avec la methode du prof (MAMP / Apache / front controller)
+
+- [x] Analyse du support `jour11/03-start.md` : MAMP/WAMP/LAMP si besoin de `mod_rewrite`, point d'entree unique, `.htaccess`, organisation MVC.
+- [x] Ajout de `public/router.php` comme front controller leger.
+- [x] Ajout de `public/.htaccess` pour Apache/MAMP : reecriture des URLs propres vers le routeur.
+- [x] URLs propres principales : `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/stack`.
+- [x] Anciennes URLs `.php` conservees pour eviter les regressions.
+- [x] Documentation MAMP ajoutee : DocumentRoot `public/`, MySQL MAMP `127.0.0.1:8889`, user/pass `root/root`.
+- [x] Equivalence MVC documentee : repositories = Model, pages PHP = controllers/vues, `app/security` = protections transversales.
+- [x] `presentation.php` enrichie avec une slide architecture selon la methode du prof.
+- [x] `stack.php` enrichie avec front controller, router, `.htaccess`, MAMP/Apache et MVC adapte.
+- [x] Tests effectues avec `php -S 127.0.0.1:8888 -t public public/router.php`.
+- [x] Routes propres verifiees : `/`, `/recettes`, `/recette/veloute-de-potimarron`, `/connexion`, `/presentation`, `/stack`.
+- [x] Compatibilite verifiee : `/recipes.php`, `/recipe.php?slug=veloute-de-potimarron`, `/presentation.php`, `/stack.php`.
+- [x] Securite verifiee apres routing : CSP presente, acces admin sans session redirige, login admin OK.
 
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 

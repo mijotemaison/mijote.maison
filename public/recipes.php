@@ -65,7 +65,7 @@ public_header('Recettes');
             <?php foreach ($recipes as $recipe): ?>
                 <?php $meta = recipe_public_meta($recipe['slug'] ?? null); ?>
                 <article class="group overflow-hidden rounded-[1.6rem] border border-orange-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-900/10" data-recipe-card data-category="<?= e($meta['category']) ?>" data-search="<?= e($recipe['title'] . ' ' . $recipe['short_description'] . ' ' . $meta['label'] . ' ' . $meta['tag']) ?>">
-                    <a href="/recipe.php?slug=<?= e($recipe['slug']) ?>" class="block">
+                    <a href="<?= e(recipe_url((string) $recipe['slug'])) ?>" class="block">
                         <div class="relative">
                             <img class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
                             <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-tomato shadow-sm"><?= e($meta['label']) ?></span>

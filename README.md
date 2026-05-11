@@ -17,14 +17,15 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - JavaScript vanilla (3 fichiers : `presentation.js`, `recipes.js`, `admin.js`, `toasts.js`).
 - Tailwind CSS 3.4 compilé localement.
 - Google Fonts (Fraunces + Inter + JetBrains Mono) servis via une CSP nonce.
+- Front controller léger (`public/router.php`) + URLs propres compatibles Apache/MAMP.
 
 ## Fonctionnalités front-office
 
 - Page d'accueil `/` avec hero éditorial, aperçu des recettes et navigation.
-- Page liste `/recipes.php` avec toutes les recettes, recherche live et filtres par catégorie.
-- Page détail `/recipe.php` avec titre, image, description, ingrédients, étapes et **JSON-LD `Recipe`** + Open Graph + Twitter Card.
-- Page de connexion administrateur.
-- Page `/presentation.php` sous forme de carrousel avec :
+- Page liste `/recettes` avec toutes les recettes, recherche live et filtres par catégorie.
+- Page détail `/recette/{slug}` avec titre, image, description, ingrédients, étapes et **JSON-LD `Recipe`** + Open Graph + Twitter Card.
+- Page de connexion administrateur `/connexion`.
+- Page `/presentation` sous forme de carrousel avec :
   - **Mode présentateur** togglable (notes orales cachées par défaut, visibles uniquement quand activé).
   - **Chronomètre** auto-démarré au premier changement de slide.
   - **Plein écran** via `requestFullscreen()`.
@@ -76,7 +77,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - `<title>` et `<meta name="description">` par page.
 - **Open Graph** complet (`og:type/title/description/image/url/site_name`).
 - **Twitter Card** `summary_large_image`.
-- **JSON-LD Recipe** complet sur `/recipe.php` (name, image, description, ingredients[], instructions[], totalTime, recipeYield, author, recipeCategory) → éligible Google Rich Results.
+- **JSON-LD Recipe** complet sur `/recette/{slug}` (name, image, description, ingredients[], instructions[], totalTime, recipeYield, author, recipeCategory) → éligible Google Rich Results.
 
 ## Installation locale
 
@@ -85,22 +86,44 @@ npm install
 npm run build-css
 mysql -u root -p < database.sql
 cp .env.example .env
-php -S localhost:8000 -t public
+php -S 127.0.0.1:8888 -t public public/router.php
 ```
 
 Configurer `.env` selon votre MySQL :
 
 ```bash
 APP_ENV=local
-APP_URL=http://localhost:8000
+APP_URL=http://localhost:8888
 DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_PORT=8889
 DB_NAME=secure_recipes_greta92
 DB_USER=root
-DB_PASSWORD=
+DB_PASSWORD=root
 ```
 
-> Note : si MySQL local tourne sur un autre port (ex. 3307 pour une instance dédiée au projet), ajuster `DB_PORT`.
+> MAMP utilise généralement MySQL sur le port `8889` avec `root/root`. Avec un MySQL local classique, utiliser souvent `3306`. Avec l'instance temporaire de test du projet, utiliser `3307`.
+
+## MAMP / Apache / méthode du prof
+
+Le projet suit la logique vue en cours sans refonte risquée :
+
+- **DocumentRoot MAMP/Apache** : pointer vers `public/`.
+- **Front controller** : `public/router.php` reçoit les URLs propres et charge la bonne page.
+- **Réécriture URL** : `public/.htaccess` renvoie les URLs non-fichiers vers le routeur.
+- **URLs principales** : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/stack`.
+- **Compatibilité** : les anciennes URLs `.php` restent accessibles (`/recipes.php`, `/recipe.php?slug=...`, `/login.php`).
+- **MVC adapté** : les repositories PDO jouent le rôle de Model, les pages PHP publiques/admin servent de contrôleurs légers et de vues, `app/security` regroupe les protections transversales.
+
+Configuration MAMP recommandée :
+
+```text
+DocumentRoot : /Users/namto/Desktop/-- PROJET GRETA /public
+MySQL host   : 127.0.0.1
+MySQL port   : 8889
+MySQL user   : root
+MySQL pass   : root
+Base         : secure_recipes_greta92
+```
 
 ## Identifiants de démonstration
 
@@ -152,7 +175,7 @@ Le projet est préparé pour un déploiement Railway. Les variables d'environnem
 Le serveur doit pointer vers `public/`. `railway.json` et `Procfile` utilisent :
 
 ```bash
-php -S 0.0.0.0:$PORT -t public
+php -S 0.0.0.0:$PORT -t public public/router.php
 ```
 
 Les vrais fichiers admin restent dans `admin/`. Les fichiers `public/admin/*` sont des wrappers qui chargent ces pages pour rendre les URLs `/admin/...` compatibles avec une racine web `public/`.

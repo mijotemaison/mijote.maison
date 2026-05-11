@@ -33,7 +33,7 @@ $slides = [
         'oral' => 'Le site respecte la séparation attendue : la partie publique ne permet que la consultation, tandis que les actions sensibles sont dans le back-office.',
         'points' => ['Page d’accueil avec présentation et aperçu de recettes.', 'Page liste pour naviguer vers chaque recette.', 'Page recette détaillée séparée.', 'Page de connexion clairement nommée.'],
         'files' => ['public/index.php', 'public/recipes.php', 'public/recipe.php', 'public/login.php'],
-        'test' => 'Vérification : /, /recipes.php, /recipe.php?slug=veloute-de-potimarron et /login.php répondent en HTTP 200.',
+        'test' => 'Vérification : /, /recettes, /recette/veloute-de-potimarron et /connexion répondent en HTTP 200. Les anciennes URLs .php restent compatibles.',
     ],
     [
         'kicker' => 'Objectif',
@@ -68,12 +68,35 @@ PHP,
     ],
     [
         'kicker' => 'Architecture',
-        'title' => 'Une séparation lisible',
-        'lead' => 'Le projet est organisé entre pages publiques, back-office, configuration, sécurité, repositories et validation.',
-        'oral' => 'Cette architecture permet au jury de retrouver rapidement où chaque responsabilité est gérée. Les pages appellent les repositories, et les repositories parlent à MySQL.',
-        'points' => ['public/ contient les pages accessibles au visiteur.', 'admin/ contient les écrans réservés aux administrateurs.', 'app/security/ contient les protections.', 'app/repositories/ centralise les requêtes SQL.'],
-        'files' => ['public/*', 'admin/*', 'app/security/*', 'app/repositories/*'],
-        'test' => 'Vérification : les pages admin appellent require_admin() et les requêtes SQL sont dans les repositories.',
+        'title' => 'Architecture selon la méthode du prof',
+        'lead' => 'Le projet reprend la logique front controller, routes propres, Apache/MAMP possible et séparation MVC adaptée.',
+        'oral' => 'public/router.php joue le point d’entrée pour les URLs propres. public/.htaccess permet à Apache ou MAMP de renvoyer les URLs non-fichiers vers ce routeur. Les repositories représentent la couche Model, les pages PHP jouent le rôle de contrôleurs légers et de vues.',
+        'points' => ['URLs propres : /recettes, /recette/{slug}, /connexion, /presentation, /stack.', 'public/.htaccess active la réécriture sous Apache/MAMP.', 'app/repositories/ centralise le Model avec PDO.', 'Les pages publiques et admin restent lisibles pour le jury.'],
+        'files' => ['public/router.php', 'public/.htaccess', 'app/repositories/*', 'public/*', 'admin/*'],
+        'code' => [
+            [
+                'title' => 'Route propre vers une recette',
+                'file' => 'public/router.php',
+                'body' => <<<'PHP'
+if (preg_match('#^/recette/([a-z0-9-]+)$#', $path, $matches) === 1) {
+    $_GET['slug'] = $matches[1];
+    require __DIR__ . '/recipe.php';
+    return;
+}
+PHP,
+            ],
+            [
+                'title' => 'Réécriture Apache/MAMP',
+                'file' => 'public/.htaccess',
+                'body' => <<<'APACHE'
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ router.php [QSA,L]
+APACHE,
+            ],
+        ],
+        'test' => 'Vérification : le serveur PHP démarre avec public/router.php et les anciennes URLs .php restent disponibles.',
     ],
     [
         'kicker' => 'Front-office',
@@ -87,14 +110,14 @@ PHP,
                 'title' => 'Lien de carte vers la page recette séparée',
                 'file' => 'public/recipes.php',
                 'body' => <<<'PHP'
-<a href="/recipe.php?slug=<?= e($recipe['slug']) ?>" class="block">
+<a href="<?= e(recipe_url((string) $recipe['slug'])) ?>" class="block">
     <h3><?= e($recipe['title']) ?></h3>
     <p><?= e($recipe['short_description']) ?></p>
 </a>
 PHP,
             ],
         ],
-        'test' => 'Vérification : la page /recipes.php affiche 10 cartes et chaque carte ouvre une page /recipe.php dédiée.',
+        'test' => 'Vérification : la page /recettes affiche 10 cartes et chaque carte ouvre une page /recette/{slug} dédiée.',
     ],
     [
         'kicker' => 'Back-office',
@@ -103,7 +126,7 @@ PHP,
         'oral' => 'Toutes les actions sensibles passent par des formulaires POST avec CSRF. Le public ne peut pas créer, modifier ou supprimer.',
         'points' => ['Dashboard avec statistiques.', 'CRUD recettes avec upload image.', 'CRUD administrateurs avec hash de mot de passe.', 'Suppression du dernier admin bloquée.'],
         'files' => ['admin/dashboard.php', 'admin/recipes/*', 'admin/admins/*'],
-        'test' => 'Vérification : accès /admin/dashboard.php sans session redirige vers /login.php.',
+        'test' => 'Vérification : accès /admin/dashboard.php sans session redirige vers /connexion.',
     ],
     [
         'kicker' => 'Authentification',
@@ -122,7 +145,7 @@ $valid = $admin && password_verify($password, (string) $admin['password_hash']);
 
 if (!$valid) {
     flash('error', 'Identifiants invalides.');
-    redirect('/login.php');
+    redirect('/connexion');
 }
 
 login_admin($admin);
@@ -142,7 +165,7 @@ function login_admin(array $admin): void
 function require_admin(): void
 {
     if (!is_admin_authenticated()) {
-        redirect('/login.php');
+        redirect('/connexion');
     }
 }
 PHP,
@@ -349,13 +372,13 @@ public_header('Présentation');
             </div>
             <div class="flex flex-wrap items-center gap-3">
                 <div class="presenter-bar" data-presenter-bar>
-                    <button type="button" class="presenter-bar__btn" data-presenter-toggle aria-pressed="false" title="Active les notes orales (visibles uniquement quand activé)">🎙️ Mode présentateur</button>
+                    <button type="button" class="presenter-bar__btn" data-presenter-toggle aria-pressed="false" title="Afficher les repères de lecture">Repères</button>
                     <span class="presenter-bar__timer tabular" data-presenter-timer aria-label="Chronomètre">00:00</span>
                     <button type="button" class="presenter-bar__btn" data-presenter-reset title="Réinitialiser le chrono">↺</button>
                     <button type="button" class="presenter-bar__btn" data-presenter-fullscreen title="Plein écran">⛶</button>
                 </div>
                 <a class="btn-secondary" href="/">Accueil</a>
-                <a class="btn-secondary" href="/stack.php">Stack</a>
+                <a class="btn-secondary" href="/stack">Stack</a>
                 <?php if (is_admin_authenticated()): ?>
                     <a class="btn-secondary" href="/admin/dashboard.php">Back-office</a>
                 <?php endif; ?>
@@ -376,7 +399,7 @@ public_header('Présentation');
                             <p class="mt-5 text-xl leading-9 text-stone-700"><?= e($slide['lead']) ?></p>
                         </div>
                         <div class="rounded-3xl bg-[#fff7ed] p-5" data-presenter-only>
-                            <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">En quelques mots</p>
+                            <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Fil conducteur</p>
                             <p class="mt-3 leading-7 text-stone-700"><?= e($slide['oral']) ?></p>
                         </div>
                     </div>

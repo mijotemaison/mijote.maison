@@ -42,6 +42,28 @@ function recipe_image_url(?string $imagePath): string
     return asset($imagePath);
 }
 
+function recipe_url(string $slug): string
+{
+    return '/recette/' . rawurlencode($slug);
+}
+
+function is_nav_active(string $href): bool
+{
+    $path = current_path();
+
+    if ($path === $href) {
+        return true;
+    }
+
+    return match ($href) {
+        '/recettes' => $path === '/recipes.php' || $path === '/recipe.php' || str_starts_with($path, '/recette/'),
+        '/connexion' => $path === '/login.php',
+        '/presentation' => $path === '/presentation.php',
+        '/stack' => $path === '/stack.php',
+        default => false,
+    };
+}
+
 function recipe_public_meta(?string $slug): array
 {
     $default = [
@@ -72,11 +94,11 @@ function recipe_public_meta(?string $slug): array
 
 function nav_link(string $href, string $label): string
 {
-    $isActive = current_path() === $href;
+    $isActive = is_nav_active($href);
     $state = $isActive
-        ? 'text-tomato nav-link-active'
-        : 'text-ink/70 hover:text-tomato';
-    return '<a class="' . $state . ' relative font-sans text-[0.95rem] font-bold tracking-wide transition-colors duration-200" href="' . e($href) . '">' . e($label) . '</a>';
+        ? 'nav-link-active bg-white text-tomato shadow-soft-2 ring-1 ring-embers-100'
+        : 'text-ink/70 hover:bg-white/70 hover:text-tomato hover:shadow-soft-1';
+    return '<a class="' . $state . ' relative inline-flex items-center whitespace-nowrap rounded-full px-4 py-2.5 font-sans text-[0.92rem] font-bold tracking-wide transition-all duration-200 ease-editorial" href="' . e($href) . '">' . e($label) . '</a>';
 }
 
 function public_header(string $title, ?array $og = null): void
@@ -123,7 +145,7 @@ function public_header(string $title, ?array $og = null): void
 <body class="min-h-screen bg-parchment text-ink antialiased font-sans">
 <a class="skip-link" href="#main">Aller au contenu</a>
 <header class="sticky top-0 z-40 border-b border-orange-100/60 bg-parchment/80 backdrop-blur-xl supports-[backdrop-filter]:bg-parchment/70">
-    <nav class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+    <nav class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <a href="/" class="group flex items-center gap-3 text-ink">
             <img class="h-12 w-12 rounded-2xl shadow-soft-2 ring-1 ring-embers-100 transition-transform duration-300 ease-editorial group-hover:rotate-[-3deg]" src="/assets/img/logo-mijote-maison.svg" alt="">
             <span class="leading-snug">
@@ -131,16 +153,16 @@ function public_header(string $title, ?array $og = null): void
                 <span class="mt-1 block text-[0.7rem] font-extrabold uppercase tracking-[0.22em] text-herb">Recettes de saison</span>
             </span>
         </a>
-        <div class="flex flex-wrap items-center gap-x-7 gap-y-2 text-sm">
+        <div class="flex w-full max-w-full items-center gap-1.5 overflow-x-auto rounded-full border border-embers-100/70 bg-ivory/75 p-1 text-sm shadow-soft-1 lg:w-auto lg:flex-wrap lg:justify-end lg:overflow-visible">
 HTML;
     echo nav_link('/', 'Accueil');
-    echo nav_link('/recipes.php', 'Recettes');
-    echo nav_link('/presentation.php', 'Présentation');
-    echo nav_link('/stack.php', 'Stack');
+    echo nav_link('/recettes', 'Recettes');
+    echo nav_link('/presentation', 'Présentation');
+    echo nav_link('/stack', 'Stack');
     if (isset($_SESSION['admin_id'])) {
         echo nav_link('/admin/dashboard.php', 'Back-office');
     } else {
-        echo nav_link('/login.php', 'Connexion');
+        echo nav_link('/connexion', 'Connexion');
     }
     echo <<<HTML
         </div>
@@ -196,14 +218,14 @@ function admin_header(string $title): void
                 <img class="h-10 w-10 rounded-xl bg-white" src="/assets/img/logo-mijote-maison.svg" alt="">
                 <span>Espace équipe</span>
             </a>
-            <a class="text-sm text-slate-400 hover:text-white lg:hidden" href="/logout.php">Sortir</a>
+            <a class="text-sm text-slate-400 hover:text-white lg:hidden" href="/deconnexion">Sortir</a>
         </div>
         <nav class="grid gap-1 px-3 pb-5 text-sm">
             <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/dashboard.php">Dashboard</a>
             <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/recipes/index.php">Recettes</a>
             <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/admins/index.php">Administrateurs</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/presentation.php">Presentation</a>
-            <a class="hidden rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white lg:block" href="/logout.php">Deconnexion</a>
+            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/presentation">Presentation</a>
+            <a class="hidden rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white lg:block" href="/deconnexion">Deconnexion</a>
         </nav>
     </aside>
     <main class="flex-1">

@@ -20,7 +20,7 @@ if (is_post()) {
         $pdo = db();
         if (login_is_blocked($pdo, $email)) {
             flash('error', 'Trop de tentatives. Réessayez dans quelques minutes.');
-            redirect('/login.php');
+            redirect('/connexion');
         }
 
         $repo = new AdminRepository($pdo);
@@ -30,7 +30,7 @@ if (is_post()) {
 
         if (!$valid) {
             flash('error', 'Identifiants invalides.');
-            redirect('/login.php');
+            redirect('/connexion');
         }
 
         login_admin($admin);
@@ -38,7 +38,7 @@ if (is_post()) {
         redirect('/admin/dashboard.php');
     } catch (Throwable $exception) {
         flash('error', 'Connexion impossible pour le moment.');
-        redirect('/login.php');
+        redirect('/connexion');
     }
 }
 
@@ -59,7 +59,7 @@ public_header('Page de connexion');
         </div>
         <div class="mx-auto w-full max-w-md">
             <?php render_flash(); ?>
-            <form class="rounded-[2rem] border border-orange-100 bg-white p-7 shadow-xl shadow-orange-900/10" method="post" action="/login.php" novalidate>
+            <form class="rounded-[2rem] border border-orange-100 bg-white p-7 shadow-xl shadow-orange-900/10" method="post" action="/connexion" novalidate>
                 <?= csrf_field() ?>
                 <img class="h-16 w-16 rounded-2xl" src="/assets/img/logo-mijote-maison.svg" alt="">
                 <span class="mt-6 inline-flex rounded-full bg-orange-50 px-4 py-2 text-sm font-extrabold text-tomato">Accès back-office</span>

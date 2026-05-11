@@ -27,7 +27,7 @@ public_header('Accueil');
             <h1 class="mt-6 max-w-3xl font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-7xl">Des recettes maison, simples et généreuses.</h1>
             <p class="mt-5 max-w-2xl text-lg leading-8 text-stone-700">Mijoté Maison rassemble des idées gourmandes pour tous les jours : entrées fraîches, plats réconfortants, desserts à partager et recettes faciles à refaire à la maison.</p>
             <div class="mt-8 flex flex-wrap gap-3">
-                <a class="btn-primary" href="/recipes.php">Voir toutes les recettes</a>
+                <a class="btn-primary" href="/recettes">Voir toutes les recettes</a>
                 <a class="btn-secondary" href="#apercu-recettes">Découvrir la sélection</a>
             </div>
             <div class="mt-8 grid max-w-xl grid-cols-3 gap-3 text-center text-sm">
@@ -81,7 +81,7 @@ public_header('Accueil');
             <h2 class="mt-2 font-serif text-4xl font-bold text-stone-950">Quelques recettes à découvrir</h2>
             <p class="mt-2 max-w-2xl text-stone-600">Un aperçu des recettes disponibles, avec navigation vers les pages détaillées.</p>
         </div>
-        <a class="btn-secondary" href="/recipes.php">Voir la liste complète</a>
+        <a class="btn-secondary" href="/recettes">Voir la liste complète</a>
     </div>
 
     <?php if ($dbError): ?>
@@ -93,7 +93,7 @@ public_header('Accueil');
             <?php foreach ($recipes as $recipe): ?>
                 <?php $meta = recipe_public_meta($recipe['slug'] ?? null); ?>
                 <article class="group overflow-hidden rounded-[1.6rem] border border-orange-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-900/10">
-                    <a href="/recipe.php?slug=<?= e($recipe['slug']) ?>" class="block">
+                    <a href="<?= e(recipe_url((string) $recipe['slug'])) ?>" class="block">
                         <div class="relative">
                             <img class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
                             <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-tomato shadow-sm"><?= e($meta['label']) ?></span>

@@ -50,7 +50,7 @@ function require_admin(): void
 {
     if (!is_admin_authenticated()) {
         flash('error', 'Acces reserve aux administrateurs authentifies.');
-        redirect('/login.php');
+        redirect('/connexion');
     }
 }
 

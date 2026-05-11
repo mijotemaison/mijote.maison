@@ -22,6 +22,8 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 ## Architecture
 
 - `public/` contient les pages publiques et les assets.
+- `public/router.php` est le front controller leger pour les URLs propres.
+- `public/.htaccess` permet a Apache/MAMP de renvoyer les URLs non-fichiers vers le routeur.
 - `admin/` contient les pages réservées aux administrateurs.
 - `app/config/` contient la configuration.
 - `app/helpers/` contient les fonctions transverses (`e()`, `public_header()`, `nav_link()`, `render_flash()`, etc.).
@@ -29,6 +31,16 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - `app/repositories/` contient les requêtes PDO.
 - `app/validation/` contient les validations serveur.
 - `docs/` contient le rapport.
+
+## Methode du prof / MVC adapte
+
+- URLs principales : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/stack`.
+- Anciennes URLs `.php` conservees pendant la transition : `/recipes.php`, `/recipe.php?slug=...`, `/login.php`, `/presentation.php`, `/stack.php`.
+- Model = `app/repositories/*` avec PDO prepare/execute.
+- Controller/Vue = pages PHP publiques et admin actuelles, volontairement gardees lisibles pour le jury.
+- Front controller = `public/router.php`.
+- Rewrite Apache/MAMP = `public/.htaccess`.
+- DocumentRoot MAMP/Apache = dossier `public/`.
 
 ## Conventions de code
 
@@ -80,18 +92,24 @@ mysql -u root -p < database.sql
 php -S localhost:8000 -t public
 ```
 
+Avec les URLs propres, utiliser de preference :
+
+```bash
+php -S 127.0.0.1:8888 -t public public/router.php
+```
+
 ## Variables d'environnement
 
 Copier `.env.example` vers `.env` si l'environnement local le permet :
 
 ```bash
 DB_HOST=127.0.0.1
-DB_PORT=3306        # ou 3307 si mysqld dédié au projet
+DB_PORT=8889        # MAMP par defaut. Utiliser 3306 ou 3307 selon le MySQL local.
 DB_NAME=secure_recipes_greta92
 DB_USER=root
-DB_PASSWORD=
+DB_PASSWORD=root
 APP_ENV=local
-APP_URL=http://localhost:8000
+APP_URL=http://localhost:8888
 ```
 
 ## Commandes Tailwind
