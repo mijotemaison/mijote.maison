@@ -15,6 +15,7 @@ $routes = [
     '/recettes' => 'recipes.php',
     '/connexion' => 'login.php',
     '/deconnexion' => 'logout.php',
+    '/a-propos' => 'about.php',
     '/presentation' => 'presentation.php',
     '/stack' => 'stack.php',
 ];

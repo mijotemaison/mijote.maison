@@ -19,6 +19,7 @@ if (is_post()) {
     try {
         $pdo = db();
         if (login_is_blocked($pdo, $email)) {
+            record_security_event($pdo, 'login_blocked', 'Connexion temporairement bloquee apres echecs repetes.', $email);
             flash('error', 'Trop de tentatives. Réessayez dans quelques minutes.');
             redirect('/connexion');
         }
@@ -29,11 +30,13 @@ if (is_post()) {
         record_login_attempt($pdo, $email, (bool) $valid);
 
         if (!$valid) {
+            record_security_event($pdo, 'login_failed', 'Tentative de connexion admin refusee.', $email);
             flash('error', 'Identifiants invalides.');
             redirect('/connexion');
         }
 
         login_admin($admin);
+        record_security_event($pdo, 'login_success', 'Connexion administrateur reussie.', (string) $admin['email']);
         flash('success', 'Connexion réussie.');
         redirect('/admin/dashboard.php');
     } catch (Throwable $exception) {

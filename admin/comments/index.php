@@ -8,7 +8,8 @@ require_once BASE_PATH . '/app/repositories/RecipeInteractionRepository.php';
 
 require_admin();
 
-$repo = new RecipeInteractionRepository(db());
+$pdo = db();
+$repo = new RecipeInteractionRepository($pdo);
 
 if (is_post()) {
     require_valid_csrf();
@@ -18,12 +19,15 @@ if (is_post()) {
     try {
         if ($action === 'approve') {
             $repo->updateCommentStatus($id, 'approved');
+            record_security_event($pdo, 'comment_approved', 'Commentaire #' . $id . ' approuve.', current_admin_email());
             flash('success', 'Commentaire approuve.');
         } elseif ($action === 'reject') {
             $repo->updateCommentStatus($id, 'rejected');
+            record_security_event($pdo, 'comment_rejected', 'Commentaire #' . $id . ' refuse.', current_admin_email());
             flash('success', 'Commentaire refuse.');
         } elseif ($action === 'delete') {
             $repo->deleteComment($id);
+            record_security_event($pdo, 'comment_deleted', 'Commentaire #' . $id . ' supprime.', current_admin_email());
             flash('success', 'Commentaire supprime.');
         } else {
             flash('error', 'Action inconnue.');

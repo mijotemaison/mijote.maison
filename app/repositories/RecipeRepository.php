@@ -49,6 +49,20 @@ final class RecipeRepository
         return $stmt->fetchAll();
     }
 
+    public function popular(int $limit = 4): array
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM recipes
+             WHERE status = 'published'
+             ORDER BY view_count DESC, published_at DESC, id DESC
+             LIMIT :limit"
+        );
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
     public function count(): int
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM recipes WHERE status = 'published'");
@@ -128,6 +142,47 @@ final class RecipeRepository
         ]);
     }
 
+    public function duplicateAsDraft(int $id): ?int
+    {
+        $recipe = $this->find($id);
+        if (!$recipe) {
+            return null;
+        }
+
+        $title = 'Copie de ' . (string) $recipe['title'];
+        $data = [
+            'title' => $title,
+            'slug' => $this->uniqueSlug($this->slugFromTitle($title)),
+            'short_description' => (string) $recipe['short_description'],
+            'description' => (string) $recipe['description'],
+            'ingredients' => (string) $recipe['ingredients'],
+            'preparation_steps' => (string) $recipe['preparation_steps'],
+            'image_path' => $recipe['image_path'],
+            'category' => (string) ($recipe['category'] ?? 'plats'),
+            'status' => 'draft',
+        ];
+
+        return $this->create($data);
+    }
+
+    public function incrementViewCount(int $id): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE recipes SET view_count = view_count + 1 WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+    }
+
+    public function imagePathUsageCount(?string $path): int
+    {
+        if (!$path) {
+            return 0;
+        }
+
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM recipes WHERE image_path = :image_path');
+        $stmt->execute(['image_path' => $path]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
     public function delete(int $id): void
     {
         $stmt = $this->pdo->prepare('DELETE FROM recipes WHERE id = :id');
@@ -158,6 +213,16 @@ final class RecipeRepository
         }
 
         return (int) $stmt->fetchColumn() > 0;
+    }
+
+    private function slugFromTitle(string $title): string
+    {
+        $slug = iconv('UTF-8', 'ASCII//TRANSLIT', $title);
+        $slug = strtolower((string) $slug);
+        $slug = preg_replace('/[^a-z0-9]+/', '-', $slug) ?: '';
+        $slug = trim($slug, '-');
+
+        return $slug !== '' ? $slug : 'recette';
     }
 
     private function publicFilters(string $query, string $category): array

@@ -763,3 +763,31 @@
   .btn-primary:hover, .btn-secondary:hover { transform: none !important; }
   [data-slide].is-leaving { opacity: 1 !important; }
 }
+
+/* ============ Impression recette ============ */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+  body::before,
+  header,
+  footer,
+  #avis,
+  .print\:hidden {
+    display: none !important;
+  }
+  main,
+  article,
+  section,
+  div {
+    box-shadow: none !important;
+  }
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  img {
+    max-height: 12cm;
+  }
+}

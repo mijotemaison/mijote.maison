@@ -9,6 +9,7 @@ define('UPLOAD_RECIPE_DIR', PUBLIC_PATH . '/uploads/recipes');
 require_once BASE_PATH . '/app/config/app.php';
 require_once BASE_PATH . '/app/helpers/functions.php';
 require_once BASE_PATH . '/app/helpers/flash.php';
+require_once BASE_PATH . '/app/repositories/SecurityLogRepository.php';
 require_once BASE_PATH . '/app/security/headers.php';
 require_once BASE_PATH . '/app/security/auth.php';
 require_once BASE_PATH . '/app/security/csrf.php';

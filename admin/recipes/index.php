@@ -60,7 +60,13 @@ admin_header('Recettes');
                         <td class="px-4 py-3 text-slate-400"><?= e($recipe['updated_at']) ?></td>
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-2">
+                                <a class="btn-secondary" href="/admin/recipes/preview.php?id=<?= e($recipe['id']) ?>">Apercu</a>
                                 <a class="btn-secondary" href="/admin/recipes/edit.php?id=<?= e($recipe['id']) ?>">Modifier</a>
+                                <form method="post" action="/admin/recipes/duplicate.php">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="id" value="<?= e($recipe['id']) ?>">
+                                    <button class="btn-secondary" type="submit">Dupliquer</button>
+                                </form>
                                 <form method="post" action="/admin/recipes/delete.php" data-confirm="Êtes-vous sûr de vouloir supprimer définitivement la recette « <?= e($recipe['title']) ?> » ? Cette action est irréversible.">
                                     <?= csrf_field() ?>
                                     <input type="hidden" name="id" value="<?= e($recipe['id']) ?>">

@@ -8,6 +8,7 @@ require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
 require_once BASE_PATH . '/app/repositories/AdminRepository.php';
 require_once BASE_PATH . '/app/repositories/LoginAttemptRepository.php';
 require_once BASE_PATH . '/app/repositories/RecipeInteractionRepository.php';
+require_once BASE_PATH . '/app/repositories/SecurityLogRepository.php';
 
 require_admin();
 
@@ -16,6 +17,7 @@ $adminCount = 0;
 $pendingCommentCount = 0;
 $latestRecipes = [];
 $latestFailures = [];
+$latestSecurityLogs = [];
 $error = null;
 
 try {
@@ -24,11 +26,13 @@ try {
     $adminRepo = new AdminRepository($pdo);
     $attemptRepo = new LoginAttemptRepository($pdo);
     $interactionRepo = new RecipeInteractionRepository($pdo);
+    $securityLogRepo = new SecurityLogRepository($pdo);
     $recipeCount = $recipeRepo->count();
     $adminCount = $adminRepo->count();
     $pendingCommentCount = $interactionRepo->countPendingComments();
     $latestRecipes = $recipeRepo->latest(5);
     $latestFailures = $attemptRepo->latestFailures(6);
+    $latestSecurityLogs = $securityLogRepo->latest(6);
 } catch (Throwable $exception) {
     $error = 'Base de donnees indisponible.';
 }
@@ -75,6 +79,21 @@ admin_header('Dashboard');
                     <div class="rounded-lg border border-white/10 bg-slate-950/50 p-3 text-sm">
                         <p class="text-white"><?= e($attempt['email'] ?: 'email vide') ?> · <?= e($attempt['ip_address']) ?></p>
                         <p class="text-slate-400"><?= e($attempt['created_at']) ?></p>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <section class="panel-card p-5 lg:col-span-2">
+            <h2 class="text-xl font-semibold text-white">Journal securite recent</h2>
+            <div class="mt-4 grid gap-3 lg:grid-cols-2">
+                <?php if (!$latestSecurityLogs): ?>
+                    <p class="text-sm text-slate-400">Aucun evenement securite enregistre.</p>
+                <?php endif; ?>
+                <?php foreach ($latestSecurityLogs as $log): ?>
+                    <div class="rounded-lg border border-white/10 bg-slate-950/50 p-3 text-sm">
+                        <p class="font-semibold text-white"><?= e($log['event_type']) ?> · <?= e($log['actor_email'] ?: 'visiteur') ?></p>
+                        <p class="mt-1 text-slate-400"><?= e($log['details'] ?? '') ?></p>
+                        <p class="mt-2 text-xs text-slate-500"><?= e($log['ip_address']) ?> · <?= e($log['created_at']) ?></p>
                     </div>
                 <?php endforeach; ?>
             </div>

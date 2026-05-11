@@ -215,6 +215,19 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Dashboard admin enrichi avec compteur de commentaires en attente.
 - [x] Tests MySQL/HTTP : note ajoutee, commentaire cree en attente, moderation admin approuvee, affichage public verifie.
 
+## Phase 15 - Populaires, impression, a propos, preview, duplication, logs
+
+- [x] Compteur `view_count` incrementé sur consultation d'une recette publiee.
+- [x] Section accueil "Recettes populaires" triee par nombre de vues.
+- [x] Bouton impression sur page recette + CSS `@media print`.
+- [x] Page publique `/a-propos` ajoutee et routee par `public/router.php`.
+- [x] Apercu admin avant publication : `/admin/recipes/preview.php`.
+- [x] Duplication admin d'une recette en brouillon : `/admin/recipes/duplicate.php`.
+- [x] Timeout session admin apres 30 minutes d'inactivite.
+- [x] Table `security_logs` + journalisation login, commentaires, duplication et suppression recette.
+- [x] Dashboard enrichi avec journal securite recent.
+- [x] Tests : vue incremente `view_count`, page a propos OK, preview admin OK, duplication cree un brouillon, log securite cree.
+
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 
 ### Design system éditorial

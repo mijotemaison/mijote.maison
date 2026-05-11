@@ -75,6 +75,31 @@ function public_actor_hash(): string
     return hash('sha256', $fingerprint);
 }
 
+function request_ip(): string
+{
+    return substr((string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'), 0, 45);
+}
+
+function request_user_agent(): string
+{
+    return substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? 'unknown'), 0, 255);
+}
+
+function record_security_event(PDO $pdo, string $eventType, string $details, ?string $actorEmail = null): void
+{
+    try {
+        (new SecurityLogRepository($pdo))->create([
+            'event_type' => substr($eventType, 0, 80),
+            'actor_email' => $actorEmail ? substr($actorEmail, 0, 190) : null,
+            'ip_address' => request_ip(),
+            'user_agent' => request_user_agent(),
+            'details' => substr($details, 0, 1000),
+        ]);
+    } catch (Throwable) {
+        // Le journal ne doit jamais bloquer une action utilisateur.
+    }
+}
+
 function render_stars(float $average, string $class = 'text-xl'): string
 {
     $rounded = (int) round($average);
@@ -100,6 +125,7 @@ function is_nav_active(string $href): bool
         '/connexion' => $path === '/login.php',
         '/presentation' => $path === '/presentation.php',
         '/stack' => $path === '/stack.php',
+        '/a-propos' => $path === '/about.php',
         default => false,
     };
 }
@@ -204,9 +230,10 @@ function public_header(string $title, ?array $og = null): void
 HTML;
     echo nav_link('/', 'Accueil');
     echo nav_link('/recettes', 'Recettes');
+    echo nav_link('/a-propos', 'À propos');
     echo nav_link('/presentation', 'Présentation');
     echo nav_link('/stack', 'Stack');
-    if (isset($_SESSION['admin_id'])) {
+    if (is_admin_authenticated()) {
         echo nav_link('/admin/dashboard.php', 'Back-office');
     } else {
         echo nav_link('/connexion', 'Connexion');

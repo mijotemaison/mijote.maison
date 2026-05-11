@@ -24,6 +24,9 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Page d'accueil `/` avec hero éditorial, aperçu des recettes et navigation.
 - Page liste `/recettes` avec recettes publiées, recherche serveur, filtres par catégorie, pagination et étoiles.
 - Page détail `/recette/{slug}` avec titre, image, description, ingrédients, étapes et **JSON-LD `Recipe`** + Open Graph + Twitter Card.
+- Section “recettes populaires” basée sur le nombre de vues.
+- Bouton d'impression propre sur la page recette.
+- Page `/a-propos` orientée présentation du site de recettes.
 - Notes lecteurs sur 5 étoiles, avec un vote par empreinte visiteur/session.
 - Commentaires publics affichés seulement après modération.
 - Page de connexion administrateur `/connexion`.
@@ -40,6 +43,8 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 
 - Dashboard admin avec compteurs, dernières recettes, tentatives échouées récentes.
 - CRUD complet des recettes avec **catégorie**, **statut brouillon/publié/archivé**, recherche live + pagination 10/page.
+- Aperçu admin avant publication.
+- Duplication d'une recette en brouillon.
 - Modération des commentaires : approuver, refuser, supprimer.
 - Upload sécurisé des images de recettes.
 - CRUD complet des administrateurs avec **recherche live** + **pagination**.
@@ -58,6 +63,9 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Les brouillons et archives ne sont pas visibles dans le front-office.
 - Notes en étoiles stockées dans `recipe_ratings`.
 - Commentaires publics stockés dans `recipe_comments` et publiés uniquement après validation admin.
+- Recettes populaires par compteur `view_count`.
+- Impression recette optimisée via CSS `@media print`.
+- Aperçu avant publication et duplication en brouillon côté back-office.
 
 ## Sécurité appliquée
 
@@ -75,6 +83,8 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - `.htaccess` dans le dossier upload pour bloquer l'exécution PHP sous Apache.
 - Construction DOM par API (pas d'`innerHTML` côté JS) — modale custom 100 % résistante aux injections.
 - Protection self-delete admin (UI + serveur).
+- Timeout de session admin après 30 minutes d'inactivité.
+- Journal de sécurité `security_logs` pour connexions et actions sensibles.
 
 ## Accessibilité
 

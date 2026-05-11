@@ -492,6 +492,59 @@ public function approvedComments(int $recipeId): array
 
 Limite restante : ajouter une limitation de fréquence spécifique aux commentaires si le site reçoit beaucoup de trafic public.
 
+### N. Timeout de session et journal de sécurité
+
+Technique : expiration d'inactivité côté session PHP et table `security_logs`.
+
+Menace : session administrateur laissée ouverte sur un poste partagé, absence de traçabilité sur les actions sensibles.
+
+Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail.
+
+Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/helpers/functions.php`, `admin/dashboard.php`, `database.sql`.
+
+Extrait réel :
+
+```php
+// app/security/auth.php — timeout admin
+const ADMIN_SESSION_TIMEOUT_SECONDS = 1800;
+
+function enforce_admin_session_timeout(): void
+{
+    if (!isset($_SESSION['admin_id'])) {
+        return;
+    }
+
+    $lastActivity = (int) ($_SESSION['admin_last_activity'] ?? time());
+    if (time() - $lastActivity <= ADMIN_SESSION_TIMEOUT_SECONDS) {
+        return;
+    }
+
+    unset($_SESSION['admin_id'], $_SESSION['admin_email'], $_SESSION['admin_username'], $_SESSION['admin_last_activity']);
+    session_regenerate_id(true);
+    flash('error', 'Session expiree apres inactivite. Merci de vous reconnecter.');
+}
+```
+
+```php
+// app/helpers/functions.php — journal non bloquant
+function record_security_event(PDO $pdo, string $eventType, string $details, ?string $actorEmail = null): void
+{
+    try {
+        (new SecurityLogRepository($pdo))->create([
+            'event_type' => substr($eventType, 0, 80),
+            'actor_email' => $actorEmail ? substr($actorEmail, 0, 190) : null,
+            'ip_address' => request_ip(),
+            'user_agent' => request_user_agent(),
+            'details' => substr($details, 0, 1000),
+        ]);
+    } catch (Throwable) {
+        // Le journal ne doit jamais bloquer une action utilisateur.
+    }
+}
+```
+
+Limite restante : envoyer ces logs vers un service externe en production pour éviter qu'un attaquant ayant accès à la base puisse les effacer.
+
 ## 5. Tests de securite realises
 
 - Tentative XSS dans titre recette : affichée comme texte avec `e()`.
@@ -507,6 +560,8 @@ Limite restante : ajouter une limitation de fréquence spécifique aux commentai
 - **Tentative d'auto-suppression admin** (curl POST avec id du compte courant) : refusée serveur avec flash explicite.
 - **Confirmation modale** : Escape annule, Enter confirme, Tab reste dans la modale (focus trap), bouton Annuler n'envoie aucune requête.
 - **Commentaire public** : insertion en `pending`, invisible côté public avant approbation admin.
+- **Journal sécurité** : duplication recette et login admin créent une entrée `security_logs`.
+- **Timeout session** : la session admin expire après 30 minutes d'inactivité.
 - Navigation responsive : Tailwind compilé localement.
 
 ## 6. Conclusion

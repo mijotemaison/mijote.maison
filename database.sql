@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS admins (
 DROP TABLE IF EXISTS recipe_comments;
 DROP TABLE IF EXISTS recipe_ratings;
 DROP TABLE IF EXISTS recipes;
+DROP TABLE IF EXISTS security_logs;
 
 CREATE TABLE IF NOT EXISTS recipes (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -71,6 +72,18 @@ CREATE TABLE IF NOT EXISTS login_attempts (
   success TINYINT(1) NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_login_attempts_lookup (email, ip_address, success, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS security_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  event_type VARCHAR(80) NOT NULL,
+  actor_email VARCHAR(190) NULL,
+  ip_address VARCHAR(45) NOT NULL,
+  user_agent VARCHAR(255) NULL,
+  details VARCHAR(1000) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_security_logs_type_date (event_type, created_at),
+  INDEX idx_security_logs_actor_date (actor_email, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO admins (username, email, password_hash, created_at, updated_at)

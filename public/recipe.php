@@ -52,6 +52,7 @@ try {
                 flash('error', 'Le commentaire doit contenir entre 5 et 800 caracteres.');
             } else {
                 $interactionRepo->createComment((int) $recipe['id'], $authorName, $content, public_actor_hash());
+                record_security_event($pdo, 'public_comment_pending', 'Commentaire public en attente sur recette #' . (int) $recipe['id'] . '.', $authorName);
                 flash('success', 'Commentaire envoye. Il apparaitra apres validation.');
             }
             redirect(recipe_url((string) $recipe['slug']) . '#avis');
@@ -59,6 +60,10 @@ try {
     }
 
     if ($recipe) {
+        if (!is_post()) {
+            $repo->incrementViewCount((int) $recipe['id']);
+            $recipe['view_count'] = (int) ($recipe['view_count'] ?? 0) + 1;
+        }
         $ratingSummary = $interactionRepo->ratingSummary((int) $recipe['id']);
         $userRating = $interactionRepo->userRating((int) $recipe['id'], public_actor_hash());
         $comments = $interactionRepo->approvedComments((int) $recipe['id']);
@@ -97,6 +102,15 @@ if ($recipe) {
             return ['@type' => 'HowToStep', 'text' => $step];
         }, $steps),
     ];
+    if (($ratingSummary['count'] ?? 0) > 0) {
+        $jsonLd['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => (string) $ratingSummary['average'],
+            'ratingCount' => (string) $ratingSummary['count'],
+            'bestRating' => '5',
+            'worstRating' => '1',
+        ];
+    }
     $jsonLd = array_filter($jsonLd, static function ($v) { return $v !== null && $v !== ''; });
 }
 
@@ -106,8 +120,11 @@ if ($jsonLd) {
 }
 ?>
 <section class="bg-[#fff1dc]">
-    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-8 sm:px-6 lg:px-8">
         <a class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-herb shadow-sm hover:text-tomato" href="/recettes">← Retour aux recettes</a>
+        <?php if ($recipe): ?>
+            <button class="btn-secondary print:hidden" type="button" data-print-recipe>Imprimer la recette</button>
+        <?php endif; ?>
     </div>
 </section>
 <?php render_flash(); ?>
@@ -132,6 +149,7 @@ if ($jsonLd) {
                         <span class="rounded-full bg-white px-4 py-2 text-tomato shadow-sm"><?= e(recipe_category_label($recipe['category'] ?? null)) ?></span>
                         <span class="rounded-full bg-white px-4 py-2 text-herb shadow-sm"><?= e($meta['time']) ?></span>
                         <span class="rounded-full bg-white px-4 py-2 text-amber-700 shadow-sm"><?= e($meta['level']) ?></span>
+                        <span class="rounded-full bg-white px-4 py-2 text-stone-700 shadow-sm"><?= e((string) ($recipe['view_count'] ?? 0)) ?> vues</span>
                     </div>
                     <h1 class="mt-6 max-w-4xl font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-7xl"><?= e($recipe['title']) ?></h1>
                     <p class="mt-5 max-w-2xl text-xl leading-9 text-stone-700"><?= e($recipe['description']) ?></p>
@@ -150,6 +168,7 @@ if ($jsonLd) {
                             <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Difficulté</dt><dd class="font-extrabold text-herb"><?= e($meta['level']) ?></dd></div>
                             <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Portions</dt><dd class="font-extrabold text-stone-900"><?= e($meta['servings']) ?></dd></div>
                             <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Ambiance</dt><dd class="font-extrabold text-amber-700"><?= e($meta['season']) ?></dd></div>
+                            <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Vues</dt><dd class="font-extrabold text-stone-900"><?= e((string) ($recipe['view_count'] ?? 0)) ?></dd></div>
                         </dl>
                         <div class="mt-5 rounded-3xl bg-white p-4 ring-1 ring-orange-100">
                             <p class="text-sm font-extrabold uppercase tracking-[0.14em] text-tomato">Note des lecteurs</p>

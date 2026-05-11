@@ -17,7 +17,8 @@ if (!is_post()) {
 require_valid_csrf();
 
 $id = (int) ($_POST['id'] ?? 0);
-$repo = new RecipeRepository(db());
+$pdo = db();
+$repo = new RecipeRepository($pdo);
 $recipe = $repo->find($id);
 
 if (!$recipe) {
@@ -26,6 +27,9 @@ if (!$recipe) {
 }
 
 $repo->delete($id);
-delete_recipe_image($recipe['image_path']);
+if ($repo->imagePathUsageCount($recipe['image_path']) === 0) {
+    delete_recipe_image($recipe['image_path']);
+}
+record_security_event($pdo, 'recipe_deleted', 'Recette #' . $id . ' supprimee : ' . (string) $recipe['title'], current_admin_email());
 flash('success', 'Recette supprimee.');
 redirect('/admin/recipes/index.php');
