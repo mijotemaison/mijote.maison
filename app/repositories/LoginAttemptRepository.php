@@ -61,4 +61,13 @@ final class LoginAttemptRepository
 
         return $stmt->rowCount();
     }
+
+    public function countOlderThanDays(int $days): int
+    {
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM login_attempts WHERE created_at < DATE_SUB(NOW(), INTERVAL :days DAY)');
+        $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
 }

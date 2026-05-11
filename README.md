@@ -208,10 +208,20 @@ php -S 0.0.0.0:$PORT -t public public/router.php
 
 Les vrais fichiers admin restent dans `admin/`. Les fichiers `public/admin/*` sont des wrappers qui chargent ces pages pour rendre les URLs `/admin/...` compatibles avec une racine web `public/`.
 
+## Maintenance sécurité
+
+Le nettoyage des anciens logs peut être lancé en ligne de commande ou via une tâche planifiée :
+
+```bash
+php scripts/cleanup_security_data.php --days=90
+php scripts/cleanup_security_data.php --days=90 --dry-run
+```
+
+Le script supprime les entrées anciennes de `security_logs` et `login_attempts`, puis journalise l'action avec l'événement `maintenance_cleanup`. La valeur par défaut vient de `LOG_RETENTION_DAYS`.
+
 ## Prochaines améliorations
 
 - Ajouter tests PHPUnit (Repository + Security).
 - Audit Lighthouse complet (cible : Perf > 90, A11y > 95, SEO > 95).
-- Automatiser le nettoyage des logs via cron Railway ou tâche serveur.
 - 2FA TOTP pour les admins.
 - Journal externe type SIEM pour une vraie production.

@@ -256,6 +256,16 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Export CSV compatible avec type d'evenement, recherche libre et plage de dates.
 - [x] Tests finaux : filtres dates, export CSV date, lint, build CSS, PDF, commit/push.
 
+## Phase 19 - Maintenance automatique securite
+
+- [x] Script CLI `scripts/cleanup_security_data.php` ajoute.
+- [x] Retention configurable via `LOG_RETENTION_DAYS` ou `--days`.
+- [x] Mode `--dry-run` pour verifier les suppressions sans modifier la base.
+- [x] Nettoyage automatique des anciennes entrees `security_logs` et `login_attempts`.
+- [x] Evenement `maintenance_cleanup` journalise apres nettoyage reel.
+- [x] `database.sql` remet aussi `admins` et `login_attempts` a zero pour des tests reproductibles.
+- [x] Tests finaux : dry-run, suppression reelle sur donnees anciennes, lint, PDF, commit/push.
+
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 
 ### Design system éditorial

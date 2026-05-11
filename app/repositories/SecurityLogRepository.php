@@ -77,6 +77,15 @@ final class SecurityLogRepository
         return $stmt->rowCount();
     }
 
+    public function countOlderThanDays(int $days): int
+    {
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM security_logs WHERE created_at < DATE_SUB(NOW(), INTERVAL :days DAY)');
+        $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
     private function filteredQueryParts(array $filters): array
     {
         $conditions = [];

@@ -530,9 +530,9 @@ Technique : expiration d'inactivité côté session PHP et table `security_logs`
 
 Menace : session administrateur laissée ouverte sur un poste partagé, absence de traçabilité sur les actions sensibles.
 
-Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail. Une page admin dédiée permet ensuite de filtrer ce journal par type, recherche libre et plage de dates, de le paginer, de l'exporter en CSV et de nettoyer les anciennes entrées.
+Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail. Une page admin dédiée permet ensuite de filtrer ce journal par type, recherche libre et plage de dates, de le paginer, de l'exporter en CSV et de nettoyer les anciennes entrées. Un script CLI permet aussi d'automatiser le nettoyage via une tâche planifiée.
 
-Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/repositories/LoginAttemptRepository.php`, `app/helpers/functions.php`, `admin/dashboard.php`, `admin/security-logs/index.php`, `database.sql`.
+Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/repositories/LoginAttemptRepository.php`, `app/helpers/functions.php`, `admin/dashboard.php`, `admin/security-logs/index.php`, `scripts/cleanup_security_data.php`, `database.sql`.
 
 Extrait réel :
 
@@ -615,7 +615,19 @@ if (!$error && (string) ($_GET['export'] ?? '') === 'csv') {
 }
 ```
 
-Limite restante : envoyer ces logs vers un service externe en production pour éviter qu'un attaquant ayant accès à la base puisse les effacer. Le nettoyage peut aussi être automatisé par cron en production.
+```php
+// scripts/cleanup_security_data.php — maintenance planifiable
+$oldAttempts = $loginAttemptRepo->countOlderThanDays($days);
+$oldLogs = $securityLogRepo->countOlderThanDays($days);
+
+if (!$dryRun) {
+    $deletedAttempts = $loginAttemptRepo->deleteOlderThanDays($days);
+    $deletedLogs = $securityLogRepo->deleteOlderThanDays($days);
+    $securityLogRepo->create(['event_type' => 'maintenance_cleanup']);
+}
+```
+
+Limite restante : envoyer ces logs vers un service externe en production pour éviter qu'un attaquant ayant accès à la base puisse les effacer.
 
 ## 5. Tests de securite realises
 
@@ -635,6 +647,7 @@ Limite restante : envoyer ces logs vers un service externe en production pour é
 - **Journal sécurité** : duplication recette et login admin créent une entrée `security_logs`; la page `/admin/security-logs/index.php` filtre par type, recherche, dates et pagine les événements.
 - **Export CSV journal** : `/admin/security-logs/index.php?export=csv` renvoie un fichier CSV après authentification admin avec les mêmes filtres que l'écran.
 - **Nettoyage journal** : l'action de nettoyage est en POST + CSRF et supprime les logs/tentatives anciennes via requêtes préparées.
+- **Maintenance CLI** : `php scripts/cleanup_security_data.php --dry-run` compte les entrées anciennes et `php scripts/cleanup_security_data.php --days=90` les supprime puis journalise `maintenance_cleanup`.
 - **Timeout session** : la session admin expire après 30 minutes d'inactivité.
 - **HTTPS production** : `APP_ENV=production` redirige les requêtes GET/HEAD HTTP vers HTTPS et refuse les POST HTTP.
 - **Argon2id / rehash** : connexion admin valide avec ancien hash déclenche un rehash vers l'algorithme courant si nécessaire.

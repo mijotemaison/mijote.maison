@@ -22,7 +22,7 @@ $responsibilities = [
     ['Back-office', 'Zone admin protégée pour créer, modifier et supprimer recettes et administrateurs, modérer les commentaires et consulter le journal sécurité.'],
     ['Router', 'public/router.php joue le rôle de front controller léger et envoie chaque URL vers la bonne page PHP, par exemple /recettes ou /recette/{slug}.'],
     ['Base de données', 'Tables admins, recipes, recipe_ratings, recipe_comments, security_logs et login_attempts importées depuis database.sql.'],
-    ['Audit', 'La table security_logs garde les connexions et actions sensibles; la page admin Journal permet filtrage par type, recherche, dates, export CSV et nettoyage.'],
+    ['Audit', 'La table security_logs garde les connexions et actions sensibles; la page admin Journal permet filtrage, export CSV et nettoyage, et un script CLI automatise la retention.'],
     ['Repositories', 'Classes PHP qui exécutent les requêtes SQL préparées avec PDO.'],
     ['Validation', 'Contrôles serveur sur les champs recettes et administrateurs avant écriture en base.'],
     ['Sécurité', 'Protection XSS, SQLi, CSRF, brute force, sessions et upload image.'],
