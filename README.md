@@ -22,7 +22,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 ## Fonctionnalités front-office
 
 - Page d'accueil `/` avec hero éditorial, aperçu des recettes et navigation.
-- Page liste `/recettes` avec toutes les recettes, recherche live et filtres par catégorie.
+- Page liste `/recettes` avec recettes publiées, recherche serveur, filtres par catégorie et pagination.
 - Page détail `/recette/{slug}` avec titre, image, description, ingrédients, étapes et **JSON-LD `Recipe`** + Open Graph + Twitter Card.
 - Page de connexion administrateur `/connexion`.
 - Page `/presentation` sous forme de carrousel avec :
@@ -37,7 +37,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 ## Fonctionnalités back-office
 
 - Dashboard admin avec compteurs, dernières recettes, tentatives échouées récentes.
-- CRUD complet des recettes avec **recherche live** + **pagination 10/page**.
+- CRUD complet des recettes avec **catégorie**, **statut brouillon/publié/archivé**, recherche live + pagination 10/page.
 - Upload sécurisé des images de recettes.
 - CRUD complet des administrateurs avec **recherche live** + **pagination**.
 - Blocage de la suppression du dernier administrateur.
@@ -45,6 +45,14 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - **Modale de confirmation custom** pour toute action sensible (suppressions) : focus trap, Escape, Enter, accessible (`role="alertdialog"`, `aria-modal`).
 - **Toasts auto-dismiss** pour les flash messages (4.5 s, slide-in, bouton ✕, `aria-live="polite"`).
 - Actions sensibles en POST avec token CSRF.
+
+## Fonctionnalités additionnelles du support prof
+
+- Recherche publique sécurisée côté serveur avec requêtes préparées PDO.
+- Filtres publics par catégorie : entrées, plats, desserts, végétarien.
+- Pagination publique des recettes publiées.
+- Statut de recette côté admin : brouillon, publié, archivé.
+- Les brouillons et archives ne sont pas visibles dans le front-office.
 
 ## Sécurité appliquée
 

@@ -193,6 +193,17 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Compatibilite verifiee : `/recipes.php`, `/recipe.php?slug=veloute-de-potimarron`, `/presentation.php`, `/stack.php`.
 - [x] Securite verifiee apres routing : CSP presente, acces admin sans session redirige, login admin OK.
 
+## Phase 13 - Premier lot de fonctionnalites additionnelles du prof
+
+- [x] Ajout de champs recettes : `category`, `status`, `published_at`, `view_count`.
+- [x] Recherche publique serveur sur titre, description courte et ingredients avec PDO prepare/execute.
+- [x] Filtres publics par categorie : entrees, plats, desserts, vegetarien.
+- [x] Pagination publique sur `/recettes` avec 6 recettes par page.
+- [x] Statuts admin : brouillon, publie, archive.
+- [x] Front-office limite aux recettes `published`.
+- [x] Formulaire admin recette enrichi avec categorie et statut.
+- [x] Tests MySQL : import `database.sql`, verification categories/statuts, recherche `q=chocolat`, filtre `category=desserts`, pagination page 2.
+
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 
 ### Design system éditorial

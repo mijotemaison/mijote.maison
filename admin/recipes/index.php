@@ -45,13 +45,18 @@ admin_header('Recettes');
     <div class="overflow-hidden rounded-lg border border-white/10">
         <table class="w-full min-w-[760px] divide-y divide-white/10 text-left text-sm" data-table="recipes" data-page-size="10">
             <thead class="bg-white/5 text-slate-300">
-                <tr><th class="px-4 py-3">Titre</th><th class="px-4 py-3">Slug</th><th class="px-4 py-3">Mis a jour</th><th class="px-4 py-3">Actions</th></tr>
+                <tr><th class="px-4 py-3">Titre</th><th class="px-4 py-3">Categorie</th><th class="px-4 py-3">Statut</th><th class="px-4 py-3">Mis a jour</th><th class="px-4 py-3">Actions</th></tr>
             </thead>
             <tbody class="divide-y divide-white/10">
                 <?php foreach ($recipes as $recipe): ?>
-                    <tr class="bg-slate-950/40" data-search="<?= e($recipe['title'] . ' ' . $recipe['slug']) ?>">
+                    <tr class="bg-slate-950/40" data-search="<?= e($recipe['title'] . ' ' . $recipe['slug'] . ' ' . ($recipe['category'] ?? '') . ' ' . ($recipe['status'] ?? '')) ?>">
                         <td class="px-4 py-3 font-medium text-white"><?= e($recipe['title']) ?></td>
-                        <td class="px-4 py-3 text-slate-400"><?= e($recipe['slug']) ?></td>
+                        <td class="px-4 py-3 text-slate-400"><?= e(recipe_category_label($recipe['category'] ?? null)) ?></td>
+                        <td class="px-4 py-3">
+                            <span class="rounded-full px-3 py-1 text-xs font-bold <?= ($recipe['status'] ?? '') === 'published' ? 'bg-emerald-500/15 text-emerald-200' : (($recipe['status'] ?? '') === 'archived' ? 'bg-slate-500/20 text-slate-300' : 'bg-amber-500/15 text-amber-200') ?>">
+                                <?= e(recipe_statuses()[$recipe['status'] ?? 'draft'] ?? 'Brouillon') ?>
+                            </span>
+                        </td>
                         <td class="px-4 py-3 text-slate-400"><?= e($recipe['updated_at']) ?></td>
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-2">

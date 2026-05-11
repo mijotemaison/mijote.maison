@@ -32,7 +32,7 @@ public_header('Accueil');
             </div>
             <div class="mt-8 grid max-w-xl grid-cols-3 gap-3 text-center text-sm">
                 <div class="rounded-2xl bg-white p-4 shadow-sm"><strong class="block text-2xl text-tomato"><?= e($totalRecipes > 0 ? (string) $totalRecipes : '10') ?></strong><span class="text-stone-600">recettes</span></div>
-                <div class="rounded-2xl bg-white p-4 shadow-sm"><strong class="block text-2xl text-herb">4</strong><span class="text-stone-600">catégories</span></div>
+                <div class="rounded-2xl bg-white p-4 shadow-sm"><strong class="block text-2xl text-herb"><?= e((string) count(recipe_categories())) ?></strong><span class="text-stone-600">catégories</span></div>
                 <div class="rounded-2xl bg-white p-4 shadow-sm"><strong class="block text-2xl text-amber-600">15-45</strong><span class="text-stone-600">minutes</span></div>
             </div>
         </div>
@@ -96,7 +96,7 @@ public_header('Accueil');
                     <a href="<?= e(recipe_url((string) $recipe['slug'])) ?>" class="block">
                         <div class="relative">
                             <img class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
-                            <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-tomato shadow-sm"><?= e($meta['label']) ?></span>
+                            <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-tomato shadow-sm"><?= e(recipe_category_label($recipe['category'] ?? null)) ?></span>
                         </div>
                         <div class="p-5">
                             <div class="mb-3 flex flex-wrap gap-2 text-xs font-extrabold text-stone-600">

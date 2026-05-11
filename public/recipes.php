@@ -8,11 +8,36 @@ require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
 
 $recipes = [];
 $dbError = null;
+$query = trim((string) ($_GET['q'] ?? ''));
+$category = (string) ($_GET['category'] ?? '');
+$page = max(1, (int) ($_GET['page'] ?? 1));
+$perPage = 6;
+$totalRecipes = 0;
+$totalPages = 1;
 
 try {
-    $recipes = (new RecipeRepository(db()))->all();
+    $repo = new RecipeRepository(db());
+    $totalRecipes = $repo->countPublished($query, $category);
+    $totalPages = max(1, (int) ceil($totalRecipes / $perPage));
+    $page = min($page, $totalPages);
+    $recipes = $repo->published($perPage, ($page - 1) * $perPage, $query, $category);
 } catch (Throwable $exception) {
     $dbError = 'Impossible de charger les recettes pour le moment.';
+}
+
+$baseParams = [];
+if ($query !== '') {
+    $baseParams['q'] = $query;
+}
+if ($category !== '' && array_key_exists($category, recipe_categories())) {
+    $baseParams['category'] = $category;
+}
+
+function recipes_page_url(array $params): string
+{
+    $queryString = http_build_query($params);
+
+    return '/recettes' . ($queryString !== '' ? '?' . $queryString : '');
 }
 
 public_header('Recettes');
@@ -29,20 +54,19 @@ public_header('Recettes');
 
 <section class="bg-cream py-10">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="grid gap-4 rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm lg:grid-cols-[1fr_auto] lg:items-center">
+        <form class="grid gap-4 rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm lg:grid-cols-[1fr_auto] lg:items-center" action="/recettes" method="get">
             <label class="relative block">
                 <span class="sr-only">Rechercher une recette</span>
-                <input class="w-full rounded-full border border-orange-200 bg-orange-50 px-5 py-4 pr-12 text-stone-900 outline-none transition placeholder:text-stone-500 focus:border-tomato focus:ring-4 focus:ring-orange-200" data-recipe-search type="search" placeholder="Rechercher une recette, un ingrédient, une envie...">
-                <span class="absolute right-5 top-1/2 -translate-y-1/2 text-xl">⌕</span>
+                <input class="w-full rounded-full border border-orange-200 bg-orange-50 px-5 py-4 pr-24 text-stone-900 outline-none transition placeholder:text-stone-500 focus:border-tomato focus:ring-4 focus:ring-orange-200" name="q" value="<?= e($query) ?>" data-recipe-search type="search" placeholder="Rechercher une recette, un ingrédient, une envie...">
+                <button class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-tomato px-4 py-2 text-sm font-extrabold text-white" type="submit">OK</button>
             </label>
             <div class="flex flex-wrap gap-2">
-                <button class="rounded-full border border-tomato bg-tomato px-4 py-2 text-sm font-extrabold text-white transition" data-recipe-filter="all" type="button">Tout</button>
-                <button class="rounded-full border border-orange-200 bg-white px-4 py-2 text-sm font-extrabold text-stone-700 transition" data-recipe-filter="entrees" type="button">Entrées</button>
-                <button class="rounded-full border border-orange-200 bg-white px-4 py-2 text-sm font-extrabold text-stone-700 transition" data-recipe-filter="plats" type="button">Plats</button>
-                <button class="rounded-full border border-orange-200 bg-white px-4 py-2 text-sm font-extrabold text-stone-700 transition" data-recipe-filter="desserts" type="button">Desserts</button>
-                <button class="rounded-full border border-orange-200 bg-white px-4 py-2 text-sm font-extrabold text-stone-700 transition" data-recipe-filter="vegetarien" type="button">Végétarien</button>
+                <a class="rounded-full border <?= $category === '' ? 'border-tomato bg-tomato text-white' : 'border-orange-200 bg-white text-stone-700' ?> px-4 py-2 text-sm font-extrabold transition" href="<?= e(recipes_page_url($query !== '' ? ['q' => $query] : [])) ?>" data-recipe-filter="all">Tout</a>
+                <?php foreach (recipe_categories() as $value => $label): ?>
+                    <a class="rounded-full border <?= $category === $value ? 'border-tomato bg-tomato text-white' : 'border-orange-200 bg-white text-stone-700' ?> px-4 py-2 text-sm font-extrabold transition" href="<?= e(recipes_page_url(array_filter(['q' => $query, 'category' => $value], static fn($v) => $v !== ''))) ?>" data-recipe-filter="<?= e($value) ?>"><?= e($label) ?></a>
+                <?php endforeach; ?>
             </div>
-        </div>
+        </form>
     </div>
 </section>
 
@@ -51,7 +75,7 @@ public_header('Recettes');
         <div>
             <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">À table</p>
             <h2 class="mt-2 font-serif text-4xl font-bold text-stone-950">Recettes disponibles</h2>
-            <p class="mt-2 max-w-2xl text-stone-600">Chaque recette est consultable sur une page séparée avec description, ingrédients, étapes et image associée.</p>
+            <p class="mt-2 max-w-2xl text-stone-600"><?= e((string) $totalRecipes) ?> recette(s) publiee(s), avec recherche serveur, filtre categorie et pagination.</p>
         </div>
         <a class="btn-secondary" href="/">Retour à l'accueil</a>
     </div>
@@ -64,11 +88,11 @@ public_header('Recettes');
         <div class="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
             <?php foreach ($recipes as $recipe): ?>
                 <?php $meta = recipe_public_meta($recipe['slug'] ?? null); ?>
-                <article class="group overflow-hidden rounded-[1.6rem] border border-orange-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-900/10" data-recipe-card data-category="<?= e($meta['category']) ?>" data-search="<?= e($recipe['title'] . ' ' . $recipe['short_description'] . ' ' . $meta['label'] . ' ' . $meta['tag']) ?>">
+                <article class="group overflow-hidden rounded-[1.6rem] border border-orange-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-900/10" data-recipe-card data-category="<?= e($recipe['category'] ?? $meta['category']) ?>" data-search="<?= e($recipe['title'] . ' ' . $recipe['short_description'] . ' ' . $recipe['ingredients'] . ' ' . recipe_category_label($recipe['category'] ?? null) . ' ' . $meta['tag']) ?>">
                     <a href="<?= e(recipe_url((string) $recipe['slug'])) ?>" class="block">
                         <div class="relative">
                             <img class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
-                            <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-tomato shadow-sm"><?= e($meta['label']) ?></span>
+                            <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-tomato shadow-sm"><?= e(recipe_category_label($recipe['category'] ?? null)) ?></span>
                         </div>
                         <div class="p-5">
                             <div class="mb-3 flex flex-wrap gap-2 text-xs font-extrabold text-stone-600">
@@ -84,6 +108,17 @@ public_header('Recettes');
                 </article>
             <?php endforeach; ?>
         </div>
+        <?php if ($totalPages > 1): ?>
+            <nav class="mt-10 flex flex-wrap items-center justify-center gap-3" aria-label="Pagination recettes">
+                <?php if ($page > 1): ?>
+                    <a class="btn-secondary" href="<?= e(recipes_page_url($baseParams + ['page' => $page - 1])) ?>">← Précédent</a>
+                <?php endif; ?>
+                <span class="rounded-full bg-white px-5 py-3 text-sm font-extrabold text-stone-700 shadow-sm">Page <?= e($page) ?> / <?= e($totalPages) ?></span>
+                <?php if ($page < $totalPages): ?>
+                    <a class="btn-secondary" href="<?= e(recipes_page_url($baseParams + ['page' => $page + 1])) ?>">Suivant →</a>
+                <?php endif; ?>
+            </nav>
+        <?php endif; ?>
         <div class="mt-8 hidden rounded-3xl border border-orange-100 bg-white p-6 text-center text-stone-600" data-recipe-empty>Aucune recette ne correspond à votre recherche.</div>
     <?php endif; ?>
 </section>

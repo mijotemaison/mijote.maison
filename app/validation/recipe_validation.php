@@ -11,6 +11,8 @@ function validate_recipe_input(array $data): array
     $description = trim((string) ($data['description'] ?? ''));
     $ingredients = trim((string) ($data['ingredients'] ?? ''));
     $steps = trim((string) ($data['preparation_steps'] ?? ''));
+    $category = (string) ($data['category'] ?? '');
+    $status = (string) ($data['status'] ?? '');
 
     if ($title === '' || mb_strlen($title) > 150) {
         $errors['title'] = 'Le titre est obligatoire et limite a 150 caracteres.';
@@ -27,6 +29,12 @@ function validate_recipe_input(array $data): array
     if ($steps === '' || mb_strlen($steps) > 7000) {
         $errors['preparation_steps'] = 'Les etapes sont obligatoires et limitees a 7000 caracteres.';
     }
+    if (!array_key_exists($category, recipe_categories())) {
+        $errors['category'] = 'La categorie choisie est invalide.';
+    }
+    if (!array_key_exists($status, recipe_statuses())) {
+        $errors['status'] = 'Le statut choisi est invalide.';
+    }
 
     return $errors;
 }
@@ -39,6 +47,8 @@ function clean_recipe_input(array $data): array
         'description' => trim((string) ($data['description'] ?? '')),
         'ingredients' => trim((string) ($data['ingredients'] ?? '')),
         'preparation_steps' => trim((string) ($data['preparation_steps'] ?? '')),
+        'category' => (string) ($data['category'] ?? 'plats'),
+        'status' => (string) ($data['status'] ?? 'draft'),
     ];
 }
 

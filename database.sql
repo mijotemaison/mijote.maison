@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS admins (
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS recipes;
+
 CREATE TABLE IF NOT EXISTS recipes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(150) NOT NULL,
@@ -22,9 +24,14 @@ CREATE TABLE IF NOT EXISTS recipes (
   ingredients TEXT NOT NULL,
   preparation_steps TEXT NOT NULL,
   image_path VARCHAR(255) NULL,
+  category VARCHAR(40) NOT NULL DEFAULT 'plats',
+  status ENUM('draft', 'published', 'archived') NOT NULL DEFAULT 'draft',
+  published_at DATETIME NULL,
+  view_count INT UNSIGNED NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  INDEX idx_recipes_slug (slug)
+  INDEX idx_recipes_slug (slug),
+  INDEX idx_recipes_public (status, category, published_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS login_attempts (
@@ -49,7 +56,7 @@ ON DUPLICATE KEY UPDATE username = VALUES(username);
 
 TRUNCATE TABLE recipes;
 
-INSERT INTO recipes (title, slug, short_description, description, ingredients, preparation_steps, image_path, created_at, updated_at)
+INSERT INTO recipes (title, slug, short_description, description, ingredients, preparation_steps, image_path, category, status, published_at, view_count, created_at, updated_at)
 VALUES
 (
   'Veloute de potimarron',
@@ -59,6 +66,10 @@ VALUES
   '1 potimarron\n1 oignon\n2 gousses d ail\n70 cl de bouillon\n10 cl de creme\nSel, poivre, muscade',
   'Laver et couper le potimarron.\nFaire revenir l oignon et l ail.\nAjouter le bouillon puis cuire 25 minutes.\nMixer, assaisonner et servir chaud.',
   'assets/img/recipes/veloute-potimarron.webp',
+  'entrees',
+  'published',
+  NOW(),
+  38,
   NOW(),
   NOW()
 ),
@@ -70,6 +81,10 @@ VALUES
   '4 blancs de poulet\n2 citrons\n2 cuilleres de miel\n1 branche de thym\nHuile d olive\nSel et poivre',
   'Saisir le poulet dans une poele chaude.\nAjouter jus de citron, miel et thym.\nLaisser reduire doucement.\nServir avec riz ou legumes.',
   'assets/img/recipes/poulet-citron-herbes.webp',
+  'plats',
+  'published',
+  NOW(),
+  64,
   NOW(),
   NOW()
 ),
@@ -81,6 +96,10 @@ VALUES
   '1 pate feuilletee\n4 pommes\n30 g de beurre\n2 cuilleres de sucre\nCannelle',
   'Etaler la pate.\nDisposer les pommes en fines tranches.\nAjouter beurre, sucre et cannelle.\nCuire 25 minutes a 190 degres.',
   'assets/img/recipes/tarte-pommes-fine.webp',
+  'desserts',
+  'published',
+  NOW(),
+  52,
   NOW(),
   NOW()
 ),
@@ -92,6 +111,10 @@ VALUES
   '350 g de pates\n300 g de champignons\n20 cl de creme\n60 g de parmesan\n1 echalote\nPersil\nSel et poivre',
   'Cuire les pates al dente.\nFaire revenir echalote et champignons.\nAjouter creme et parmesan.\nMelanger avec les pates et servir avec persil.',
   'assets/img/recipes/pates-creme-champignons.webp',
+  'plats',
+  'published',
+  NOW(),
+  71,
   NOW(),
   NOW()
 ),
@@ -103,6 +126,10 @@ VALUES
   '3 tomates\n1 concombre\n150 g de feta\nOlives noires\n1 oignon rouge\nHuile d olive\nCitron\nOrigan',
   'Couper les legumes.\nAjouter feta, olives et oignon rouge.\nAssaisonner avec huile, citron et origan.\nServir bien frais.',
   'assets/img/recipes/salade-mediterraneenne.webp',
+  'entrees',
+  'published',
+  NOW(),
+  46,
   NOW(),
   NOW()
 ),
@@ -114,6 +141,10 @@ VALUES
   '4 paves de saumon\n2 courgettes\n2 carottes\n1 poivron\n1 citron\nAneth\nHuile d olive\nSel et poivre',
   'Couper les legumes et les assaisonner.\nAjouter le saumon, citron et aneth.\nCuire 20 minutes a 180 degres.\nServir chaud.',
   'assets/img/recipes/saumon-four-legumes.webp',
+  'plats',
+  'published',
+  NOW(),
+  59,
   NOW(),
   NOW()
 ),
@@ -125,6 +156,10 @@ VALUES
   '1 patate douce\n2 carottes\n1 courgette\n200 g de pois chiches\n40 cl de lait de coco\nCurry\nGingembre\nCoriandre',
   'Faire revenir les epices.\nAjouter les legumes et le lait de coco.\nMijoter 25 minutes.\nAjouter coriandre et servir avec du riz.',
   'assets/img/recipes/curry-legumes-coco.webp',
+  'vegetarien',
+  'published',
+  NOW(),
+  68,
   NOW(),
   NOW()
 ),
@@ -136,6 +171,10 @@ VALUES
   '4 pains burger\n4 steaks\n4 tranches de cheddar\nSalade\nTomate\nOignon rouge\nSauce maison\nFrites',
   'Toaster les pains.\nCuire les steaks et faire fondre le fromage.\nAssembler avec legumes et sauce.\nServir avec frites maison.',
   'assets/img/recipes/burger-maison.webp',
+  'plats',
+  'published',
+  NOW(),
+  83,
   NOW(),
   NOW()
 ),
@@ -147,6 +186,10 @@ VALUES
   '320 g de riz arborio\n250 g de champignons\n1 oignon\n90 cl de bouillon\n80 g de parmesan\n10 cl de vin blanc\nBeurre',
   'Faire revenir oignon et riz.\nAjouter le vin puis le bouillon louche par louche.\nIncorporer champignons, beurre et parmesan.\nServir aussitot.',
   'assets/img/recipes/risotto-parmesan.webp',
+  'plats',
+  'published',
+  NOW(),
+  41,
   NOW(),
   NOW()
 ),
@@ -158,6 +201,10 @@ VALUES
   '200 g de chocolat noir\n120 g de beurre\n3 oeufs\n90 g de sucre\n50 g de farine\n1 pincee de sel',
   'Faire fondre chocolat et beurre.\nFouetter oeufs et sucre.\nAjouter farine puis chocolat fondu.\nCuire 10 a 12 minutes a 200 degres.',
   'assets/img/recipes/fondant-chocolat.webp',
+  'desserts',
+  'published',
+  NOW(),
+  96,
   NOW(),
   NOW()
 );

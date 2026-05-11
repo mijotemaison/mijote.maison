@@ -47,6 +47,25 @@ function recipe_url(string $slug): string
     return '/recette/' . rawurlencode($slug);
 }
 
+function recipe_categories(): array
+{
+    return [
+        'entrees' => 'Entrées',
+        'plats' => 'Plats',
+        'desserts' => 'Desserts',
+        'vegetarien' => 'Végétarien',
+    ];
+}
+
+function recipe_statuses(): array
+{
+    return [
+        'draft' => 'Brouillon',
+        'published' => 'Publié',
+        'archived' => 'Archivé',
+    ];
+}
+
 function is_nav_active(string $href): bool
 {
     $path = current_path();
@@ -90,6 +109,13 @@ function recipe_public_meta(?string $slug): array
     ];
 
     return array_merge($default, $meta[$slug ?? ''] ?? []);
+}
+
+function recipe_category_label(?string $category): string
+{
+    $categories = recipe_categories();
+
+    return $categories[$category ?? ''] ?? 'Recette';
 }
 
 function nav_link(string $href, string $label): string

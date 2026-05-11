@@ -103,28 +103,37 @@ APACHE,
         'title' => 'La partie publique',
         'lead' => 'Le visiteur voit une page d’accueil, une liste de recettes et une page détaillée par recette.',
         'oral' => 'Le front-office ressemble à un vrai site de recettes. Il affiche les données en lecture seule et ne propose aucune action sensible.',
-        'points' => ['Accueil avec présentation du site.', 'Liste complète avec recherche et filtres.', 'Détail recette avec image, ingrédients et étapes.', 'Échappement systématique à l’affichage.'],
+        'points' => ['Accueil avec présentation du site.', 'Liste publique limitée aux recettes publiées.', 'Recherche serveur, filtres catégorie et pagination.', 'Détail recette avec image, ingrédients et étapes.'],
         'files' => ['public/index.php', 'public/recipes.php', 'public/recipe.php'],
         'code' => [
             [
-                'title' => 'Lien de carte vers la page recette séparée',
-                'file' => 'public/recipes.php',
+                'title' => 'Recherche publique préparée',
+                'file' => 'app/repositories/RecipeRepository.php',
                 'body' => <<<'PHP'
-<a href="<?= e(recipe_url((string) $recipe['slug'])) ?>" class="block">
-    <h3><?= e($recipe['title']) ?></h3>
-    <p><?= e($recipe['short_description']) ?></p>
-</a>
+public function published(int $limit = 12, int $offset = 0, string $query = '', string $category = ''): array
+{
+    [$where, $params] = $this->publicFilters($query, $category);
+    $sql = 'SELECT * FROM recipes ' . $where . ' ORDER BY published_at DESC LIMIT :limit OFFSET :offset';
+    $stmt = $this->pdo->prepare($sql);
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value);
+    }
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
 PHP,
             ],
         ],
-        'test' => 'Vérification : la page /recettes affiche 10 cartes et chaque carte ouvre une page /recette/{slug} dédiée.',
+        'test' => 'Vérification : /recettes affiche 10 recettes publiées, /recettes?q=chocolat renvoie Fondant, /recettes?category=desserts renvoie 2 recettes.',
     ],
     [
         'kicker' => 'Back-office',
         'title' => 'La partie administrateur',
         'lead' => 'Le back-office permet de gérer les recettes et les administrateurs après connexion.',
         'oral' => 'Toutes les actions sensibles passent par des formulaires POST avec CSRF. Le public ne peut pas créer, modifier ou supprimer.',
-        'points' => ['Dashboard avec statistiques.', 'CRUD recettes avec upload image.', 'CRUD administrateurs avec hash de mot de passe.', 'Suppression du dernier admin bloquée.'],
+        'points' => ['Dashboard avec statistiques.', 'CRUD recettes avec upload image.', 'Catégorie et statut brouillon/publié/archivé.', 'CRUD administrateurs avec hash de mot de passe.'],
         'files' => ['admin/dashboard.php', 'admin/recipes/*', 'admin/admins/*'],
         'test' => 'Vérification : accès /admin/dashboard.php sans session redirige vers /connexion.',
     ],
@@ -187,7 +196,7 @@ PHP,
                 'body' => <<<'PHP'
 public function findBySlug(string $slug): ?array
 {
-    $stmt = $this->pdo->prepare('SELECT * FROM recipes WHERE slug = :slug LIMIT 1');
+    $stmt = $this->pdo->prepare("SELECT * FROM recipes WHERE slug = :slug AND status = 'published' LIMIT 1");
     $stmt->execute(['slug' => $slug]);
     $recipe = $stmt->fetch();
 

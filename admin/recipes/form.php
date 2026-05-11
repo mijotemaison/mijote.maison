@@ -5,6 +5,8 @@ $values = [
     'description' => $_POST['description'] ?? ($recipe['description'] ?? ''),
     'ingredients' => $_POST['ingredients'] ?? ($recipe['ingredients'] ?? ''),
     'preparation_steps' => $_POST['preparation_steps'] ?? ($recipe['preparation_steps'] ?? ''),
+    'category' => $_POST['category'] ?? ($recipe['category'] ?? 'plats'),
+    'status' => $_POST['status'] ?? ($recipe['status'] ?? 'draft'),
 ];
 ?>
 <div>
@@ -16,6 +18,26 @@ $values = [
     <label class="label" for="short_description">Courte description</label>
     <textarea class="field" id="short_description" name="short_description" rows="2" maxlength="300" required><?= e($values['short_description']) ?></textarea>
     <?php if (isset($errors['short_description'])): ?><p class="mt-2 text-sm text-rose-200"><?= e($errors['short_description']) ?></p><?php endif; ?>
+</div>
+<div class="grid gap-5 lg:grid-cols-2">
+    <div>
+        <label class="label" for="category">Categorie</label>
+        <select class="field" id="category" name="category" required>
+            <?php foreach (recipe_categories() as $value => $label): ?>
+                <option value="<?= e($value) ?>" <?= $values['category'] === $value ? 'selected' : '' ?>><?= e($label) ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php if (isset($errors['category'])): ?><p class="mt-2 text-sm text-rose-200"><?= e($errors['category']) ?></p><?php endif; ?>
+    </div>
+    <div>
+        <label class="label" for="status">Statut de publication</label>
+        <select class="field" id="status" name="status" required>
+            <?php foreach (recipe_statuses() as $value => $label): ?>
+                <option value="<?= e($value) ?>" <?= $values['status'] === $value ? 'selected' : '' ?>><?= e($label) ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php if (isset($errors['status'])): ?><p class="mt-2 text-sm text-rose-200"><?= e($errors['status']) ?></p><?php endif; ?>
+    </div>
 </div>
 <div class="grid gap-5 lg:grid-cols-2">
     <div>

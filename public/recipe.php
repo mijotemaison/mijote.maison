@@ -42,7 +42,7 @@ if ($recipe) {
         'image' => [recipe_image_url($recipe['image_path'])],
         'description' => $recipe['short_description'],
         'author' => ['@type' => 'Organization', 'name' => 'Mijoté Maison'],
-        'recipeCategory' => $meta['label'] ?? 'Recette',
+        'recipeCategory' => recipe_category_label($recipe['category'] ?? null),
         'recipeYield' => $meta['servings'] ?? null,
         'totalTime' => isset($meta['time']) ? 'PT' . preg_replace('/\D/', '', $meta['time']) . 'M' : null,
         'recipeIngredient' => $ingredients,
@@ -81,7 +81,7 @@ if ($jsonLd) {
             <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:px-8">
                 <div>
                     <div class="flex flex-wrap gap-2 text-sm font-extrabold">
-                        <span class="rounded-full bg-white px-4 py-2 text-tomato shadow-sm"><?= e($meta['label']) ?></span>
+                        <span class="rounded-full bg-white px-4 py-2 text-tomato shadow-sm"><?= e(recipe_category_label($recipe['category'] ?? null)) ?></span>
                         <span class="rounded-full bg-white px-4 py-2 text-herb shadow-sm"><?= e($meta['time']) ?></span>
                         <span class="rounded-full bg-white px-4 py-2 text-amber-700 shadow-sm"><?= e($meta['level']) ?></span>
                     </div>
