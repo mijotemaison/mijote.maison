@@ -46,8 +46,8 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Aperçu admin avant publication.
 - Duplication d'une recette en brouillon.
 - Modération des commentaires : approuver, refuser, supprimer.
-- Journal sécurité complet `/admin/security-logs/index.php` avec filtres, pagination serveur et nettoyage des anciens événements.
-- Export CSV du journal sécurité avec les mêmes filtres que l'écran.
+- Journal sécurité complet `/admin/security-logs/index.php` avec filtres, plage de dates, pagination serveur et nettoyage des anciens événements.
+- Export CSV du journal sécurité avec les mêmes filtres que l'écran, y compris la plage de dates.
 - Upload sécurisé des images de recettes.
 - CRUD complet des administrateurs avec **recherche live** + **pagination**.
 - Blocage de la suppression du dernier administrateur.
@@ -89,7 +89,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Construction DOM par API (pas d'`innerHTML` côté JS) — modale custom 100 % résistante aux injections.
 - Protection self-delete admin (UI + serveur).
 - Timeout de session admin après 30 minutes d'inactivité.
-- Journal de sécurité `security_logs` pour connexions et actions sensibles, avec page admin dédiée, export CSV et nettoyage des anciennes tentatives.
+- Journal de sécurité `security_logs` pour connexions et actions sensibles, avec page admin dédiée, filtres par dates, export CSV et nettoyage des anciennes tentatives.
 
 ## Accessibilité
 
@@ -214,5 +214,4 @@ Les vrais fichiers admin restent dans `admin/`. Les fichiers `public/admin/*` so
 - Audit Lighthouse complet (cible : Perf > 90, A11y > 95, SEO > 95).
 - Automatiser le nettoyage des logs via cron Railway ou tâche serveur.
 - 2FA TOTP pour les admins.
-- Export CSV enrichi avec plage de dates.
 - Journal externe type SIEM pour une vraie production.

@@ -38,6 +38,8 @@ if (is_post()) {
 $filters = [
     'event_type' => trim((string) ($_GET['event_type'] ?? '')),
     'q' => trim((string) ($_GET['q'] ?? '')),
+    'date_from' => trim((string) ($_GET['date_from'] ?? '')),
+    'date_to' => trim((string) ($_GET['date_to'] ?? '')),
 ];
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $perPage = 20;
@@ -64,6 +66,8 @@ try {
 $queryParams = array_filter([
     'event_type' => $filters['event_type'],
     'q' => $filters['q'],
+    'date_from' => $filters['date_from'],
+    'date_to' => $filters['date_to'],
 ], static fn (string $value): bool => $value !== '');
 
 if (!$error && (string) ($_GET['export'] ?? '') === 'csv') {
@@ -113,7 +117,7 @@ admin_header('Journal securite');
     <div class="panel-card p-5 text-amber-100"><?= e($error) ?></div>
 <?php else: ?>
     <section class="panel-card mb-5 p-5">
-        <form class="grid gap-3 md:grid-cols-[1fr_1fr_auto]" method="get" action="/admin/security-logs/index.php">
+        <form class="grid gap-3 lg:grid-cols-[1fr_1fr_.75fr_.75fr_auto]" method="get" action="/admin/security-logs/index.php">
             <label>
                 <span class="mb-2 block text-sm font-semibold text-slate-300">Type d'evenement</span>
                 <select class="field" name="event_type">
@@ -126,6 +130,14 @@ admin_header('Journal securite');
             <label>
                 <span class="mb-2 block text-sm font-semibold text-slate-300">Recherche</span>
                 <input class="field" type="search" name="q" value="<?= e($filters['q']) ?>" placeholder="Email, IP, navigateur, details...">
+            </label>
+            <label>
+                <span class="mb-2 block text-sm font-semibold text-slate-300">Depuis</span>
+                <input class="field" type="date" name="date_from" value="<?= e($filters['date_from']) ?>">
+            </label>
+            <label>
+                <span class="mb-2 block text-sm font-semibold text-slate-300">Jusqu'au</span>
+                <input class="field" type="date" name="date_to" value="<?= e($filters['date_to']) ?>">
             </label>
             <div class="flex items-end gap-2">
                 <button class="btn-primary" type="submit">Filtrer</button>

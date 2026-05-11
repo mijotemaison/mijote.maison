@@ -249,6 +249,13 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Export CSV du journal securite avec les filtres courants.
 - [x] Tests finaux : Argon2id, HTTPS prod, export CSV, lint, build CSS, PDF, commit/push.
 
+## Phase 18 - Audit par plage de dates
+
+- [x] Filtres `date_from` et `date_to` ajoutes au journal securite.
+- [x] Requetes preparees du journal enrichies avec bornes de dates inclusives.
+- [x] Export CSV compatible avec type d'evenement, recherche libre et plage de dates.
+- [x] Tests finaux : filtres dates, export CSV date, lint, build CSS, PDF, commit/push.
+
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 
 ### Design system éditorial

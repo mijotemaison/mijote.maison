@@ -530,7 +530,7 @@ Technique : expiration d'inactivité côté session PHP et table `security_logs`
 
 Menace : session administrateur laissée ouverte sur un poste partagé, absence de traçabilité sur les actions sensibles.
 
-Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail. Une page admin dédiée permet ensuite de filtrer ce journal, de le paginer, de l'exporter en CSV et de nettoyer les anciennes entrées.
+Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail. Une page admin dédiée permet ensuite de filtrer ce journal par type, recherche libre et plage de dates, de le paginer, de l'exporter en CSV et de nettoyer les anciennes entrées.
 
 Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/repositories/LoginAttemptRepository.php`, `app/helpers/functions.php`, `admin/dashboard.php`, `admin/security-logs/index.php`, `database.sql`.
 
@@ -591,6 +591,17 @@ public function filtered(array $filters = [], int $limit = 20, int $offset = 0):
 
     return $stmt->fetchAll();
 }
+
+private function filteredQueryParts(array $filters): array
+{
+    $dateFrom = $this->normalizedDate((string) ($filters['date_from'] ?? ''));
+    if ($dateFrom !== '') {
+        $conditions[] = 'created_at >= :date_from';
+        $params[':date_from'] = $dateFrom . ' 00:00:00';
+    }
+
+    return [$conditions ? ' WHERE ' . implode(' AND ', $conditions) : '', $params];
+}
 ```
 
 ```php
@@ -621,8 +632,8 @@ Limite restante : envoyer ces logs vers un service externe en production pour é
 - **Tentative d'auto-suppression admin** (curl POST avec id du compte courant) : refusée serveur avec flash explicite.
 - **Confirmation modale** : Escape annule, Enter confirme, Tab reste dans la modale (focus trap), bouton Annuler n'envoie aucune requête.
 - **Commentaire public** : insertion en `pending`, invisible côté public avant approbation admin.
-- **Journal sécurité** : duplication recette et login admin créent une entrée `security_logs`; la page `/admin/security-logs/index.php` filtre et pagine les événements.
-- **Export CSV journal** : `/admin/security-logs/index.php?export=csv` renvoie un fichier CSV après authentification admin.
+- **Journal sécurité** : duplication recette et login admin créent une entrée `security_logs`; la page `/admin/security-logs/index.php` filtre par type, recherche, dates et pagine les événements.
+- **Export CSV journal** : `/admin/security-logs/index.php?export=csv` renvoie un fichier CSV après authentification admin avec les mêmes filtres que l'écran.
 - **Nettoyage journal** : l'action de nettoyage est en POST + CSRF et supprime les logs/tentatives anciennes via requêtes préparées.
 - **Timeout session** : la session admin expire après 30 minutes d'inactivité.
 - **HTTPS production** : `APP_ENV=production` redirige les requêtes GET/HEAD HTTP vers HTTPS et refuse les POST HTTP.

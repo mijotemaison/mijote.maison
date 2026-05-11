@@ -98,9 +98,36 @@ final class SecurityLogRepository
             $params[':query_details'] = $likeQuery;
         }
 
+        $dateFrom = $this->normalizedDate((string) ($filters['date_from'] ?? ''));
+        if ($dateFrom !== '') {
+            $conditions[] = 'created_at >= :date_from';
+            $params[':date_from'] = $dateFrom . ' 00:00:00';
+        }
+
+        $dateTo = $this->normalizedDate((string) ($filters['date_to'] ?? ''));
+        if ($dateTo !== '') {
+            $conditions[] = 'created_at <= :date_to';
+            $params[':date_to'] = $dateTo . ' 23:59:59';
+        }
+
         return [
             $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '',
             $params,
         ];
+    }
+
+    private function normalizedDate(string $value): string
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return '';
+        }
+
+        $date = DateTimeImmutable::createFromFormat('!Y-m-d', $value);
+        if (!$date || $date->format('Y-m-d') !== $value) {
+            return '';
+        }
+
+        return $value;
     }
 }
