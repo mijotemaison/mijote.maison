@@ -5,8 +5,10 @@ declare(strict_types=1);
 require_once __DIR__ . '/../app/bootstrap.php';
 require_once BASE_PATH . '/app/config/database.php';
 require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
+require_once BASE_PATH . '/app/repositories/RecipeInteractionRepository.php';
 
 $recipes = [];
+$ratingSummaries = [];
 $dbError = null;
 $query = trim((string) ($_GET['q'] ?? ''));
 $category = (string) ($_GET['category'] ?? '');
@@ -16,11 +18,13 @@ $totalRecipes = 0;
 $totalPages = 1;
 
 try {
-    $repo = new RecipeRepository(db());
+    $pdo = db();
+    $repo = new RecipeRepository($pdo);
     $totalRecipes = $repo->countPublished($query, $category);
     $totalPages = max(1, (int) ceil($totalRecipes / $perPage));
     $page = min($page, $totalPages);
     $recipes = $repo->published($perPage, ($page - 1) * $perPage, $query, $category);
+    $ratingSummaries = (new RecipeInteractionRepository($pdo))->ratingSummariesForRecipeIds(array_column($recipes, 'id'));
 } catch (Throwable $exception) {
     $dbError = 'Impossible de charger les recettes pour le moment.';
 }
@@ -88,6 +92,7 @@ public_header('Recettes');
         <div class="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
             <?php foreach ($recipes as $recipe): ?>
                 <?php $meta = recipe_public_meta($recipe['slug'] ?? null); ?>
+                <?php $rating = $ratingSummaries[(int) $recipe['id']] ?? ['average' => 0, 'count' => 0]; ?>
                 <article class="group overflow-hidden rounded-[1.6rem] border border-orange-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-900/10" data-recipe-card data-category="<?= e($recipe['category'] ?? $meta['category']) ?>" data-search="<?= e($recipe['title'] . ' ' . $recipe['short_description'] . ' ' . $recipe['ingredients'] . ' ' . recipe_category_label($recipe['category'] ?? null) . ' ' . $meta['tag']) ?>">
                     <a href="<?= e(recipe_url((string) $recipe['slug'])) ?>" class="block">
                         <div class="relative">
@@ -99,6 +104,10 @@ public_header('Recettes');
                                 <span class="rounded-full bg-orange-50 px-3 py-1"><?= e($meta['time']) ?></span>
                                 <span class="rounded-full bg-emerald-50 px-3 py-1 text-herb"><?= e($meta['level']) ?></span>
                                 <span class="rounded-full bg-amber-50 px-3 py-1 text-amber-700"><?= e($meta['tag']) ?></span>
+                            </div>
+                            <div class="mb-3 flex items-center gap-2 text-xs font-bold text-stone-500">
+                                <?= render_stars((float) $rating['average'], 'text-base') ?>
+                                <span><?= e($rating['count'] > 0 ? number_format((float) $rating['average'], 1, ',', ' ') . '/5 · ' . $rating['count'] . ' avis' : 'Pas encore notée') ?></span>
                             </div>
                             <h3 class="font-serif text-2xl font-bold leading-tight text-stone-950"><?= e($recipe['title']) ?></h3>
                             <p class="mt-3 min-h-16 text-sm leading-6 text-stone-600"><?= e($recipe['short_description']) ?></p>

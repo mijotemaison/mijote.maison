@@ -6,7 +6,7 @@ require_once __DIR__ . '/../app/bootstrap.php';
 
 $stackItems = [
     ['PHP natif', 'Construit les pages, traite les formulaires, démarre les sessions et appelle les fonctions de sécurité.'],
-    ['MySQL', 'Stocke les administrateurs, les recettes, leurs categories/statuts et les tentatives de connexion.'],
+    ['MySQL', 'Stocke les administrateurs, les recettes, leurs categories/statuts, les notes, les commentaires et les tentatives de connexion.'],
     ['PDO', 'Fait le lien sécurisé entre PHP et MySQL avec des requêtes préparées.'],
     ['HTML', 'Structure les pages publiques, les formulaires et les tableaux du back-office.'],
     ['Tailwind CSS', 'Gère l’identité visuelle, les grilles responsive, les cartes et les formulaires.'],
@@ -21,7 +21,7 @@ $responsibilities = [
     ['Front-office', 'Pages publiques pour consulter les recettes : accueil, liste, détail et présentation.'],
     ['Back-office', 'Zone admin protégée pour créer, modifier et supprimer recettes et administrateurs.'],
     ['Router', 'public/router.php joue le rôle de front controller léger et envoie chaque URL vers la bonne page PHP, par exemple /recettes ou /recette/{slug}.'],
-    ['Base de données', 'Tables admins, recipes et login_attempts importées depuis database.sql, avec recettes publiees, brouillons et archives.'],
+    ['Base de données', 'Tables admins, recipes, recipe_ratings, recipe_comments et login_attempts importées depuis database.sql.'],
     ['Repositories', 'Classes PHP qui exécutent les requêtes SQL préparées avec PDO.'],
     ['Validation', 'Contrôles serveur sur les champs recettes et administrateurs avant écriture en base.'],
     ['Sécurité', 'Protection XSS, SQLi, CSRF, brute force, sessions et upload image.'],

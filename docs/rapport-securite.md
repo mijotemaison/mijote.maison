@@ -451,6 +451,47 @@ document.querySelectorAll('form[data-confirm]').forEach(function (form) {
 
 Limite restante : étendre le pattern aux mises à jour à risque (changement d'email admin, par exemple) si nécessaire.
 
+### M. Notes et commentaires publics modérés
+
+Technique : tables séparées `recipe_ratings` et `recipe_comments`, CSRF sur les formulaires publics, validation serveur, échappement à l'affichage et modération admin.
+
+Menace : XSS via commentaires, spam public, modification non autorisée des avis, pollution du front-office.
+
+Solution appliquée : les notes utilisent une empreinte visiteur hashée (`public_actor_hash`) avec une clé unique par recette/visiteur. Les commentaires publics sont insérés avec le statut `pending` et ne sont affichés côté front-office que lorsqu'un administrateur les passe en `approved`. Les actions admin de modération passent par POST et CSRF.
+
+Fichiers concernés : `public/recipe.php`, `app/repositories/RecipeInteractionRepository.php`, `admin/comments/index.php`, `database.sql`.
+
+Extrait réel :
+
+```php
+// public/recipe.php — commentaire public en attente
+if ($authorName === '' || mb_strlen($authorName) > 80) {
+    flash('error', 'Le nom est obligatoire et limite a 80 caracteres.');
+} elseif (mb_strlen($content) < 5 || mb_strlen($content) > 800) {
+    flash('error', 'Le commentaire doit contenir entre 5 et 800 caracteres.');
+} else {
+    $interactionRepo->createComment((int) $recipe['id'], $authorName, $content, public_actor_hash());
+    flash('success', 'Commentaire envoye. Il apparaitra apres validation.');
+}
+```
+
+```php
+// app/repositories/RecipeInteractionRepository.php — affichage public modéré
+public function approvedComments(int $recipeId): array
+{
+    $stmt = $this->pdo->prepare(
+        "SELECT * FROM recipe_comments
+         WHERE recipe_id = :recipe_id AND status = 'approved'
+         ORDER BY created_at DESC, id DESC"
+    );
+    $stmt->execute(['recipe_id' => $recipeId]);
+
+    return $stmt->fetchAll();
+}
+```
+
+Limite restante : ajouter une limitation de fréquence spécifique aux commentaires si le site reçoit beaucoup de trafic public.
+
 ## 5. Tests de securite realises
 
 - Tentative XSS dans titre recette : affichée comme texte avec `e()`.
@@ -465,6 +506,7 @@ Limite restante : étendre le pattern aux mises à jour à risque (changement d'
 - **Script inline sans nonce refusé** par le navigateur (vérifié dans la console DevTools).
 - **Tentative d'auto-suppression admin** (curl POST avec id du compte courant) : refusée serveur avec flash explicite.
 - **Confirmation modale** : Escape annule, Enter confirme, Tab reste dans la modale (focus trap), bouton Annuler n'envoie aucune requête.
+- **Commentaire public** : insertion en `pending`, invisible côté public avant approbation admin.
 - Navigation responsive : Tailwind compilé localement.
 
 ## 6. Conclusion

@@ -66,6 +66,27 @@ function recipe_statuses(): array
     ];
 }
 
+function public_actor_hash(): string
+{
+    $fingerprint = session_id()
+        . '|' . substr((string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'), 0, 45)
+        . '|' . substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? 'unknown'), 0, 255);
+
+    return hash('sha256', $fingerprint);
+}
+
+function render_stars(float $average, string $class = 'text-xl'): string
+{
+    $rounded = (int) round($average);
+    $html = '<span class="' . e($class) . ' tracking-tight text-amber-500" aria-hidden="true">';
+    for ($i = 1; $i <= 5; $i++) {
+        $html .= $i <= $rounded ? '★' : '☆';
+    }
+    $html .= '</span>';
+
+    return $html;
+}
+
 function is_nav_active(string $href): bool
 {
     $path = current_path();
@@ -249,6 +270,7 @@ function admin_header(string $title): void
         <nav class="grid gap-1 px-3 pb-5 text-sm">
             <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/dashboard.php">Dashboard</a>
             <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/recipes/index.php">Recettes</a>
+            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/comments/index.php">Commentaires</a>
             <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/admins/index.php">Administrateurs</a>
             <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/presentation">Presentation</a>
             <a class="hidden rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white lg:block" href="/deconnexion">Deconnexion</a>

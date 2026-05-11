@@ -7,11 +7,13 @@ require_once BASE_PATH . '/app/config/database.php';
 require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
 require_once BASE_PATH . '/app/repositories/AdminRepository.php';
 require_once BASE_PATH . '/app/repositories/LoginAttemptRepository.php';
+require_once BASE_PATH . '/app/repositories/RecipeInteractionRepository.php';
 
 require_admin();
 
 $recipeCount = 0;
 $adminCount = 0;
+$pendingCommentCount = 0;
 $latestRecipes = [];
 $latestFailures = [];
 $error = null;
@@ -21,8 +23,10 @@ try {
     $recipeRepo = new RecipeRepository($pdo);
     $adminRepo = new AdminRepository($pdo);
     $attemptRepo = new LoginAttemptRepository($pdo);
+    $interactionRepo = new RecipeInteractionRepository($pdo);
     $recipeCount = $recipeRepo->count();
     $adminCount = $adminRepo->count();
+    $pendingCommentCount = $interactionRepo->countPendingComments();
     $latestRecipes = $recipeRepo->latest(5);
     $latestFailures = $attemptRepo->latestFailures(6);
 } catch (Throwable $exception) {
@@ -43,9 +47,10 @@ admin_header('Dashboard');
 <?php if ($error): ?>
     <div class="panel-card p-5 text-amber-100"><?= e($error) ?></div>
 <?php else: ?>
-    <div class="grid gap-5 md:grid-cols-3">
+    <div class="grid gap-5 md:grid-cols-4">
         <div class="panel-card p-5"><p class="text-sm text-slate-400">Recettes</p><p class="mt-2 text-4xl font-bold text-white"><?= e($recipeCount) ?></p></div>
         <div class="panel-card p-5"><p class="text-sm text-slate-400">Administrateurs</p><p class="mt-2 text-4xl font-bold text-white"><?= e($adminCount) ?></p></div>
+        <div class="panel-card p-5"><p class="text-sm text-slate-400">Commentaires en attente</p><p class="mt-2 text-4xl font-bold text-white"><?= e($pendingCommentCount) ?></p></div>
         <div class="panel-card p-5"><p class="text-sm text-slate-400">Protections</p><p class="mt-2 text-lg font-semibold text-cyan-100">CSRF · CSP · PDO · Upload</p></div>
     </div>
     <div class="mt-8 grid gap-6 lg:grid-cols-2">

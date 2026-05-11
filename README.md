@@ -22,8 +22,10 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 ## Fonctionnalités front-office
 
 - Page d'accueil `/` avec hero éditorial, aperçu des recettes et navigation.
-- Page liste `/recettes` avec recettes publiées, recherche serveur, filtres par catégorie et pagination.
+- Page liste `/recettes` avec recettes publiées, recherche serveur, filtres par catégorie, pagination et étoiles.
 - Page détail `/recette/{slug}` avec titre, image, description, ingrédients, étapes et **JSON-LD `Recipe`** + Open Graph + Twitter Card.
+- Notes lecteurs sur 5 étoiles, avec un vote par empreinte visiteur/session.
+- Commentaires publics affichés seulement après modération.
 - Page de connexion administrateur `/connexion`.
 - Page `/presentation` sous forme de carrousel avec :
   - **Mode présentateur** togglable (notes orales cachées par défaut, visibles uniquement quand activé).
@@ -38,6 +40,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 
 - Dashboard admin avec compteurs, dernières recettes, tentatives échouées récentes.
 - CRUD complet des recettes avec **catégorie**, **statut brouillon/publié/archivé**, recherche live + pagination 10/page.
+- Modération des commentaires : approuver, refuser, supprimer.
 - Upload sécurisé des images de recettes.
 - CRUD complet des administrateurs avec **recherche live** + **pagination**.
 - Blocage de la suppression du dernier administrateur.
@@ -53,6 +56,8 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Pagination publique des recettes publiées.
 - Statut de recette côté admin : brouillon, publié, archivé.
 - Les brouillons et archives ne sont pas visibles dans le front-office.
+- Notes en étoiles stockées dans `recipe_ratings`.
+- Commentaires publics stockés dans `recipe_comments` et publiés uniquement après validation admin.
 
 ## Sécurité appliquée
 

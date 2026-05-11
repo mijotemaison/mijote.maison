@@ -204,6 +204,17 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Formulaire admin recette enrichi avec categorie et statut.
 - [x] Tests MySQL : import `database.sql`, verification categories/statuts, recherche `q=chocolat`, filtre `category=desserts`, pagination page 2.
 
+## Phase 14 - Notes etoiles et commentaires moderes
+
+- [x] Ajout table `recipe_ratings` avec note 1 a 5, empreinte visiteur et cle unique par recette/visiteur.
+- [x] Ajout table `recipe_comments` avec statut `pending`, `approved`, `rejected`.
+- [x] Affichage des etoiles sur les cartes recettes et la page detail.
+- [x] Formulaire public de notation protege par CSRF.
+- [x] Formulaire public de commentaire protege par CSRF, validation serveur, honeypot anti-spam simple et moderation obligatoire.
+- [x] Page admin `/admin/comments/index.php` pour approuver, refuser ou supprimer les commentaires.
+- [x] Dashboard admin enrichi avec compteur de commentaires en attente.
+- [x] Tests MySQL/HTTP : note ajoutee, commentaire cree en attente, moderation admin approuvee, affichage public verifie.
+
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 
 ### Design system éditorial

@@ -5,16 +5,63 @@ declare(strict_types=1);
 require_once __DIR__ . '/../app/bootstrap.php';
 require_once BASE_PATH . '/app/config/database.php';
 require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
+require_once BASE_PATH . '/app/repositories/RecipeInteractionRepository.php';
 
 $recipe = null;
 $error = null;
+$ratingSummary = ['average' => 0.0, 'count' => 0];
+$userRating = null;
+$comments = [];
 
 try {
-    $repo = new RecipeRepository(db());
+    $pdo = db();
+    $repo = new RecipeRepository($pdo);
+    $interactionRepo = new RecipeInteractionRepository($pdo);
     if (isset($_GET['id'])) {
         $recipe = $repo->find((int) $_GET['id']);
     } elseif (isset($_GET['slug'])) {
         $recipe = $repo->findBySlug((string) $_GET['slug']);
+    }
+
+    if ($recipe && is_post()) {
+        require_valid_csrf();
+        $action = (string) ($_POST['action'] ?? '');
+
+        if ($action === 'rate') {
+            $rating = (int) ($_POST['rating'] ?? 0);
+            if ($rating < 1 || $rating > 5) {
+                flash('error', 'La note doit etre comprise entre 1 et 5.');
+            } else {
+                $interactionRepo->rate((int) $recipe['id'], $rating, public_actor_hash());
+                flash('success', 'Merci pour votre note.');
+            }
+            redirect(recipe_url((string) $recipe['slug']) . '#avis');
+        }
+
+        if ($action === 'comment') {
+            $authorName = trim((string) ($_POST['author_name'] ?? ''));
+            $content = trim((string) ($_POST['content'] ?? ''));
+            $honeypot = trim((string) ($_POST['website'] ?? ''));
+
+            if ($honeypot !== '') {
+                redirect(recipe_url((string) $recipe['slug']) . '#avis');
+            }
+            if ($authorName === '' || mb_strlen($authorName) > 80) {
+                flash('error', 'Le nom est obligatoire et limite a 80 caracteres.');
+            } elseif (mb_strlen($content) < 5 || mb_strlen($content) > 800) {
+                flash('error', 'Le commentaire doit contenir entre 5 et 800 caracteres.');
+            } else {
+                $interactionRepo->createComment((int) $recipe['id'], $authorName, $content, public_actor_hash());
+                flash('success', 'Commentaire envoye. Il apparaitra apres validation.');
+            }
+            redirect(recipe_url((string) $recipe['slug']) . '#avis');
+        }
+    }
+
+    if ($recipe) {
+        $ratingSummary = $interactionRepo->ratingSummary((int) $recipe['id']);
+        $userRating = $interactionRepo->userRating((int) $recipe['id'], public_actor_hash());
+        $comments = $interactionRepo->approvedComments((int) $recipe['id']);
     }
 } catch (Throwable $exception) {
     $error = 'Impossible de charger la recette pour le moment.';
@@ -63,6 +110,7 @@ if ($jsonLd) {
         <a class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-herb shadow-sm hover:text-tomato" href="/recettes">← Retour aux recettes</a>
     </div>
 </section>
+<?php render_flash(); ?>
 
 <?php if ($error): ?>
     <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
@@ -103,6 +151,14 @@ if ($jsonLd) {
                             <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Portions</dt><dd class="font-extrabold text-stone-900"><?= e($meta['servings']) ?></dd></div>
                             <div class="flex items-center justify-between rounded-2xl bg-orange-50 px-4 py-3"><dt class="font-extrabold text-stone-600">Ambiance</dt><dd class="font-extrabold text-amber-700"><?= e($meta['season']) ?></dd></div>
                         </dl>
+                        <div class="mt-5 rounded-3xl bg-white p-4 ring-1 ring-orange-100">
+                            <p class="text-sm font-extrabold uppercase tracking-[0.14em] text-tomato">Note des lecteurs</p>
+                            <div class="mt-2 flex items-center gap-3">
+                                <?= render_stars((float) $ratingSummary['average'], 'text-2xl') ?>
+                                <span class="font-extrabold text-stone-900"><?= e($ratingSummary['count'] > 0 ? number_format((float) $ratingSummary['average'], 1, ',', ' ') . '/5' : 'Aucune note') ?></span>
+                            </div>
+                            <p class="mt-1 text-sm text-stone-500"><?= e((string) $ratingSummary['count']) ?> avis enregistré(s)</p>
+                        </div>
                     </div>
 
                     <div class="rounded-[2rem] border border-emerald-100 bg-emerald-50 p-6 text-herb">
@@ -128,6 +184,75 @@ if ($jsonLd) {
                             <?php endforeach; ?>
                         </div>
                     </section>
+                </div>
+            </div>
+        </section>
+
+        <section id="avis" class="bg-[#fff1dc] py-14">
+            <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[.85fr_1.15fr] lg:px-8">
+                <aside class="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-xl shadow-orange-900/10 sm:p-8">
+                    <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Avis lecteurs</p>
+                    <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">Donner une note</h2>
+                    <p class="mt-3 leading-7 text-stone-600">Votre note aide les prochains visiteurs à choisir une recette. Elle peut être modifiée si vous votez à nouveau.</p>
+                    <form class="mt-6 grid gap-4" method="post" action="<?= e(recipe_url((string) $recipe['slug'])) ?>#avis">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="rate">
+                        <div class="flex flex-wrap gap-2" role="group" aria-label="Noter la recette">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <button class="rounded-full border <?= $userRating === $i ? 'border-amber-500 bg-amber-400 text-stone-950' : 'border-orange-200 bg-orange-50 text-amber-600' ?> px-4 py-2 text-xl font-black transition hover:border-amber-500 hover:bg-amber-100" type="submit" name="rating" value="<?= e($i) ?>" aria-label="Noter <?= e($i) ?> sur 5">
+                                    <?= str_repeat('★', $i) ?>
+                                </button>
+                            <?php endfor; ?>
+                        </div>
+                        <?php if ($userRating): ?>
+                            <p class="text-sm font-bold text-herb">Votre note actuelle : <?= e($userRating) ?>/5.</p>
+                        <?php endif; ?>
+                    </form>
+
+                    <hr class="my-8 border-orange-100">
+
+                    <h3 class="font-serif text-3xl font-bold text-stone-950">Laisser un commentaire</h3>
+                    <p class="mt-2 text-sm leading-6 text-stone-600">Les commentaires sont relus avant publication pour garder une page utile et agréable.</p>
+                    <form class="mt-5 grid gap-4" method="post" action="<?= e(recipe_url((string) $recipe['slug'])) ?>#avis">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="comment">
+                        <label class="hidden" aria-hidden="true">Site web
+                            <input name="website" tabindex="-1" autocomplete="off">
+                        </label>
+                        <div>
+                            <label class="mb-2 block text-sm font-extrabold text-stone-700" for="author_name">Nom</label>
+                            <input class="w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-stone-900 outline-none transition focus:border-tomato focus:ring-4 focus:ring-orange-200" id="author_name" name="author_name" maxlength="80" required>
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-extrabold text-stone-700" for="content">Commentaire</label>
+                            <textarea class="w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-stone-900 outline-none transition focus:border-tomato focus:ring-4 focus:ring-orange-200" id="content" name="content" rows="5" maxlength="800" required></textarea>
+                        </div>
+                        <button class="btn-primary" type="submit">Envoyer le commentaire</button>
+                    </form>
+                </aside>
+
+                <div class="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-xl shadow-orange-900/10 sm:p-8">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-herb">Commentaires</p>
+                            <h2 class="mt-2 font-serif text-4xl font-bold text-stone-950">Ce qu’en pensent les lecteurs</h2>
+                        </div>
+                        <span class="rounded-full bg-orange-50 px-4 py-2 text-sm font-extrabold text-tomato"><?= e((string) count($comments)) ?> publié(s)</span>
+                    </div>
+                    <div class="mt-7 space-y-4">
+                        <?php if (!$comments): ?>
+                            <p class="rounded-3xl bg-orange-50 p-5 text-stone-600">Aucun commentaire publié pour le moment.</p>
+                        <?php endif; ?>
+                        <?php foreach ($comments as $comment): ?>
+                            <article class="rounded-3xl border border-orange-100 bg-[#fffaf3] p-5">
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <h3 class="font-serif text-2xl font-bold text-stone-950"><?= e($comment['author_name']) ?></h3>
+                                    <time class="text-xs font-bold uppercase tracking-[0.12em] text-stone-500" datetime="<?= e($comment['created_at']) ?>"><?= e(date('d/m/Y', strtotime((string) $comment['created_at']))) ?></time>
+                                </div>
+                                <p class="mt-3 whitespace-pre-line leading-7 text-stone-700"><?= e($comment['content']) ?></p>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </section>

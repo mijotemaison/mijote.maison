@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS admins (
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS recipe_comments;
+DROP TABLE IF EXISTS recipe_ratings;
 DROP TABLE IF EXISTS recipes;
 
 CREATE TABLE IF NOT EXISTS recipes (
@@ -34,6 +36,33 @@ CREATE TABLE IF NOT EXISTS recipes (
   INDEX idx_recipes_public (status, category, published_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS recipe_ratings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  recipe_id INT NOT NULL,
+  rating TINYINT UNSIGNED NOT NULL,
+  voter_hash CHAR(64) NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_recipe_rating_voter (recipe_id, voter_hash),
+  INDEX idx_recipe_ratings_recipe (recipe_id),
+  CONSTRAINT fk_recipe_ratings_recipe FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
+  CONSTRAINT chk_recipe_rating_value CHECK (rating BETWEEN 1 AND 5)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS recipe_comments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  recipe_id INT NOT NULL,
+  author_name VARCHAR(80) NOT NULL,
+  content TEXT NOT NULL,
+  status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+  visitor_hash CHAR(64) NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_recipe_comments_recipe_status (recipe_id, status, created_at),
+  INDEX idx_recipe_comments_status (status, created_at),
+  CONSTRAINT fk_recipe_comments_recipe FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS login_attempts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(190) NULL,
@@ -53,8 +82,6 @@ VALUES (
   NOW()
 )
 ON DUPLICATE KEY UPDATE username = VALUES(username);
-
-TRUNCATE TABLE recipes;
 
 INSERT INTO recipes (title, slug, short_description, description, ingredients, preparation_steps, image_path, category, status, published_at, view_count, created_at, updated_at)
 VALUES
@@ -208,6 +235,23 @@ VALUES
   NOW(),
   NOW()
 );
+
+INSERT INTO recipe_ratings (recipe_id, rating, voter_hash, created_at, updated_at)
+SELECT id, 5, SHA2(CONCAT(slug, '-seed-a'), 256), NOW(), NOW() FROM recipes WHERE slug IN ('fondant-au-chocolat', 'burger-maison-gourmand', 'pates-cremeuses-aux-champignons');
+
+INSERT INTO recipe_ratings (recipe_id, rating, voter_hash, created_at, updated_at)
+SELECT id, 4, SHA2(CONCAT(slug, '-seed-b'), 256), NOW(), NOW() FROM recipes WHERE slug IN ('veloute-de-potimarron', 'tarte-fine-aux-pommes', 'saumon-au-four-et-legumes', 'curry-de-legumes-coco');
+
+INSERT INTO recipe_ratings (recipe_id, rating, voter_hash, created_at, updated_at)
+SELECT id, 5, SHA2(CONCAT(slug, '-seed-c'), 256), NOW(), NOW() FROM recipes WHERE slug IN ('poulet-citron-et-herbes', 'salade-mediterraneenne', 'risotto-parmesan-et-champignons');
+
+INSERT INTO recipe_comments (recipe_id, author_name, content, status, visitor_hash, created_at, updated_at)
+SELECT id, 'Claire', 'Recette tres claire, parfaite pour un repas en famille.', 'approved', SHA2(CONCAT(slug, '-comment-claire'), 256), NOW(), NOW()
+FROM recipes WHERE slug IN ('veloute-de-potimarron', 'fondant-au-chocolat');
+
+INSERT INTO recipe_comments (recipe_id, author_name, content, status, visitor_hash, created_at, updated_at)
+SELECT id, 'Nadia', 'J ai suivi les etapes sans difficulte, le resultat etait vraiment gourmand.', 'approved', SHA2(CONCAT(slug, '-comment-nadia'), 256), NOW(), NOW()
+FROM recipes WHERE slug IN ('poulet-citron-et-herbes', 'pates-cremeuses-aux-champignons');
 
 -- Utilisateur MySQL recommande pour le principe du moindre privilege :
 -- CREATE USER 'secure_recipes_user'@'%' IDENTIFIED BY 'mot_de_passe_fort_a_changer';
