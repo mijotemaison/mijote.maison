@@ -4,6 +4,32 @@ declare(strict_types=1);
 
 const ADMIN_SESSION_TIMEOUT_SECONDS = 1800;
 
+function admin_password_hash(string $password): string
+{
+    if (defined('PASSWORD_ARGON2ID')) {
+        return password_hash($password, PASSWORD_ARGON2ID, [
+            'memory_cost' => 65536,
+            'time_cost' => 3,
+            'threads' => 1,
+        ]);
+    }
+
+    return password_hash($password, PASSWORD_DEFAULT);
+}
+
+function admin_password_needs_rehash(string $hash): bool
+{
+    if (defined('PASSWORD_ARGON2ID')) {
+        return password_needs_rehash($hash, PASSWORD_ARGON2ID, [
+            'memory_cost' => 65536,
+            'time_cost' => 3,
+            'threads' => 1,
+        ]);
+    }
+
+    return password_needs_rehash($hash, PASSWORD_DEFAULT);
+}
+
 function start_secure_session(): void
 {
     if (session_status() === PHP_SESSION_ACTIVE) {

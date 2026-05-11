@@ -61,11 +61,41 @@ try {
     $error = 'Base de donnees indisponible.';
 }
 
-$totalPages = max(1, (int) ceil($totalLogs / $perPage));
 $queryParams = array_filter([
     'event_type' => $filters['event_type'],
     'q' => $filters['q'],
 ], static fn (string $value): bool => $value !== '');
+
+if (!$error && (string) ($_GET['export'] ?? '') === 'csv') {
+    $exportLogs = $securityLogRepo->filtered($filters, 5000, 0);
+    $filename = 'journal-securite-' . date('Ymd-His') . '.csv';
+
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+
+    $output = fopen('php://output', 'w');
+    if ($output !== false) {
+        fwrite($output, "\xEF\xBB\xBF");
+        fputcsv($output, ['id', 'event_type', 'actor_email', 'ip_address', 'user_agent', 'details', 'created_at'], ',', '"', '', "\n");
+        foreach ($exportLogs as $log) {
+            fputcsv($output, [
+                $log['id'],
+                $log['event_type'],
+                $log['actor_email'],
+                $log['ip_address'],
+                $log['user_agent'],
+                $log['details'],
+                $log['created_at'],
+            ], ',', '"', '', "\n");
+        }
+        fclose($output);
+    }
+    exit;
+}
+
+$totalPages = max(1, (int) ceil($totalLogs / $perPage));
 
 admin_header('Journal securite');
 ?>
@@ -109,12 +139,15 @@ admin_header('Journal securite');
             <?= e((string) $totalLogs) ?> evenement<?= $totalLogs > 1 ? 's' : '' ?> trouve<?= $totalLogs > 1 ? 's' : '' ?>.
             Page <?= e((string) $page) ?> / <?= e((string) $totalPages) ?>.
         </p>
-        <form method="post" action="/admin/security-logs/index.php" data-confirm="Nettoyer les logs et tentatives de connexion de plus de 90 jours ?">
-            <?= csrf_field() ?>
-            <input type="hidden" name="action" value="cleanup">
-            <input type="hidden" name="days" value="90">
-            <button class="btn-secondary !px-4 !py-2 !text-xs" type="submit">Nettoyer +90 jours</button>
-        </form>
+        <div class="flex flex-wrap gap-2">
+            <a class="btn-secondary !px-4 !py-2 !text-xs" href="<?= e('/admin/security-logs/index.php?' . http_build_query($queryParams + ['export' => 'csv'])) ?>">Exporter CSV</a>
+            <form method="post" action="/admin/security-logs/index.php" data-confirm="Nettoyer les logs et tentatives de connexion de plus de 90 jours ?">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="cleanup">
+                <input type="hidden" name="days" value="90">
+                <button class="btn-secondary !px-4 !py-2 !text-xs" type="submit">Nettoyer +90 jours</button>
+            </form>
+        </div>
     </div>
 
     <div class="overflow-hidden rounded-lg border border-white/10">

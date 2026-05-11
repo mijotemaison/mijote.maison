@@ -35,6 +35,11 @@ if (is_post()) {
             redirect('/connexion');
         }
 
+        if (admin_password_needs_rehash((string) $admin['password_hash'])) {
+            $repo->updatePasswordHash((int) $admin['id'], admin_password_hash($password));
+            record_security_event($pdo, 'password_rehashed', 'Hash du mot de passe admin mis a jour vers l algorithme courant.', (string) $admin['email']);
+        }
+
         login_admin($admin);
         record_security_event($pdo, 'login_success', 'Connexion administrateur reussie.', (string) $admin['email']);
         flash('success', 'Connexion réussie.');

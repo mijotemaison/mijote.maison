@@ -14,5 +14,6 @@ require_once BASE_PATH . '/app/security/headers.php';
 require_once BASE_PATH . '/app/security/auth.php';
 require_once BASE_PATH . '/app/security/csrf.php';
 
+enforce_https_in_production();
 start_secure_session();
 apply_security_headers();

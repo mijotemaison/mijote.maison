@@ -31,7 +31,7 @@ if (is_post()) {
                 $payload = [
                     'username' => $data['username'],
                     'email' => $data['email'],
-                    'password_hash' => $data['password'] !== '' ? password_hash($data['password'], PASSWORD_DEFAULT) : null,
+                    'password_hash' => $data['password'] !== '' ? admin_password_hash($data['password']) : null,
                 ];
                 $repo->update((int) $admin['id'], $payload);
                 if ((int) $admin['id'] === (int) ($_SESSION['admin_id'] ?? 0)) {

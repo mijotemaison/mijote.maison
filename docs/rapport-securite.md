@@ -45,29 +45,40 @@ Secure Recipes GRETA 92 est un site de recettes de cuisine concu comme une appli
 
 ### A. Authentification et hachage des mots de passe
 
-Technique : `password_hash()` et `password_verify()`.
+Technique : `password_hash()` avec Argon2id si disponible, `password_verify()` et rehash automatique.
 
 Menace : vol ou lecture directe des mots de passe si la base est compromise.
 
-Solution appliquee : les mots de passe admins sont haches. Le login compare le mot de passe saisi avec le hash stocke.
+Solution appliquee : les mots de passe admins sont haches via une fonction centrale. Les nouveaux mots de passe utilisent Argon2id quand PHP le supporte, avec fallback compatible. Le login compare le mot de passe saisi avec le hash stocke et peut re-hacher automatiquement un ancien hash après une connexion valide.
 
-Fichiers concernes : `admin/admins/create.php`, `admin/admins/edit.php`, `public/login.php`.
+Fichiers concernes : `app/security/auth.php`, `app/repositories/AdminRepository.php`, `admin/admins/create.php`, `admin/admins/edit.php`, `public/login.php`.
 
 Extrait reel :
 
 ```php
-$repo->create([
-    'username' => $data['username'],
-    'email' => $data['email'],
-    'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
-]);
+function admin_password_hash(string $password): string
+{
+    if (defined('PASSWORD_ARGON2ID')) {
+        return password_hash($password, PASSWORD_ARGON2ID, [
+            'memory_cost' => 65536,
+            'time_cost' => 3,
+            'threads' => 1,
+        ]);
+    }
+
+    return password_hash($password, PASSWORD_DEFAULT);
+}
 ```
 
 ```php
 $valid = $admin && password_verify($password, (string) $admin['password_hash']);
+
+if (admin_password_needs_rehash((string) $admin['password_hash'])) {
+    $repo->updatePasswordHash((int) $admin['id'], admin_password_hash($password));
+}
 ```
 
-Explication : `password_hash()` choisit un algorithme adapte par defaut. `password_verify()` evite de comparer manuellement le mot de passe.
+Explication : `password_hash()` applique un algorithme lent adapté aux mots de passe. Argon2id augmente le coût mémoire pour compliquer les attaques hors-ligne. `password_verify()` évite toute comparaison manuelle. Le rehash permet de moderniser progressivement un hash bcrypt existant sans bloquer l'administrateur.
 
 Limite restante : les identifiants de demonstration doivent etre changes en production.
 
@@ -77,9 +88,9 @@ Technique : cookies securises et regeneration d'identifiant de session.
 
 Menace : fixation de session et vol de cookie.
 
-Solution appliquee : session `HttpOnly`, `SameSite=Lax`, `Secure` si HTTPS et regeneration apres connexion.
+Solution appliquee : session `HttpOnly`, `SameSite=Lax`, `Secure` si HTTPS et regeneration apres connexion. En production, une requête HTTP en GET/HEAD est redirigée vers HTTPS ; une requête POST non HTTPS est refusée pour éviter de rejouer un formulaire sensible sur une URL différente.
 
-Fichiers concernes : `app/security/auth.php`.
+Fichiers concernes : `app/security/auth.php`, `app/security/headers.php`.
 
 Extrait reel :
 
@@ -102,7 +113,28 @@ function login_admin(array $admin): void
 }
 ```
 
-Limite restante : HTTPS doit etre force au niveau hebergeur en production.
+```php
+function enforce_https_in_production(): void
+{
+    if (!is_production() || request_is_https() || PHP_SAPI === 'cli') {
+        return;
+    }
+
+    $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+    if (!in_array($method, ['GET', 'HEAD'], true)) {
+        http_response_code(403);
+        echo 'HTTPS requis en production.';
+        exit;
+    }
+
+    $host = preg_replace('/[^A-Za-z0-9.:-]/', '', (string) ($_SERVER['HTTP_HOST'] ?? ''));
+    $requestUri = str_replace(["\r", "\n"], '', (string) ($_SERVER['REQUEST_URI'] ?? '/'));
+    header('Location: https://' . $host . $requestUri, true, 301);
+    exit;
+}
+```
+
+Limite restante : en production réelle, il faut aussi configurer HTTPS côté hébergeur avec un certificat valide.
 
 ### C. Protection XSS
 
@@ -498,7 +530,7 @@ Technique : expiration d'inactivité côté session PHP et table `security_logs`
 
 Menace : session administrateur laissée ouverte sur un poste partagé, absence de traçabilité sur les actions sensibles.
 
-Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail. Une page admin dédiée permet ensuite de filtrer ce journal, de le paginer et de nettoyer les anciennes entrées.
+Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail. Une page admin dédiée permet ensuite de filtrer ce journal, de le paginer, de l'exporter en CSV et de nettoyer les anciennes entrées.
 
 Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/repositories/LoginAttemptRepository.php`, `app/helpers/functions.php`, `admin/dashboard.php`, `admin/security-logs/index.php`, `database.sql`.
 
@@ -561,6 +593,17 @@ public function filtered(array $filters = [], int $limit = 20, int $offset = 0):
 }
 ```
 
+```php
+// admin/security-logs/index.php — export CSV réservé aux admins
+if (!$error && (string) ($_GET['export'] ?? '') === 'csv') {
+    $exportLogs = $securityLogRepo->filtered($filters, 5000, 0);
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    $output = fopen('php://output', 'w');
+    fputcsv($output, ['id', 'event_type', 'actor_email', 'ip_address', 'user_agent', 'details', 'created_at'], ',', '"', '', "\n");
+}
+```
+
 Limite restante : envoyer ces logs vers un service externe en production pour éviter qu'un attaquant ayant accès à la base puisse les effacer. Le nettoyage peut aussi être automatisé par cron en production.
 
 ## 5. Tests de securite realises
@@ -579,8 +622,11 @@ Limite restante : envoyer ces logs vers un service externe en production pour é
 - **Confirmation modale** : Escape annule, Enter confirme, Tab reste dans la modale (focus trap), bouton Annuler n'envoie aucune requête.
 - **Commentaire public** : insertion en `pending`, invisible côté public avant approbation admin.
 - **Journal sécurité** : duplication recette et login admin créent une entrée `security_logs`; la page `/admin/security-logs/index.php` filtre et pagine les événements.
+- **Export CSV journal** : `/admin/security-logs/index.php?export=csv` renvoie un fichier CSV après authentification admin.
 - **Nettoyage journal** : l'action de nettoyage est en POST + CSRF et supprime les logs/tentatives anciennes via requêtes préparées.
 - **Timeout session** : la session admin expire après 30 minutes d'inactivité.
+- **HTTPS production** : `APP_ENV=production` redirige les requêtes GET/HEAD HTTP vers HTTPS et refuse les POST HTTP.
+- **Argon2id / rehash** : connexion admin valide avec ancien hash déclenche un rehash vers l'algorithme courant si nécessaire.
 - Navigation responsive : Tailwind compilé localement.
 
 ## 6. Conclusion

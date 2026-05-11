@@ -93,6 +93,15 @@ final class AdminRepository
         ]);
     }
 
+    public function updatePasswordHash(int $id, string $passwordHash): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE admins SET password_hash = :password_hash, updated_at = NOW() WHERE id = :id');
+        $stmt->execute([
+            'id' => $id,
+            'password_hash' => $passwordHash,
+        ]);
+    }
+
     public function delete(int $id): void
     {
         $stmt = $this->pdo->prepare('DELETE FROM admins WHERE id = :id');

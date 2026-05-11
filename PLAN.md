@@ -239,6 +239,16 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Nettoyage journalise dans `security_logs` via `security_cleanup`.
 - [x] Tests finaux : lint PHP, build Tailwind, navigation admin journal, PDF regenere, commit/push.
 
+## Phase 17 - Durcissement production et export audit
+
+- [x] Redirection HTTPS forcee si `APP_ENV=production` et requete non HTTPS.
+- [x] Requetes POST non HTTPS refusees en production au lieu d'etre redirigees.
+- [x] Hachage admin centralise dans `admin_password_hash()`.
+- [x] Argon2id utilise pour les nouveaux mots de passe admin quand PHP le supporte.
+- [x] Rehash automatique des anciens hashes admin apres login valide si l'algorithme courant est plus fort.
+- [x] Export CSV du journal securite avec les filtres courants.
+- [x] Tests finaux : Argon2id, HTTPS prod, export CSV, lint, build CSS, PDF, commit/push.
+
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 
 ### Design system éditorial

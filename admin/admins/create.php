@@ -25,7 +25,7 @@ if (is_post()) {
                 $repo->create([
                     'username' => $data['username'],
                     'email' => $data['email'],
-                    'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
+                    'password_hash' => admin_password_hash($data['password']),
                 ]);
                 flash('success', 'Administrateur ajoute.');
                 redirect('/admin/admins/index.php');

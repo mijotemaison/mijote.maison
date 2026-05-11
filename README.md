@@ -47,6 +47,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Duplication d'une recette en brouillon.
 - Modération des commentaires : approuver, refuser, supprimer.
 - Journal sécurité complet `/admin/security-logs/index.php` avec filtres, pagination serveur et nettoyage des anciens événements.
+- Export CSV du journal sécurité avec les mêmes filtres que l'écran.
 - Upload sécurisé des images de recettes.
 - CRUD complet des administrateurs avec **recherche live** + **pagination**.
 - Blocage de la suppression du dernier administrateur.
@@ -71,10 +72,12 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 
 ## Sécurité appliquée
 
-- Mots de passe hachés avec `password_hash()`.
+- Mots de passe hachés avec `password_hash()` en Argon2id si disponible, avec fallback compatible.
 - Vérification avec `password_verify()`.
+- Réhachage automatique des anciens hashes admin au login quand l'algorithme courant est plus fort.
 - Régénération de session après connexion (`session_regenerate_id(true)`).
 - Cookies de session `HttpOnly`, `SameSite=Lax`, `Secure` si HTTPS.
+- Redirection HTTPS forcée quand `APP_ENV=production`.
 - Headers de sécurité et **CSP avec nonce par requête** dans `app/security/headers.php` :
   `default-src 'self'; script-src 'self' 'nonce-{nonce}'; style-src 'self' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; ...`
 - Requêtes SQL préparées dans les repositories.
@@ -86,7 +89,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Construction DOM par API (pas d'`innerHTML` côté JS) — modale custom 100 % résistante aux injections.
 - Protection self-delete admin (UI + serveur).
 - Timeout de session admin après 30 minutes d'inactivité.
-- Journal de sécurité `security_logs` pour connexions et actions sensibles, avec page admin dédiée et nettoyage des anciennes tentatives.
+- Journal de sécurité `security_logs` pour connexions et actions sensibles, avec page admin dédiée, export CSV et nettoyage des anciennes tentatives.
 
 ## Accessibilité
 
@@ -207,10 +210,9 @@ Les vrais fichiers admin restent dans `admin/`. Les fichiers `public/admin/*` so
 
 ## Prochaines améliorations
 
-- Forcer HTTPS en production.
 - Ajouter tests PHPUnit (Repository + Security).
 - Audit Lighthouse complet (cible : Perf > 90, A11y > 95, SEO > 95).
 - Automatiser le nettoyage des logs via cron Railway ou tâche serveur.
 - 2FA TOTP pour les admins.
-- Export CSV du journal sécurité pour audit externe.
-- Argon2id en remplacement de bcrypt par défaut.
+- Export CSV enrichi avec plage de dates.
+- Journal externe type SIEM pour une vraie production.

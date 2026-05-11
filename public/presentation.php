@@ -133,7 +133,7 @@ PHP,
         'title' => 'La partie administrateur',
         'lead' => 'Le back-office permet de gérer les recettes et les administrateurs après connexion.',
         'oral' => 'Toutes les actions sensibles passent par des formulaires POST avec CSRF. Le public ne peut pas créer, modifier ou supprimer.',
-        'points' => ['Dashboard avec statistiques et journal sécurité.', 'CRUD recettes avec upload image.', 'Aperçu avant publication et duplication en brouillon.', 'Modération des commentaires lecteurs.', 'Journal sécurité filtrable avec nettoyage des anciens événements.'],
+        'points' => ['Dashboard avec statistiques et journal sécurité.', 'CRUD recettes avec upload image.', 'Aperçu avant publication et duplication en brouillon.', 'Modération des commentaires lecteurs.', 'Journal sécurité filtrable avec export CSV et nettoyage des anciens événements.'],
         'files' => ['admin/dashboard.php', 'admin/recipes/*', 'admin/comments/index.php', 'admin/security-logs/index.php', 'app/repositories/SecurityLogRepository.php'],
         'test' => 'Vérification : accès /admin/dashboard.php sans session redirige vers /connexion ; duplication crée un brouillon et écrit un log consultable dans /admin/security-logs/index.php.',
     ],
@@ -141,9 +141,9 @@ PHP,
         'kicker' => 'Authentification',
         'title' => 'Protéger l’accès admin',
         'lead' => 'Le mot de passe n’est jamais stocké en clair, et la session est régénérée après connexion.',
-        'oral' => 'La connexion vérifie un hash avec password_verify. Ensuite login_admin() régénère l’identifiant de session pour limiter la fixation de session.',
-        'points' => ['password_hash() utilisé pour créer les mots de passe.', 'password_verify() utilisé au login.', 'session_regenerate_id(true) après succès.', 'require_admin() protège les pages admin.'],
-        'files' => ['public/login.php', 'app/security/auth.php', 'admin/*'],
+        'oral' => 'La connexion vérifie un hash avec password_verify. Ensuite login_admin() régénère l’identifiant de session pour limiter la fixation de session. Les anciens hashes peuvent être réhachés automatiquement vers l’algorithme courant.',
+        'points' => ['Argon2id utilisé pour les nouveaux mots de passe si disponible.', 'password_verify() utilisé au login.', 'Rehash automatique si un ancien hash est détecté.', 'session_regenerate_id(true) après succès.', 'require_admin() protège les pages admin.'],
+        'files' => ['public/login.php', 'app/security/auth.php', 'admin/admins/*'],
         'code' => [
             [
                 'title' => 'Vérification du mot de passe hashé',
@@ -155,6 +155,10 @@ $valid = $admin && password_verify($password, (string) $admin['password_hash']);
 if (!$valid) {
     flash('error', 'Identifiants invalides.');
     redirect('/connexion');
+}
+
+if (admin_password_needs_rehash((string) $admin['password_hash'])) {
+    $repo->updatePasswordHash((int) $admin['id'], admin_password_hash($password));
 }
 
 login_admin($admin);
