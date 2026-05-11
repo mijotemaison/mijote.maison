@@ -14,7 +14,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - MySQL.
 - PDO avec requêtes préparées.
 - HTML.
-- JavaScript vanilla (3 fichiers : `presentation.js`, `recipes.js`, `admin.js`, `toasts.js`).
+- JavaScript vanilla (4 fichiers : `presentation.js`, `recipes.js`, `admin.js`, `toasts.js`).
 - Tailwind CSS 3.4 compilé localement.
 - Google Fonts (Fraunces + Inter + JetBrains Mono) servis via une CSP nonce.
 - Front controller léger (`public/router.php`) + URLs propres compatibles Apache/MAMP.
@@ -46,6 +46,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Aperçu admin avant publication.
 - Duplication d'une recette en brouillon.
 - Modération des commentaires : approuver, refuser, supprimer.
+- Journal sécurité complet `/admin/security-logs/index.php` avec filtres, pagination serveur et nettoyage des anciens événements.
 - Upload sécurisé des images de recettes.
 - CRUD complet des administrateurs avec **recherche live** + **pagination**.
 - Blocage de la suppression du dernier administrateur.
@@ -66,6 +67,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Recettes populaires par compteur `view_count`.
 - Impression recette optimisée via CSS `@media print`.
 - Aperçu avant publication et duplication en brouillon côté back-office.
+- Journal sécurité consultable et filtrable par type d'événement, recherche libre, IP ou acteur.
 
 ## Sécurité appliquée
 
@@ -84,7 +86,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Construction DOM par API (pas d'`innerHTML` côté JS) — modale custom 100 % résistante aux injections.
 - Protection self-delete admin (UI + serveur).
 - Timeout de session admin après 30 minutes d'inactivité.
-- Journal de sécurité `security_logs` pour connexions et actions sensibles.
+- Journal de sécurité `security_logs` pour connexions et actions sensibles, avec page admin dédiée et nettoyage des anciennes tentatives.
 
 ## Accessibilité
 
@@ -208,7 +210,7 @@ Les vrais fichiers admin restent dans `admin/`. Les fichiers `public/admin/*` so
 - Forcer HTTPS en production.
 - Ajouter tests PHPUnit (Repository + Security).
 - Audit Lighthouse complet (cible : Perf > 90, A11y > 95, SEO > 95).
-- Ajouter rotation/nettoyage planifié des tentatives de connexion anciennes.
+- Automatiser le nettoyage des logs via cron Railway ou tâche serveur.
 - 2FA TOTP pour les admins.
-- Audit log persistant (qui a fait quoi, quand).
+- Export CSV du journal sécurité pour audit externe.
 - Argon2id en remplacement de bcrypt par défaut.

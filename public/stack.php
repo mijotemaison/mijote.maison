@@ -10,7 +10,7 @@ $stackItems = [
     ['PDO', 'Fait le lien sécurisé entre PHP et MySQL avec des requêtes préparées.'],
     ['HTML', 'Structure les pages publiques, les formulaires et les tableaux du back-office.'],
     ['Tailwind CSS', 'Gère l’identité visuelle, les grilles responsive, les cartes et les formulaires.'],
-    ['JavaScript vanilla', 'Ajoute la recherche de recettes, les filtres, le carrousel et la copie des extraits de code.'],
+    ['JavaScript vanilla', 'Ajoute la recherche de recettes, les filtres, le carrousel, les confirmations admin et la copie des extraits de code.'],
     ['Sessions PHP', 'Gardent l’état de connexion admin avec cookies HttpOnly et SameSite.'],
     ['Front controller', 'Centralise les URLs propres : /recettes, /recette/slug, /connexion, /presentation et /stack.'],
     ['Apache / .htaccess', 'Permet sous MAMP de rediriger les URLs propres vers le routeur quand le fichier demandé n’existe pas.'],
@@ -19,9 +19,10 @@ $stackItems = [
 
 $responsibilities = [
     ['Front-office', 'Pages publiques pour consulter les recettes : accueil, liste, détail et présentation.'],
-    ['Back-office', 'Zone admin protégée pour créer, modifier et supprimer recettes et administrateurs.'],
+    ['Back-office', 'Zone admin protégée pour créer, modifier et supprimer recettes et administrateurs, modérer les commentaires et consulter le journal sécurité.'],
     ['Router', 'public/router.php joue le rôle de front controller léger et envoie chaque URL vers la bonne page PHP, par exemple /recettes ou /recette/{slug}.'],
     ['Base de données', 'Tables admins, recipes, recipe_ratings, recipe_comments, security_logs et login_attempts importées depuis database.sql.'],
+    ['Audit', 'La table security_logs garde les connexions et actions sensibles; la page admin Journal permet filtrage, pagination et nettoyage.'],
     ['Repositories', 'Classes PHP qui exécutent les requêtes SQL préparées avec PDO.'],
     ['Validation', 'Contrôles serveur sur les champs recettes et administrateurs avant écriture en base.'],
     ['Sécurité', 'Protection XSS, SQLi, CSRF, brute force, sessions et upload image.'],

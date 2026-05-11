@@ -52,4 +52,13 @@ final class LoginAttemptRepository
 
         return $stmt->fetchAll();
     }
+
+    public function deleteOlderThanDays(int $days): int
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM login_attempts WHERE created_at < DATE_SUB(NOW(), INTERVAL :days DAY)');
+        $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->rowCount();
+    }
 }

@@ -84,7 +84,10 @@ admin_header('Dashboard');
             </div>
         </section>
         <section class="panel-card p-5 lg:col-span-2">
-            <h2 class="text-xl font-semibold text-white">Journal securite recent</h2>
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <h2 class="text-xl font-semibold text-white">Journal securite recent</h2>
+                <a class="text-sm font-semibold text-cyan-200 hover:text-white" href="/admin/security-logs/index.php">Voir tout le journal</a>
+            </div>
             <div class="mt-4 grid gap-3 lg:grid-cols-2">
                 <?php if (!$latestSecurityLogs): ?>
                     <p class="text-sm text-slate-400">Aucun evenement securite enregistre.</p>

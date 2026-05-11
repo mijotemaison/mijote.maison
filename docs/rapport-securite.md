@@ -498,9 +498,9 @@ Technique : expiration d'inactivité côté session PHP et table `security_logs`
 
 Menace : session administrateur laissée ouverte sur un poste partagé, absence de traçabilité sur les actions sensibles.
 
-Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail.
+Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail. Une page admin dédiée permet ensuite de filtrer ce journal, de le paginer et de nettoyer les anciennes entrées.
 
-Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/helpers/functions.php`, `admin/dashboard.php`, `database.sql`.
+Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/repositories/LoginAttemptRepository.php`, `app/helpers/functions.php`, `admin/dashboard.php`, `admin/security-logs/index.php`, `database.sql`.
 
 Extrait réel :
 
@@ -543,7 +543,25 @@ function record_security_event(PDO $pdo, string $eventType, string $details, ?st
 }
 ```
 
-Limite restante : envoyer ces logs vers un service externe en production pour éviter qu'un attaquant ayant accès à la base puisse les effacer.
+```php
+// app/repositories/SecurityLogRepository.php — filtrage prepare
+public function filtered(array $filters = [], int $limit = 20, int $offset = 0): array
+{
+    [$where, $params] = $this->filteredQueryParts($filters);
+    $sql = 'SELECT * FROM security_logs' . $where . ' ORDER BY created_at DESC, id DESC LIMIT :limit OFFSET :offset';
+    $stmt = $this->pdo->prepare($sql);
+    foreach ($params as $name => $value) {
+        $stmt->bindValue($name, $value);
+    }
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll();
+}
+```
+
+Limite restante : envoyer ces logs vers un service externe en production pour éviter qu'un attaquant ayant accès à la base puisse les effacer. Le nettoyage peut aussi être automatisé par cron en production.
 
 ## 5. Tests de securite realises
 
@@ -560,7 +578,8 @@ Limite restante : envoyer ces logs vers un service externe en production pour é
 - **Tentative d'auto-suppression admin** (curl POST avec id du compte courant) : refusée serveur avec flash explicite.
 - **Confirmation modale** : Escape annule, Enter confirme, Tab reste dans la modale (focus trap), bouton Annuler n'envoie aucune requête.
 - **Commentaire public** : insertion en `pending`, invisible côté public avant approbation admin.
-- **Journal sécurité** : duplication recette et login admin créent une entrée `security_logs`.
+- **Journal sécurité** : duplication recette et login admin créent une entrée `security_logs`; la page `/admin/security-logs/index.php` filtre et pagine les événements.
+- **Nettoyage journal** : l'action de nettoyage est en POST + CSRF et supprime les logs/tentatives anciennes via requêtes préparées.
 - **Timeout session** : la session admin expire après 30 minutes d'inactivité.
 - Navigation responsive : Tailwind compilé localement.
 

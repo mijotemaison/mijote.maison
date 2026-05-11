@@ -31,21 +31,21 @@ Le sujet officiel PDF est present dans le dossier sous le nom `00-sujet-final-an
 
 ## Grille d'evaluation transformee en checklist
 
-- [ ] Architecture generale claire front-office / back-office / app : 3 pts.
-- [ ] Page d'accueil avec recettes, navigation et aucune action sensible publique : 2 pts.
-- [ ] Page recette complete et lisible avec donnees base : 2 pts.
-- [ ] Page de connexion fonctionnelle avec erreurs propres et acces restreint : 2 pts.
-- [ ] CRUD recettes complet : 3 pts.
-- [ ] CRUD administrateurs complet : 2 pts.
-- [ ] Authentification securisee, mots de passe haches, sessions protegees : 4 pts.
-- [ ] Protection SQLi par PDO prepare/execute partout : 4 pts.
-- [ ] Protection XSS par validation, echappement et absence de HTML utilisateur : 4 pts.
-- [ ] CSP coherente : 2 pts.
-- [ ] Protection CSRF sur formulaires sensibles : 4 pts.
-- [ ] Protection brute force avec journalisation et blocage temporaire : 3 pts.
-- [ ] Upload securise : MIME, extension, taille, nom aleatoire, pas d'execution : 3 pts.
-- [ ] Qualite du code : lisibilite, organisation, commentaires utiles : 3 pts.
-- [ ] Documentation securite claire avec extraits reels : 4 pts.
+- [x] Architecture generale claire front-office / back-office / app : 3 pts.
+- [x] Page d'accueil avec recettes, navigation et aucune action sensible publique : 2 pts.
+- [x] Page recette complete et lisible avec donnees base : 2 pts.
+- [x] Page de connexion fonctionnelle avec erreurs propres et acces restreint : 2 pts.
+- [x] CRUD recettes complet : 3 pts.
+- [x] CRUD administrateurs complet : 2 pts.
+- [x] Authentification securisee, mots de passe haches, sessions protegees : 4 pts.
+- [x] Protection SQLi par PDO prepare/execute partout : 4 pts.
+- [x] Protection XSS par validation, echappement et absence de HTML utilisateur : 4 pts.
+- [x] CSP coherente : 2 pts.
+- [x] Protection CSRF sur formulaires sensibles : 4 pts.
+- [x] Protection brute force avec journalisation et blocage temporaire : 3 pts.
+- [x] Upload securise : MIME, extension, taille, nom aleatoire, pas d'execution : 3 pts.
+- [x] Qualite du code : lisibilite, organisation, commentaires utiles : 3 pts.
+- [x] Documentation securite claire avec extraits reels : 4 pts.
 
 ## Plan d'execution
 
@@ -127,10 +127,10 @@ Le sujet officiel PDF est present dans le dossier sous le nom `00-sujet-final-an
 
 ### Phase 10 - Git
 
-- [ ] Initialiser/configurer Git si necessaire.
-- [ ] Ajouter le remote GitHub.
-- [ ] Commit final.
-- [ ] Push vers la branche principale detectee.
+- [x] Initialiser/configurer Git si necessaire.
+- [x] Ajouter le remote GitHub.
+- [x] Commit final.
+- [x] Push vers la branche principale detectee.
 
 ## Choix techniques
 
@@ -227,6 +227,17 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Table `security_logs` + journalisation login, commentaires, duplication et suppression recette.
 - [x] Dashboard enrichi avec journal securite recent.
 - [x] Tests : vue incremente `view_count`, page a propos OK, preview admin OK, duplication cree un brouillon, log securite cree.
+
+## Phase 16 - Journal securite complet et nettoyage
+
+- [x] Page admin `/admin/security-logs/index.php` ajoutee.
+- [x] Filtres serveur par type d'evenement et recherche libre.
+- [x] Pagination serveur du journal securite avec requetes preparees.
+- [x] Lien "Journal" ajoute au menu admin.
+- [x] Dashboard relie vers le journal complet.
+- [x] Nettoyage manuel protege par CSRF des logs et tentatives login de plus de 90 jours.
+- [x] Nettoyage journalise dans `security_logs` via `security_cleanup`.
+- [x] Tests finaux : lint PHP, build Tailwind, navigation admin journal, PDF regenere, commit/push.
 
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 

@@ -31,4 +31,76 @@ final class SecurityLogRepository
 
         return $stmt->fetchAll();
     }
+
+    public function eventTypes(): array
+    {
+        $stmt = $this->pdo->prepare('SELECT DISTINCT event_type FROM security_logs ORDER BY event_type ASC');
+        $stmt->execute();
+
+        return array_map(static fn (array $row): string => (string) $row['event_type'], $stmt->fetchAll());
+    }
+
+    public function countFiltered(array $filters = []): int
+    {
+        [$where, $params] = $this->filteredQueryParts($filters);
+        $sql = 'SELECT COUNT(*) FROM security_logs' . $where;
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $name => $value) {
+            $stmt->bindValue($name, $value);
+        }
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function filtered(array $filters = [], int $limit = 20, int $offset = 0): array
+    {
+        [$where, $params] = $this->filteredQueryParts($filters);
+        $sql = 'SELECT * FROM security_logs' . $where . ' ORDER BY created_at DESC, id DESC LIMIT :limit OFFSET :offset';
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $name => $value) {
+            $stmt->bindValue($name, $value);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public function deleteOlderThanDays(int $days): int
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM security_logs WHERE created_at < DATE_SUB(NOW(), INTERVAL :days DAY)');
+        $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->rowCount();
+    }
+
+    private function filteredQueryParts(array $filters): array
+    {
+        $conditions = [];
+        $params = [];
+
+        $eventType = trim((string) ($filters['event_type'] ?? ''));
+        if ($eventType !== '') {
+            $conditions[] = 'event_type = :event_type';
+            $params[':event_type'] = $eventType;
+        }
+
+        $query = trim((string) ($filters['q'] ?? ''));
+        if ($query !== '') {
+            $conditions[] = '(actor_email LIKE :query_actor OR ip_address LIKE :query_ip OR user_agent LIKE :query_agent OR details LIKE :query_details)';
+            $likeQuery = '%' . $query . '%';
+            $params[':query_actor'] = $likeQuery;
+            $params[':query_ip'] = $likeQuery;
+            $params[':query_agent'] = $likeQuery;
+            $params[':query_details'] = $likeQuery;
+        }
+
+        return [
+            $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '',
+            $params,
+        ];
+    }
 }
