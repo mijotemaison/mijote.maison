@@ -55,19 +55,19 @@ public_header('Explication de la stack');
             <div class="mt-6 grid gap-3 text-center text-sm font-extrabold text-stone-700">
                 <div class="rounded-2xl bg-orange-50 p-4">Visiteur ou admin</div>
                 <div class="text-tomato">↓ requête HTTP</div>
-                <div class="rounded-2xl bg-white p-4 shadow-sm">Apache/MAMP ou serveur PHP envoie vers public/index.php</div>
+                <div class="rounded-2xl bg-white p-4 shadow-sm">Apache/MAMP, XAMPP ou LAMP envoie vers public/index.php</div>
                 <div class="text-tomato">↓ AltoRouter</div>
-                <div class="rounded-2xl bg-white p-4 shadow-sm">Controller prépare la page ou le formulaire</div>
+                <div class="rounded-2xl bg-white p-4 shadow-sm">Controller choisit la logique et charge la vue</div>
                 <div class="text-tomato">↓ appels internes</div>
                 <div class="grid gap-3 sm:grid-cols-3">
-                    <div class="rounded-2xl bg-emerald-50 p-4">Model</div>
+                    <div class="rounded-2xl bg-emerald-50 p-4">Model / Repository PDO</div>
                     <div class="rounded-2xl bg-emerald-50 p-4">Sécurité</div>
                     <div class="rounded-2xl bg-emerald-50 p-4">Validation</div>
                 </div>
                 <div class="text-tomato">↓ requêtes préparées PDO</div>
                 <div class="rounded-2xl bg-orange-50 p-4">MySQL stocke et renvoie les données</div>
                 <div class="text-tomato">↓ affichage</div>
-                <div class="rounded-2xl bg-white p-4 shadow-sm">HTML + Tailwind + données échappées avec e()</div>
+                <div class="rounded-2xl bg-white p-4 shadow-sm">Vue PHP + HTML/Tailwind + données échappées avec e()</div>
             </div>
         </div>
     </div>
