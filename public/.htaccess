@@ -5,7 +5,7 @@ DirectoryIndex index.php
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ router.php [QSA,L]
+    RewriteRule ^ index.php [QSA,L]
 </IfModule>
 
 <IfModule mod_headers.c>

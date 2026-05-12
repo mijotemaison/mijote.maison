@@ -21,7 +21,11 @@ Secure Recipes GRETA 92 est un site de recettes de cuisine concu comme une appli
 
 ## 2. Architecture
 
-- `public/` : accueil, detail recette, login, logout, presentation, assets.
+- `public/index.php` : front controller AltoRouter pour les URLs propres.
+- `public/` : wrappers `.php` compatibles, presentation, stack, assets.
+- `src/Controller/` : controleurs MVC publics.
+- `src/Model/` : modeles publics deleguant aux repositories.
+- `src/Vues/` : templates PHP du front-office.
 - `admin/` : dashboard, CRUD recettes, CRUD administrateurs.
 - `public/admin/` : wrappers compatibles avec une racine web `public/` pour exposer les URLs `/admin/...`.
 - `app/config/` : configuration applicative et connexion PDO.
@@ -33,7 +37,7 @@ Secure Recipes GRETA 92 est un site de recettes de cuisine concu comme une appli
 
 ## 3. Fonctionnalites
 
-- Accueil public avec hero, badges securite et liste des recettes.
+- Accueil public avec hero, presentation du site et apercu des recettes.
 - Detail recette avec titre, image, description, ingredients et preparation.
 - Connexion admin sans inscription publique.
 - Dashboard admin avec compteurs et tentatives echouees recentes.
@@ -51,7 +55,7 @@ Menace : vol ou lecture directe des mots de passe si la base est compromise.
 
 Solution appliquee : les mots de passe admins sont haches via une fonction centrale. Les nouveaux mots de passe utilisent Argon2id quand PHP le supporte, avec fallback compatible. Le login compare le mot de passe saisi avec le hash stocke et peut re-hacher automatiquement un ancien hash après une connexion valide.
 
-Fichiers concernes : `app/security/auth.php`, `app/repositories/AdminRepository.php`, `admin/admins/create.php`, `admin/admins/edit.php`, `public/login.php`.
+Fichiers concernes : `app/security/auth.php`, `src/Controller/AuthController.php`, `app/repositories/AdminRepository.php`, `admin/admins/create.php`, `admin/admins/edit.php`.
 
 Extrait reel :
 
@@ -74,7 +78,7 @@ function admin_password_hash(string $password): string
 $valid = $admin && password_verify($password, (string) $admin['password_hash']);
 
 if (admin_password_needs_rehash((string) $admin['password_hash'])) {
-    $repo->updatePasswordHash((int) $admin['id'], admin_password_hash($password));
+    $adminModel->updatePasswordHash((int) $admin['id'], admin_password_hash($password));
 }
 ```
 
@@ -144,7 +148,7 @@ Menace : execution de JavaScript injecte dans une recette ou un compte admin.
 
 Solution appliquee : toutes les donnees affichees depuis la base passent par `e()`.
 
-Fichiers concernes : `app/helpers/functions.php`, `public/index.php`, `public/recipe.php`, `admin/*`.
+Fichiers concernes : `app/helpers/functions.php`, `src/Vues/home.tpl.php`, `src/Vues/recipe.tpl.php`, `admin/*`.
 
 Extrait reel :
 
@@ -156,7 +160,7 @@ function e(mixed $value): string
 ```
 
 ```php
-<h1 class="mt-5 text-4xl font-bold text-white"><?= e($recipe['title']) ?></h1>
+<h1 class="mt-6 max-w-4xl font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-7xl"><?= e($recipe['title']) ?></h1>
 ```
 
 Limite restante : si un jour du HTML enrichi est autorise, il faudra ajouter une liste blanche stricte.
@@ -171,7 +175,7 @@ Solution appliquée : CSP `default-src 'self'`, `script-src 'self' 'nonce-{nonce
 
 Le nonce est généré via `random_bytes(16)` à chaque requête (helper `csp_nonce()`) et n'est jamais réutilisé. Les rares scripts inline indispensables (JSON-LD `Recipe`) portent l'attribut `nonce="<?= e(csp_nonce()) ?>"` ; tout script inline non noncé est rejeté par le navigateur.
 
-Fichiers concernés : `app/security/headers.php`, `app/bootstrap.php`, `public/recipe.php` (JSON-LD avec nonce).
+Fichiers concernés : `app/security/headers.php`, `app/bootstrap.php`, `src/Controller/RecipeController.php` (JSON-LD avec nonce).
 
 Extrait réel :
 
@@ -202,7 +206,7 @@ function apply_security_headers(): void
 ```
 
 ```php
-// public/recipe.php — JSON-LD Recipe SEO avec nonce CSP
+// src/Controller/RecipeController.php — JSON-LD Recipe SEO avec nonce CSP
 echo '<script type="application/ld+json" nonce="' . e(csp_nonce()) . '">'
     . json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
     . '</script>';
@@ -261,7 +265,7 @@ Menace : forcer un admin connecte a executer une action sensible.
 
 Solution appliquee : les formulaires de connexion, creation, modification et suppression incluent un token.
 
-Fichiers concernes : `app/security/csrf.php`, `public/login.php`, `admin/recipes/*`, `admin/admins/*`.
+Fichiers concernes : `app/security/csrf.php`, `src/Controller/AuthController.php`, `admin/recipes/*`, `admin/admins/*`.
 
 Extrait reel :
 
@@ -295,7 +299,7 @@ Menace : tentative automatisee de deviner le mot de passe admin.
 
 Solution appliquee : apres 5 echecs sur 15 minutes par email ou IP, la connexion est temporairement refusee.
 
-Fichiers concernes : `app/security/brute_force.php`, `app/repositories/LoginAttemptRepository.php`, `public/login.php`.
+Fichiers concernes : `app/security/brute_force.php`, `src/Controller/AuthController.php`, `app/repositories/LoginAttemptRepository.php`.
 
 Extrait reel :
 
@@ -491,12 +495,12 @@ Menace : XSS via commentaires, spam public, modification non autorisée des avis
 
 Solution appliquée : les notes utilisent une empreinte visiteur hashée (`public_actor_hash`) avec une clé unique par recette/visiteur. Les commentaires publics sont insérés avec le statut `pending` et ne sont affichés côté front-office que lorsqu'un administrateur les passe en `approved`. Les actions admin de modération passent par POST et CSRF.
 
-Fichiers concernés : `public/recipe.php`, `app/repositories/RecipeInteractionRepository.php`, `admin/comments/index.php`, `database.sql`.
+Fichiers concernés : `src/Controller/RecipeController.php`, `src/Vues/recipe.tpl.php`, `app/repositories/RecipeInteractionRepository.php`, `admin/comments/index.php`, `database.sql`.
 
 Extrait réel :
 
 ```php
-// public/recipe.php — commentaire public en attente
+// src/Controller/RecipeController.php — commentaire public en attente
 if ($authorName === '' || mb_strlen($authorName) > 80) {
     flash('error', 'Le nom est obligatoire et limite a 80 caracteres.');
 } elseif (mb_strlen($content) < 5 || mb_strlen($content) > 800) {

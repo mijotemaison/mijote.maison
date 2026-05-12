@@ -12,15 +12,19 @@ $stackItems = [
     ['Tailwind CSS', 'Gère l’identité visuelle, les grilles responsive, les cartes et les formulaires.'],
     ['JavaScript vanilla', 'Ajoute la recherche de recettes, les filtres, le carrousel, les confirmations admin et la copie des extraits de code.'],
     ['Sessions PHP', 'Gardent l’état de connexion admin avec cookies HttpOnly, SameSite et Secure si HTTPS.'],
-    ['Front controller', 'Centralise les URLs propres : /recettes, /recette/slug, /connexion, /presentation et /stack.'],
-    ['Apache / .htaccess', 'Permet sous MAMP de rediriger les URLs propres vers le routeur quand le fichier demandé n’existe pas.'],
+    ['Front controller', 'public/index.php centralise les URLs propres avec AltoRouter : /recettes, /recette/slug, /connexion, /presentation et /stack.'],
+    ['AltoRouter', 'Associe une URL et une méthode HTTP à une méthode de contrôleur, comme dans le support du prof.'],
+    ['Apache / .htaccess', 'Permet sous MAMP de rediriger les URLs propres vers public/index.php quand le fichier demandé n’existe pas.'],
+    ['src/Controller', 'Prépare les données et choisit la vue à afficher pour les pages publiques.'],
+    ['src/Model', 'Fournit des modèles métier simples qui appellent les repositories PDO existants.'],
+    ['src/Vues', 'Contient les templates PHP affichant le HTML public.'],
     ['app/security', 'Regroupe CSRF, authentification, brute force, upload sécurisé et headers HTTP.'],
 ];
 
 $responsibilities = [
     ['Front-office', 'Pages publiques pour consulter les recettes : accueil, liste, détail et présentation.'],
     ['Back-office', 'Zone admin protégée pour créer, modifier et supprimer recettes et administrateurs, modérer les commentaires et consulter le journal sécurité.'],
-    ['Router', 'public/router.php joue le rôle de front controller léger et envoie chaque URL vers la bonne page PHP, par exemple /recettes ou /recette/{slug}.'],
+    ['Router', 'public/index.php utilise AltoRouter pour envoyer chaque URL vers un contrôleur, par exemple RecipeController::show pour /recette/{slug}.'],
     ['Base de données', 'Tables admins, recipes, recipe_ratings, recipe_comments, security_logs et login_attempts importées depuis database.sql.'],
     ['Audit', 'La table security_logs garde les connexions et actions sensibles; la page admin Journal permet filtrage, export CSV et nettoyage, et un script CLI automatise la retention.'],
     ['Repositories', 'Classes PHP qui exécutent les requêtes SQL préparées avec PDO.'],
@@ -49,14 +53,14 @@ public_header('Explication de la stack');
             <div class="mt-6 grid gap-3 text-center text-sm font-extrabold text-stone-700">
                 <div class="rounded-2xl bg-orange-50 p-4">Visiteur ou admin</div>
                 <div class="text-tomato">↓ requête HTTP</div>
-                <div class="rounded-2xl bg-white p-4 shadow-sm">Apache/MAMP ou serveur PHP envoie vers public/router.php</div>
-                <div class="text-tomato">↓ route propre</div>
-                <div class="rounded-2xl bg-white p-4 shadow-sm">PHP traite la page ou le formulaire</div>
+                <div class="rounded-2xl bg-white p-4 shadow-sm">Apache/MAMP ou serveur PHP envoie vers public/index.php</div>
+                <div class="text-tomato">↓ AltoRouter</div>
+                <div class="rounded-2xl bg-white p-4 shadow-sm">Controller prépare la page ou le formulaire</div>
                 <div class="text-tomato">↓ appels internes</div>
                 <div class="grid gap-3 sm:grid-cols-3">
+                    <div class="rounded-2xl bg-emerald-50 p-4">Model</div>
                     <div class="rounded-2xl bg-emerald-50 p-4">Sécurité</div>
                     <div class="rounded-2xl bg-emerald-50 p-4">Validation</div>
-                    <div class="rounded-2xl bg-emerald-50 p-4">Repositories</div>
                 </div>
                 <div class="text-tomato">↓ requêtes préparées PDO</div>
                 <div class="rounded-2xl bg-orange-50 p-4">MySQL stocke et renvoie les données</div>
@@ -71,21 +75,21 @@ public_header('Explication de la stack');
     <div class="grid gap-6 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
         <div>
             <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Méthode du prof</p>
-            <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">MAMP, Apache, front controller et MVC adapté.</h2>
-            <p class="mt-4 leading-8 text-stone-700">Le cours montre une architecture avec un point d’entrée unique, une réécriture d’URL via Apache et une séparation Controller / Model / Vue. Le projet reprend cette logique sans casser le code déjà sécurisé.</p>
+            <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">MAMP, Apache, front controller et MVC classique.</h2>
+            <p class="mt-4 leading-8 text-stone-700">Le cours montre une architecture avec un point d’entrée unique, une réécriture d’URL via Apache et une séparation Controller / Model / Vue. Le projet suit maintenant cette logique sur le front-office public.</p>
         </div>
         <div class="grid gap-4">
             <article class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
                 <h3 class="font-serif text-2xl font-bold text-stone-950">Front controller</h3>
-                <p class="mt-2 leading-7 text-stone-600"><code class="rounded bg-orange-50 px-2 py-1">public/router.php</code> reçoit les URLs propres et charge la page correspondante. Exemple : <code class="rounded bg-orange-50 px-2 py-1">/recette/veloute-de-potimarron</code> charge <code class="rounded bg-orange-50 px-2 py-1">public/recipe.php</code> avec le slug.</p>
+                <p class="mt-2 leading-7 text-stone-600"><code class="rounded bg-orange-50 px-2 py-1">public/index.php</code> reçoit les URLs propres et utilise <code class="rounded bg-orange-50 px-2 py-1">AltoRouter</code>. Exemple : <code class="rounded bg-orange-50 px-2 py-1">/recette/veloute-de-potimarron</code> appelle <code class="rounded bg-orange-50 px-2 py-1">RecipeController::show()</code>.</p>
             </article>
             <article class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
                 <h3 class="font-serif text-2xl font-bold text-stone-950">Apache / MAMP</h3>
-                <p class="mt-2 leading-7 text-stone-600"><code class="rounded bg-orange-50 px-2 py-1">public/.htaccess</code> active <code class="rounded bg-orange-50 px-2 py-1">mod_rewrite</code> : si l’URL ne correspond pas à un vrai fichier, Apache l’envoie au routeur. Sur MAMP, le DocumentRoot doit pointer vers <code class="rounded bg-orange-50 px-2 py-1">public/</code>.</p>
+                <p class="mt-2 leading-7 text-stone-600"><code class="rounded bg-orange-50 px-2 py-1">public/.htaccess</code> active <code class="rounded bg-orange-50 px-2 py-1">mod_rewrite</code> : si l’URL ne correspond pas à un vrai fichier, Apache l’envoie à <code class="rounded bg-orange-50 px-2 py-1">public/index.php</code>. Sur MAMP, le DocumentRoot doit pointer vers <code class="rounded bg-orange-50 px-2 py-1">public/</code>.</p>
             </article>
             <article class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
-                <h3 class="font-serif text-2xl font-bold text-stone-950">Équivalence MVC</h3>
-                <p class="mt-2 leading-7 text-stone-600">Les repositories PDO jouent le rôle de Model, les pages PHP publiques/admin jouent le rôle de Controller léger et de Vue, et les fichiers <code class="rounded bg-orange-50 px-2 py-1">app/security</code> centralisent les protections transversales.</p>
+                <h3 class="font-serif text-2xl font-bold text-stone-950">MVC classique</h3>
+                <p class="mt-2 leading-7 text-stone-600"><code class="rounded bg-orange-50 px-2 py-1">src/Controller</code> prépare les données, <code class="rounded bg-orange-50 px-2 py-1">src/Model</code> appelle les repositories PDO, et <code class="rounded bg-orange-50 px-2 py-1">src/Vues</code> affiche le HTML. Les protections transversales restent dans <code class="rounded bg-orange-50 px-2 py-1">app/security</code>.</p>
             </article>
         </div>
     </div>
@@ -95,7 +99,7 @@ public_header('Explication de la stack');
     <div class="mb-8 max-w-3xl">
         <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Rôle des technologies</p>
         <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">Qui fait quoi dans la stack ?</h2>
-        <p class="mt-3 text-stone-600">Chaque technologie a une responsabilité précise. Le projet évite les mélanges : les pages affichent, les repositories interrogent MySQL, et les fichiers de sécurité protègent les actions sensibles.</p>
+        <p class="mt-3 text-stone-600">Chaque technologie a une responsabilité précise. Les contrôleurs préparent, les modèles demandent les données, les vues affichent, les repositories interrogent MySQL, et les fichiers de sécurité protègent les actions sensibles.</p>
     </div>
     <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <?php foreach ($stackItems as [$name, $description]): ?>

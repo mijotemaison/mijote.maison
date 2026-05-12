@@ -17,7 +17,8 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - JavaScript vanilla (4 fichiers : `presentation.js`, `recipes.js`, `admin.js`, `toasts.js`).
 - Tailwind CSS 3.4 compilé localement.
 - Google Fonts (Fraunces + Inter + JetBrains Mono) servis via une CSP nonce.
-- Front controller léger (`public/router.php`) + URLs propres compatibles Apache/MAMP.
+- Front controller AltoRouter (`public/index.php`) + URLs propres compatibles Apache/MAMP.
+- Architecture MVC classique demandée en cours : `src/Controller`, `src/Model`, `src/Vues`.
 
 ## Fonctionnalités front-office
 
@@ -114,7 +115,7 @@ npm install
 npm run build-css
 mysql -u root -p < database.sql
 cp .env.example .env
-php -S 127.0.0.1:8888 -t public public/router.php
+php -S 127.0.0.1:8888 -t public public/index.php
 ```
 
 Configurer `.env` selon votre MySQL :
@@ -133,14 +134,15 @@ DB_PASSWORD=root
 
 ## MAMP / Apache / méthode du prof
 
-Le projet suit la logique vue en cours sans refonte risquée :
+Le projet suit maintenant la logique vue en cours :
 
 - **DocumentRoot MAMP/Apache** : pointer vers `public/`.
-- **Front controller** : `public/router.php` reçoit les URLs propres et charge la bonne page.
-- **Réécriture URL** : `public/.htaccess` renvoie les URLs non-fichiers vers le routeur.
+- **Front controller** : `public/index.php` reçoit les URLs propres et les envoie vers les contrôleurs.
+- **Réécriture URL** : `public/.htaccess` renvoie les URLs non-fichiers vers `public/index.php`.
 - **URLs principales** : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/stack`.
 - **Compatibilité** : les anciennes URLs `.php` restent accessibles (`/recipes.php`, `/recipe.php?slug=...`, `/login.php`).
-- **MVC adapté** : les repositories PDO jouent le rôle de Model, les pages PHP publiques/admin servent de contrôleurs légers et de vues, `app/security` regroupe les protections transversales.
+- **MVC classique côté public** : `src/Controller` prépare les données, `src/Model` appelle les repositories PDO, `src/Vues` affiche le HTML.
+- **Repositories conservés** : `app/repositories` garde les requêtes PDO préparées pour ne pas dupliquer l'accès SQL.
 
 Configuration MAMP recommandée :
 
@@ -203,7 +205,7 @@ Le projet est préparé pour un déploiement Railway. Les variables d'environnem
 Le serveur doit pointer vers `public/`. `railway.json` et `Procfile` utilisent :
 
 ```bash
-php -S 0.0.0.0:$PORT -t public public/router.php
+php -S 0.0.0.0:$PORT -t public public/index.php
 ```
 
 Les vrais fichiers admin restent dans `admin/`. Les fichiers `public/admin/*` sont des wrappers qui chargent ces pages pour rendre les URLs `/admin/...` compatibles avec une racine web `public/`.

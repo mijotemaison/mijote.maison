@@ -69,20 +69,27 @@ PHP,
     [
         'kicker' => 'Architecture',
         'title' => 'Architecture selon la méthode du prof',
-        'lead' => 'Le projet reprend la logique front controller, routes propres, Apache/MAMP possible et séparation MVC adaptée.',
-        'oral' => 'public/router.php joue le point d’entrée pour les URLs propres. public/.htaccess permet à Apache ou MAMP de renvoyer les URLs non-fichiers vers ce routeur. Les repositories représentent la couche Model, les pages PHP jouent le rôle de contrôleurs légers et de vues.',
-        'points' => ['URLs propres : /recettes, /recette/{slug}, /connexion, /presentation, /stack.', 'public/.htaccess active la réécriture sous Apache/MAMP.', 'app/repositories/ centralise le Model avec PDO.', 'Les pages publiques et admin restent lisibles pour le jury.'],
-        'files' => ['public/router.php', 'public/.htaccess', 'app/repositories/*', 'public/*', 'admin/*'],
+        'lead' => 'Le projet reprend la logique front controller, routes propres, Apache/MAMP possible et MVC classique.',
+        'oral' => 'public/index.php est le point d’entrée principal. Il utilise AltoRouter comme dans la méthode du prof pour envoyer chaque URL vers un contrôleur. Les contrôleurs préparent les données, les modèles appellent les repositories PDO, et les vues affichent le HTML.',
+        'points' => ['URLs propres : /recettes, /recette/{slug}, /connexion, /presentation, /stack.', 'public/.htaccess active la réécriture sous Apache/MAMP.', 'src/Controller, src/Model et src/Vues suivent le MVC classique.', 'Les anciennes URLs .php restent compatibles.'],
+        'files' => ['public/index.php', 'public/.htaccess', 'src/Controller/*', 'src/Model/*', 'src/Vues/*'],
         'code' => [
             [
-                'title' => 'Route propre vers une recette',
-                'file' => 'public/router.php',
+                'title' => 'Route propre avec AltoRouter',
+                'file' => 'public/index.php',
                 'body' => <<<'PHP'
-if (preg_match('#^/recette/([a-z0-9-]+)$#', $path, $matches) === 1) {
-    $_GET['slug'] = $matches[1];
-    require __DIR__ . '/recipe.php';
-    return;
-}
+$router = new AltoRouter();
+$router->map('GET', '/recettes', [RecipeController::class, 'index'], 'recipes');
+$router->map('GET|POST', '/recette/[*:slug]', [RecipeController::class, 'show'], 'recipe_show');
+PHP,
+            ],
+            [
+                'title' => 'Controller vers Vue',
+                'file' => 'src/Controller/RecipeController.php',
+                'body' => <<<'PHP'
+$recipeModel = new Recipe($pdo);
+$recipes = $recipeModel->published($perPage, ($page - 1) * $perPage, $query, $category);
+$this->render('recipes', compact('recipes', 'ratingSummaries', 'query', 'category'));
 PHP,
             ],
             [
@@ -92,11 +99,11 @@ PHP,
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^ router.php [QSA,L]
+RewriteRule ^ index.php [QSA,L]
 APACHE,
             ],
         ],
-        'test' => 'Vérification : le serveur PHP démarre avec public/router.php et les anciennes URLs .php restent disponibles.',
+        'test' => 'Vérification : le serveur PHP démarre avec public/index.php, les routes AltoRouter répondent en 200 et les anciennes URLs .php restent disponibles.',
     ],
     [
         'kicker' => 'Front-office',
@@ -143,13 +150,14 @@ PHP,
         'lead' => 'Le mot de passe n’est jamais stocké en clair, et la session est régénérée après connexion.',
         'oral' => 'La connexion vérifie un hash avec password_verify. Ensuite login_admin() régénère l’identifiant de session pour limiter la fixation de session. Les anciens hashes peuvent être réhachés automatiquement vers l’algorithme courant.',
         'points' => ['Argon2id utilisé pour les nouveaux mots de passe si disponible.', 'password_verify() utilisé au login.', 'Rehash automatique si un ancien hash est détecté.', 'session_regenerate_id(true) après succès.', 'require_admin() protège les pages admin.'],
-        'files' => ['public/login.php', 'app/security/auth.php', 'admin/admins/*'],
+        'files' => ['src/Controller/AuthController.php', 'app/security/auth.php', 'admin/admins/*'],
         'code' => [
             [
                 'title' => 'Vérification du mot de passe hashé',
-                'file' => 'public/login.php',
+                'file' => 'src/Controller/AuthController.php',
                 'body' => <<<'PHP'
-$admin = filter_var($email, FILTER_VALIDATE_EMAIL) ? $repo->findByEmail($email) : null;
+$adminModel = new Admin($pdo);
+$admin = filter_var($email, FILTER_VALIDATE_EMAIL) ? $adminModel->findByEmail($email) : null;
 $valid = $admin && password_verify($password, (string) $admin['password_hash']);
 
 if (!$valid) {
@@ -158,7 +166,7 @@ if (!$valid) {
 }
 
 if (admin_password_needs_rehash((string) $admin['password_hash'])) {
-    $repo->updatePasswordHash((int) $admin['id'], admin_password_hash($password));
+    $adminModel->updatePasswordHash((int) $admin['id'], admin_password_hash($password));
 }
 
 login_admin($admin);
@@ -217,7 +225,7 @@ PHP,
         'lead' => 'Les données issues de la base sont échappées avec e() et la CSP limite les scripts.',
         'oral' => 'La protection XSS se fait au moment de l’affichage. Si une recette contient du HTML ou du JavaScript, il est transformé en texte visible et non exécuté.',
         'points' => ['htmlspecialchars avec ENT_QUOTES.', 'Aucun HTML brut autorisé dans les recettes.', 'CSP centralisée dans headers.php.', 'Scripts limités aux fichiers locaux.'],
-        'files' => ['app/helpers/functions.php', 'public/recipe.php', 'app/security/headers.php'],
+        'files' => ['app/helpers/functions.php', 'src/Vues/recipe.tpl.php', 'app/security/headers.php'],
         'code' => [
             [
                 'title' => 'Helper d’échappement',
@@ -277,7 +285,7 @@ PHP,
         'lead' => 'Les tentatives de connexion sont journalisées et le login est bloqué après plusieurs échecs récents.',
         'oral' => 'Le but est de ralentir un robot qui teste beaucoup de mots de passe. Le blocage se base sur les échecs récents liés à l’email et à l’IP.',
         'points' => ['Table login_attempts.', 'Email, IP, user agent, succès ou échec.', 'Blocage après 5 échecs sur 15 minutes.', 'Message générique au login.'],
-        'files' => ['app/security/brute_force.php', 'app/repositories/LoginAttemptRepository.php', 'public/login.php'],
+        'files' => ['app/security/brute_force.php', 'app/repositories/LoginAttemptRepository.php', 'src/Controller/AuthController.php'],
         'code' => [
             [
                 'title' => 'Seuil de blocage',

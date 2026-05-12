@@ -21,9 +21,13 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 
 ## Architecture
 
-- `public/` contient les pages publiques et les assets.
-- `public/router.php` est le front controller leger pour les URLs propres.
-- `public/.htaccess` permet a Apache/MAMP de renvoyer les URLs non-fichiers vers le routeur.
+- `public/` contient le front controller, les wrappers de compatibilite `.php` et les assets.
+- `public/index.php` est le front controller AltoRouter pour les URLs propres.
+- `public/router.php` reste un proxy de compatibilite pour le serveur PHP lance avec l'ancienne commande.
+- `public/.htaccess` permet a Apache/MAMP de renvoyer les URLs non-fichiers vers `public/index.php`.
+- `src/Controller/` contient les controleurs MVC publics.
+- `src/Model/` contient les modeles MVC publics qui appellent les repositories PDO.
+- `src/Vues/` contient les vues PHP publiques.
 - `admin/` contient les pages réservées aux administrateurs.
 - `app/config/` contient la configuration.
 - `app/helpers/` contient les fonctions transverses (`e()`, `public_header()`, `nav_link()`, `render_flash()`, etc.).
@@ -32,13 +36,14 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - `app/validation/` contient les validations serveur.
 - `docs/` contient le rapport.
 
-## Methode du prof / MVC adapte
+## Methode du prof / MVC classique
 
 - URLs principales : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/stack`.
 - Anciennes URLs `.php` conservees pendant la transition : `/recipes.php`, `/recipe.php?slug=...`, `/login.php`, `/presentation.php`, `/stack.php`.
-- Model = `app/repositories/*` avec PDO prepare/execute.
-- Controller/Vue = pages PHP publiques et admin actuelles, volontairement gardees lisibles pour le jury.
-- Front controller = `public/router.php`.
+- Controller = `src/Controller/*` pour le front-office public.
+- Model = `src/Model/*`, avec delegation vers `app/repositories/*` pour les requetes PDO prepare/execute.
+- Vue = `src/Vues/*.tpl.php`.
+- Front controller = `public/index.php` avec AltoRouter.
 - Rewrite Apache/MAMP = `public/.htaccess`.
 - DocumentRoot MAMP/Apache = dossier `public/`.
 
@@ -95,7 +100,7 @@ php -S localhost:8000 -t public
 Avec les URLs propres, utiliser de preference :
 
 ```bash
-php -S 127.0.0.1:8888 -t public public/router.php
+php -S 127.0.0.1:8888 -t public public/index.php
 ```
 
 ## Variables d'environnement

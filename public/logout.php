@@ -4,5 +4,4 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../app/bootstrap.php';
 
-logout_admin();
-redirect('/connexion');
+(new App\Controller\AuthController())->logout();

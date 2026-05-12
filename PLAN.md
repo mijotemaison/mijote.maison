@@ -17,9 +17,13 @@ Le sujet officiel PDF est present dans le dossier sous le nom `00-sujet-final-an
 
 ## Architecture attendue
 
-- `public/` : front-office, connexion, deconnexion, presentation, assets publics.
-- `public/router.php` : front controller leger pour les URLs propres.
-- `public/.htaccess` : reecriture Apache/MAMP vers le routeur pour les URLs non-fichiers.
+- `public/` : front controller, wrappers `.php`, presentation, stack, assets publics.
+- `public/index.php` : front controller AltoRouter pour les URLs propres.
+- `public/router.php` : proxy de compatibilite pour l'ancienne commande du serveur PHP.
+- `public/.htaccess` : reecriture Apache/MAMP vers `public/index.php` pour les URLs non-fichiers.
+- `src/Controller/` : controleurs MVC publics.
+- `src/Model/` : modeles publics deleguant aux repositories PDO.
+- `src/Vues/` : vues PHP publiques.
 - `admin/` : back-office protege.
 - `app/config/` : configuration application et base de donnees.
 - `app/helpers/` : helpers d'affichage, flash messages et chemins.
@@ -180,15 +184,17 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 ## Phase 12 - Alignement avec la methode du prof (MAMP / Apache / front controller)
 
 - [x] Analyse du support `jour11/03-start.md` : MAMP/WAMP/LAMP si besoin de `mod_rewrite`, point d'entree unique, `.htaccess`, organisation MVC.
-- [x] Ajout de `public/router.php` comme front controller leger.
+- [x] Ajout de `public/index.php` comme front controller AltoRouter.
+- [x] Ajout de `src/Controller`, `src/Model`, `src/Vues` pour suivre le MVC classique du prof.
+- [x] Conservation de `public/router.php` comme proxy de compatibilite.
 - [x] Ajout de `public/.htaccess` pour Apache/MAMP : reecriture des URLs propres vers le routeur.
 - [x] URLs propres principales : `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/stack`.
 - [x] Anciennes URLs `.php` conservees pour eviter les regressions.
 - [x] Documentation MAMP ajoutee : DocumentRoot `public/`, MySQL MAMP `127.0.0.1:8889`, user/pass `root/root`.
-- [x] Equivalence MVC documentee : repositories = Model, pages PHP = controllers/vues, `app/security` = protections transversales.
+- [x] MVC classique documente : `src/Controller` = controleurs, `src/Model` = modeles, `src/Vues` = vues, `app/repositories` = PDO prepare.
 - [x] `presentation.php` enrichie avec une slide architecture selon la methode du prof.
-- [x] `stack.php` enrichie avec front controller, router, `.htaccess`, MAMP/Apache et MVC adapte.
-- [x] Tests effectues avec `php -S 127.0.0.1:8888 -t public public/router.php`.
+- [x] `stack.php` enrichie avec front controller AltoRouter, `.htaccess`, MAMP/Apache et MVC classique.
+- [x] Tests effectues avec `php -S 127.0.0.1:8888 -t public public/index.php` et compatibilite `public/router.php`.
 - [x] Routes propres verifiees : `/`, `/recettes`, `/recette/veloute-de-potimarron`, `/connexion`, `/presentation`, `/stack`.
 - [x] Compatibilite verifiee : `/recipes.php`, `/recipe.php?slug=veloute-de-potimarron`, `/presentation.php`, `/stack.php`.
 - [x] Securite verifiee apres routing : CSP presente, acces admin sans session redirige, login admin OK.
@@ -220,7 +226,7 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Compteur `view_count` incrementé sur consultation d'une recette publiee.
 - [x] Section accueil "Recettes populaires" triee par nombre de vues.
 - [x] Bouton impression sur page recette + CSS `@media print`.
-- [x] Page publique `/a-propos` ajoutee et routee par `public/router.php`.
+- [x] Page publique `/a-propos` ajoutee et routee par AltoRouter.
 - [x] Apercu admin avant publication : `/admin/recipes/preview.php`.
 - [x] Duplication admin d'une recette en brouillon : `/admin/recipes/duplicate.php`.
 - [x] Timeout session admin apres 30 minutes d'inactivite.
@@ -275,6 +281,19 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Tests repositories : filtrage `security_logs`, suppression logs anciens, suppression tentatives login anciennes.
 - [x] Execution `composer test` : 12 tests / 25 assertions OK.
 - [x] Tests finaux : lint, build CSS, PDF, commit/push.
+
+## Phase 21 - Migration MVC classique avec AltoRouter
+
+- [x] Installation de `altorouter/altorouter` via Composer.
+- [x] Configuration autoload PSR-4 `App\\` vers `src/`.
+- [x] `public/index.php` devient le front controller principal, comme dans la methode du prof.
+- [x] Creation de `src/Controller` : `SiteController`, `RecipeController`, `AuthController`, `ErreurController`.
+- [x] Creation de `src/Model` : `Recipe`, `RecipeInteraction`, `Admin`.
+- [x] Creation de `src/Vues` : templates publics `home`, `recipes`, `recipe`, `login`, `about`, `404`.
+- [x] Conservation des anciennes URLs `.php` comme wrappers de compatibilite.
+- [x] `tailwind.config.js` scanne maintenant `src/**/*.php` pour conserver les classes des vues MVC.
+- [x] `public/.htaccess`, `Procfile`, `railway.json`, README, CODEX, Stack et Presentation mis a jour vers `public/index.php`.
+- [x] Tests HTTP : `/`, `/recettes`, `/recette/veloute-de-potimarron`, `/connexion`, `/presentation`, `/stack`, anciennes URLs `.php`.
 
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 

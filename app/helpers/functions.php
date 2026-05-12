@@ -47,6 +47,13 @@ function recipe_url(string $slug): string
     return '/recette/' . rawurlencode($slug);
 }
 
+function recipes_page_url(array $params): string
+{
+    $queryString = http_build_query($params);
+
+    return '/recettes' . ($queryString !== '' ? '?' . $queryString : '');
+}
+
 function recipe_categories(): array
 {
     return [
