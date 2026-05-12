@@ -4,6 +4,11 @@
   "type": "project",
   "license": "proprietary",
   "require": {
+    "ext-fileinfo": "*",
+    "ext-iconv": "*",
+    "ext-mbstring": "*",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
     "php": ">=8.2",
     "altorouter/altorouter": "^2.0"
   },
