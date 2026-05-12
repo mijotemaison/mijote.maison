@@ -37,6 +37,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
   - **Plein écran** via `requestFullscreen()`.
   - Persistance localStorage du mode et du chrono.
   - Transitions fade entre slides + `prefers-reduced-motion` honoré.
+- Page `/conformite` : grille officielle sans colonne points, avec réponse du projet, fichiers concernés, extraits réels du code et explications pour le jury.
 - Données issues de la base échappées avec `e()`.
 - Design éditorial premium AAA : palette parchment/tomato/saffron/herb, typographie Fraunces (display) + Inter (UI), grain papier subtil, ombres multi-couches, filets dorés, header en verre dépoli.
 
@@ -139,7 +140,8 @@ Le projet suit maintenant la logique vue en cours :
 - **DocumentRoot MAMP/Apache** : pointer vers `public/`.
 - **Front controller** : `public/index.php` reçoit les URLs propres et les envoie vers les contrôleurs.
 - **Réécriture URL** : `public/.htaccess` renvoie les URLs non-fichiers vers `public/index.php`.
-- **URLs principales** : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/stack`.
+- **URLs principales** : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/conformite`, `/stack`.
+- **Page conformité** : `/conformite` justifie chaque critère du sujet avec preuves de code.
 - **Compatibilité** : les anciennes URLs `.php` restent accessibles (`/recipes.php`, `/recipe.php?slug=...`, `/login.php`).
 - **MVC classique côté public** : `src/Controller` prépare les données, `src/Model` appelle les repositories PDO, `src/Vues` affiche le HTML.
 - **Repositories conservés** : `app/repositories` garde les requêtes PDO préparées pour ne pas dupliquer l'accès SQL.
@@ -154,6 +156,13 @@ MySQL user   : root
 MySQL pass   : root
 Base         : secure_recipes_greta92
 ```
+
+Équivalents cités dans le cours :
+
+- macOS : MAMP.
+- Windows : WAMP, XAMPP ou Laragon.
+- Linux : LAMP.
+- Apache : activer `mod_rewrite` et autoriser `.htaccess` avec `AllowOverride`.
 
 ## Identifiants de démonstration
 

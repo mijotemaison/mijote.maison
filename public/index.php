@@ -28,6 +28,7 @@ $router->map('GET|POST', '/connexion', [AuthController::class, 'login'], 'login'
 $router->map('GET', '/deconnexion', [AuthController::class, 'logout'], 'logout');
 $router->map('GET', '/a-propos', [SiteController::class, 'about'], 'about');
 $router->map('GET', '/presentation', [SiteController::class, 'presentation'], 'presentation');
+$router->map('GET', '/conformite', [SiteController::class, 'conformite'], 'conformite');
 $router->map('GET', '/stack', [SiteController::class, 'stack'], 'stack');
 
 $match = $router->match();

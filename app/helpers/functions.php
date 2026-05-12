@@ -131,6 +131,7 @@ function is_nav_active(string $href): bool
         '/recettes' => $path === '/recipes.php' || $path === '/recipe.php' || str_starts_with($path, '/recette/'),
         '/connexion' => $path === '/login.php',
         '/presentation' => $path === '/presentation.php',
+        '/conformite' => $path === '/conformite.php',
         '/stack' => $path === '/stack.php',
         '/a-propos' => $path === '/about.php',
         default => false,
@@ -239,6 +240,7 @@ HTML;
     echo nav_link('/recettes', 'Recettes');
     echo nav_link('/a-propos', 'À propos');
     echo nav_link('/presentation', 'Présentation');
+    echo nav_link('/conformite', 'Conformité');
     echo nav_link('/stack', 'Stack');
     if (is_admin_authenticated()) {
         echo nav_link('/admin/dashboard.php', 'Back-office');

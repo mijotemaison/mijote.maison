@@ -38,14 +38,16 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 
 ## Methode du prof / MVC classique
 
-- URLs principales : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/stack`.
-- Anciennes URLs `.php` conservees pendant la transition : `/recipes.php`, `/recipe.php?slug=...`, `/login.php`, `/presentation.php`, `/stack.php`.
+- URLs principales : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/conformite`, `/stack`.
+- Anciennes URLs `.php` conservees pendant la transition : `/recipes.php`, `/recipe.php?slug=...`, `/login.php`, `/presentation.php`, `/conformite.php`, `/stack.php`.
 - Controller = `src/Controller/*` pour le front-office public.
 - Model = `src/Model/*`, avec delegation vers `app/repositories/*` pour les requetes PDO prepare/execute.
 - Vue = `src/Vues/*.tpl.php`.
 - Front controller = `public/index.php` avec AltoRouter.
 - Rewrite Apache/MAMP = `public/.htaccess`.
 - DocumentRoot MAMP/Apache = dossier `public/`.
+- Environnements cites par le prof : macOS = MAMP, Windows = WAMP/XAMPP/Laragon, Linux = LAMP.
+- Page `/conformite` = preuve jury : grille officielle sans colonne points, reponse du projet, fichiers, extraits reels du code et explications.
 
 ## Conventions de code
 

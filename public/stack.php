@@ -12,9 +12,10 @@ $stackItems = [
     ['Tailwind CSS', 'Gère l’identité visuelle, les grilles responsive, les cartes et les formulaires.'],
     ['JavaScript vanilla', 'Ajoute la recherche de recettes, les filtres, le carrousel, les confirmations admin et la copie des extraits de code.'],
     ['Sessions PHP', 'Gardent l’état de connexion admin avec cookies HttpOnly, SameSite et Secure si HTTPS.'],
-    ['Front controller', 'public/index.php centralise les URLs propres avec AltoRouter : /recettes, /recette/slug, /connexion, /presentation et /stack.'],
+    ['Front controller', 'public/index.php centralise les URLs propres avec AltoRouter : /recettes, /recette/slug, /connexion, /presentation, /conformite et /stack.'],
     ['AltoRouter', 'Associe une URL et une méthode HTTP à une méthode de contrôleur, comme dans le support du prof.'],
     ['Apache / .htaccess', 'Permet sous MAMP de rediriger les URLs propres vers public/index.php quand le fichier demandé n’existe pas.'],
+    ['MAMP / XAMPP / LAMP', 'Environnement local recommandé par le cours : MAMP sur Mac, WAMP/XAMPP/Laragon sur Windows, LAMP sur Linux.'],
     ['src/Controller', 'Prépare les données et choisit la vue à afficher pour les pages publiques.'],
     ['src/Model', 'Fournit des modèles métier simples qui appellent les repositories PDO existants.'],
     ['src/Vues', 'Contient les templates PHP affichant le HTML public.'],
@@ -45,6 +46,7 @@ public_header('Explication de la stack');
             <p class="mt-5 text-lg leading-8 text-stone-700">Une stack technique, c’est l’ensemble des technologies qui font tenir l’application : ce qui affiche les pages, ce qui stocke les données, ce qui sécurise les actions et ce qui rend l’interface agréable.</p>
             <div class="mt-7 flex flex-wrap gap-3">
                 <a class="btn-primary" href="/presentation">Voir la présentation</a>
+                <a class="btn-secondary" href="/conformite">Voir la conformité</a>
                 <a class="btn-secondary" href="/recettes">Voir les recettes</a>
             </div>
         </div>
@@ -77,6 +79,7 @@ public_header('Explication de la stack');
             <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Méthode du prof</p>
             <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">MAMP, Apache, front controller et MVC classique.</h2>
             <p class="mt-4 leading-8 text-stone-700">Le cours montre une architecture avec un point d’entrée unique, une réécriture d’URL via Apache et une séparation Controller / Model / Vue. Le projet suit maintenant cette logique sur le front-office public.</p>
+            <p class="mt-4 leading-8 text-stone-700">Pour l’environnement, le prof cite MAMP sur macOS, WAMP/XAMPP/Laragon sur Windows, LAMP sur Linux, ou Docker. Le projet fonctionne avec MAMP/Apache grâce à <code class="rounded bg-orange-50 px-2 py-1">public/.htaccess</code>, et aussi avec le serveur PHP intégré pour Railway.</p>
         </div>
         <div class="grid gap-4">
             <article class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
@@ -116,7 +119,7 @@ public_header('Explication de la stack');
         <div class="mb-8 max-w-3xl">
             <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-herb">Organisation du projet</p>
             <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">Qui fait quoi dans le code ?</h2>
-            <p class="mt-3 text-stone-700">Cette lecture aide à expliquer le projet au jury sans entrer directement dans tous les fichiers.</p>
+            <p class="mt-3 text-stone-700">Cette lecture aide à expliquer le projet au jury sans entrer directement dans tous les fichiers. Pour la preuve critère par critère, la page Conformité reprend la grille officielle avec des extraits réels.</p>
         </div>
         <div class="grid gap-5 md:grid-cols-2">
             <?php foreach ($responsibilities as [$name, $description]): ?>

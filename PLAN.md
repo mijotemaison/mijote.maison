@@ -295,6 +295,17 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] `public/.htaccess`, `Procfile`, `railway.json`, README, CODEX, Stack et Presentation mis a jour vers `public/index.php`.
 - [x] Tests HTTP : `/`, `/recettes`, `/recette/veloute-de-potimarron`, `/connexion`, `/presentation`, `/stack`, anciennes URLs `.php`.
 
+## Phase 22 - Page Conformite au sujet officiel
+
+- [x] Reanalyse des supports prof `jour11`, `jour11-blog/app` et `jour11-blog-tp-final`.
+- [x] Confirmation des attentes prof : MAMP macOS, WAMP/XAMPP/Laragon Windows, LAMP Linux, Apache `mod_rewrite`, `.htaccess`, AltoRouter, front controller et MVC classique.
+- [x] Ajout de la route publique `/conformite` et compatibilite `/conformite.php`.
+- [x] Ajout du lien `Conformite` dans le header public.
+- [x] Creation de la page `Conformite au sujet officiel` : grille sans colonne points, reponse du projet, fichiers concernes, extraits reels du code et explications jury.
+- [x] Mise a jour de `stack.php`, `presentation.php`, README et CODEX pour pointer vers cette page.
+- [x] Tests finaux locaux : build CSS, Composer, PHPUnit, lint PHP, routes publiques `/conformite`, `/conformite.php`, `/presentation`, `/stack`, `/recettes`, `/connexion`.
+- [x] Commit et push final de la page Conformite.
+
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 
 ### Design system éditorial

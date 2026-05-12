@@ -71,7 +71,7 @@ PHP,
         'title' => 'Architecture selon la méthode du prof',
         'lead' => 'Le projet reprend la logique front controller, routes propres, Apache/MAMP possible et MVC classique.',
         'oral' => 'public/index.php est le point d’entrée principal. Il utilise AltoRouter comme dans la méthode du prof pour envoyer chaque URL vers un contrôleur. Les contrôleurs préparent les données, les modèles appellent les repositories PDO, et les vues affichent le HTML.',
-        'points' => ['URLs propres : /recettes, /recette/{slug}, /connexion, /presentation, /stack.', 'public/.htaccess active la réécriture sous Apache/MAMP.', 'src/Controller, src/Model et src/Vues suivent le MVC classique.', 'Les anciennes URLs .php restent compatibles.'],
+        'points' => ['URLs propres : /recettes, /recette/{slug}, /connexion, /presentation, /conformite, /stack.', 'public/.htaccess active la réécriture sous Apache/MAMP.', 'src/Controller, src/Model et src/Vues suivent le MVC classique.', 'Les anciennes URLs .php restent compatibles.'],
         'files' => ['public/index.php', 'public/.htaccess', 'src/Controller/*', 'src/Model/*', 'src/Vues/*'],
         'code' => [
             [
@@ -376,7 +376,7 @@ PHP,
         'title' => 'Résultat final',
         'lead' => 'Le projet démontre une application web complète, structurée, présentable et défendable techniquement.',
         'oral' => 'La partie visible ressemble à un site de recettes, et la partie technique montre les protections demandées par le sujet. Chaque point important peut être relié à un fichier et à un extrait de code.',
-        'points' => ['Sujet PDF respecté côté front-office et back-office.', 'Sécurité documentée avec extraits réels.', 'Design public cohérent avec un site de recettes.', 'Projet prêt à être présenté et testé.'],
+        'points' => ['Sujet PDF respecté côté front-office et back-office.', 'Sécurité documentée avec extraits réels.', 'Page Conformité dédiée à la grille officielle.', 'Projet prêt à être présenté et testé.'],
         'files' => ['README.md', 'PLAN.md', 'docs/rapport-securite-projet-final-greta92.pdf'],
         'test' => 'Vérification : présentation exploitable en mode carrousel, slide par slide.',
     ],
@@ -400,6 +400,7 @@ public_header('Présentation');
                 </div>
                 <a class="btn-secondary" href="/">Accueil</a>
                 <a class="btn-secondary" href="/stack">Stack</a>
+                <a class="btn-secondary" href="/conformite">Conformité</a>
                 <?php if (is_admin_authenticated()): ?>
                     <a class="btn-secondary" href="/admin/dashboard.php">Back-office</a>
                 <?php endif; ?>

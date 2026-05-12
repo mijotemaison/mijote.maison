@@ -48,6 +48,11 @@ final class SiteController extends AbstractController
         $this->renderLegacyPublicPage('presentation.php');
     }
 
+    public function conformite(): void
+    {
+        $this->renderLegacyPublicPage('conformite.php');
+    }
+
     public function stack(): void
     {
         $this->renderLegacyPublicPage('stack.php');
