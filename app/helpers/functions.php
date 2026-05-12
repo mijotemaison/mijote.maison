@@ -47,6 +47,11 @@ function recipe_url(string $slug): string
     return '/recette/' . rawurlencode($slug);
 }
 
+function recipe_print_url(string $slug): string
+{
+    return recipe_url($slug) . '/impression';
+}
+
 function recipes_page_url(array $params): string
 {
     $queryString = http_build_query($params);

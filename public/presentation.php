@@ -110,7 +110,7 @@ APACHE,
         'title' => 'La partie publique',
         'lead' => 'Le visiteur voit une page d’accueil, une liste de recettes et une page détaillée par recette.',
         'oral' => 'Le front-office ressemble à un vrai site de recettes. Il affiche les données en lecture seule et ne propose aucune action sensible.',
-        'points' => ['Accueil avec présentation du site.', 'Recettes populaires basées sur les vues.', 'Recherche serveur, filtres catégorie et pagination.', 'Notes étoiles, commentaires approuvés et impression recette.'],
+        'points' => ['Accueil avec présentation du site.', 'Recettes populaires basées sur les vues.', 'Recherche serveur, filtres catégorie et pagination.', 'Notes étoiles, commentaires approuvés et page impression dédiée.'],
         'files' => ['public/index.php', 'public/recipes.php', 'public/recipe.php'],
         'code' => [
             [
@@ -133,7 +133,7 @@ public function published(int $limit = 12, int $offset = 0, string $query = '', 
 PHP,
             ],
         ],
-        'test' => 'Vérification : / affiche les populaires, /recette/{slug} incrémente les vues, imprime la recette, et permet notation + commentaire modéré.',
+        'test' => 'Vérification : / affiche les populaires, /recette/{slug} incrémente les vues, /recette/{slug}/impression affiche une version imprimable, et la page détail permet notation + commentaire modéré.',
     ],
     [
         'kicker' => 'Back-office',

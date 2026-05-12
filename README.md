@@ -25,8 +25,9 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Page d'accueil `/` avec hero éditorial, aperçu des recettes et navigation.
 - Page liste `/recettes` avec recettes publiées, recherche serveur, filtres par catégorie, pagination et étoiles.
 - Page détail `/recette/{slug}` avec titre, image, description, ingrédients, étapes et **JSON-LD `Recipe`** + Open Graph + Twitter Card.
+- Page impression dédiée `/recette/{slug}/impression`, sans JavaScript, pensée pour Ctrl+P ou le menu imprimer du navigateur.
 - Section “recettes populaires” basée sur le nombre de vues.
-- Bouton d'impression propre sur la page recette.
+- Lien “Version imprimable” depuis chaque page recette.
 - Page `/a-propos` orientée présentation du site de recettes.
 - Notes lecteurs sur 5 étoiles, avec un vote par empreinte visiteur/session.
 - Commentaires publics affichés seulement après modération.

@@ -101,6 +101,23 @@ final class RecipeController extends AbstractController
         $this->render('recipe', compact('recipe', 'error', 'ratingSummary', 'userRating', 'comments', 'meta'));
     }
 
+    public function printable(?string $slug = null): void
+    {
+        $recipe = null;
+        $error = null;
+
+        try {
+            $pdo = \db();
+            $recipeModel = new Recipe($pdo);
+            $recipe = $recipeModel->find(null, $slug ?? ($_GET['slug'] ?? null));
+        } catch (Throwable) {
+            $error = 'Impossible de charger la recette pour le moment.';
+        }
+
+        $meta = $recipe ? \recipe_public_meta($recipe['slug'] ?? null) : null;
+        $this->render('recipe_print', compact('recipe', 'error', 'meta'));
+    }
+
     private function handlePublicRecipeAction(\PDO $pdo, RecipeInteraction $interactionModel, array $recipe): void
     {
         $action = (string) ($_POST['action'] ?? '');

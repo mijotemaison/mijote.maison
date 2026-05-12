@@ -23,6 +23,7 @@ $router->setBasePath($_SERVER['BASE_URI'] ?? '');
 $router->map('GET', '/', [SiteController::class, 'home'], 'home');
 $router->map('GET', '/index.php', [SiteController::class, 'home'], 'legacy_home');
 $router->map('GET', '/recettes', [RecipeController::class, 'index'], 'recipes');
+$router->map('GET', '/recette/[*:slug]/impression', [RecipeController::class, 'printable'], 'recipe_print');
 $router->map('GET|POST', '/recette/[*:slug]', [RecipeController::class, 'show'], 'recipe_show');
 $router->map('GET|POST', '/connexion', [AuthController::class, 'login'], 'login');
 $router->map('GET', '/deconnexion', [AuthController::class, 'logout'], 'logout');

@@ -58,8 +58,8 @@ PHP,
     [
         'criterion' => 'Page recette',
         'expected' => 'Affichage complet et lisible d’une recette, données correctement récupérées depuis la base.',
-        'answer' => 'Chaque recette dispose d’une page séparée `/recette/{slug}` avec titre, image, description, ingrédients, étapes, note et commentaires publiés.',
-        'files' => ['src/Controller/RecipeController.php', 'src/Vues/recipe.tpl.php', 'app/repositories/RecipeRepository.php'],
+        'answer' => 'Chaque recette dispose d’une page séparée `/recette/{slug}` avec titre, image, description, ingrédients, étapes, note, commentaires publiés et version imprimable dédiée.',
+        'files' => ['src/Controller/RecipeController.php', 'src/Vues/recipe.tpl.php', 'src/Vues/recipe_print.tpl.php', 'app/repositories/RecipeRepository.php'],
         'code' => [
             'title' => 'Lecture sécurisée par slug',
             'file' => 'app/repositories/RecipeRepository.php',
@@ -74,7 +74,7 @@ public function findBySlug(string $slug): ?array
 }
 PHP,
         ],
-        'explanation' => 'La page recette est séparée de l’accueil, comme demandé. La recette est récupérée depuis MySQL avec un slug paramétré, puis affichée dans une vue dédiée avec échappement HTML.',
+        'explanation' => 'La page recette est séparée de l’accueil, comme demandé. La recette est récupérée depuis MySQL avec un slug paramétré, puis affichée dans une vue dédiée avec échappement HTML. La route `/recette/{slug}/impression` fournit aussi une page HTML dédiée à l’impression.',
     ],
     [
         'criterion' => 'Page de connexion',

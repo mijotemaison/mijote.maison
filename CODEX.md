@@ -38,8 +38,8 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 
 ## Methode du prof / MVC classique
 
-- URLs principales : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/conformite`, `/stack`.
-- Anciennes URLs `.php` conservees pendant la transition : `/recipes.php`, `/recipe.php?slug=...`, `/login.php`, `/presentation.php`, `/conformite.php`, `/stack.php`.
+- URLs principales : `/`, `/recettes`, `/recette/{slug}`, `/recette/{slug}/impression`, `/connexion`, `/presentation`, `/conformite`, `/stack`.
+- Anciennes URLs `.php` conservees pendant la transition : `/recipes.php`, `/recipe.php?slug=...`, `/recipe-print.php?slug=...`, `/login.php`, `/presentation.php`, `/conformite.php`, `/stack.php`.
 - Controller = `src/Controller/*` pour le front-office public.
 - Model = `src/Model/*`, avec delegation vers `app/repositories/*` pour les requetes PDO prepare/execute.
 - Vue = `src/Vues/*.tpl.php`.

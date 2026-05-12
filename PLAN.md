@@ -306,6 +306,15 @@ Tout point non termine ou non testable localement sera indique ici et dans le RE
 - [x] Tests finaux locaux : build CSS, Composer, PHPUnit, lint PHP, routes publiques `/conformite`, `/conformite.php`, `/presentation`, `/stack`, `/recettes`, `/connexion`.
 - [x] Commit et push final de la page Conformite.
 
+## Phase 23 - Page impression dediee recette
+
+- [x] Ajout de la route propre `/recette/{slug}/impression`.
+- [x] Ajout de la compatibilite `/recipe-print.php?slug=...`.
+- [x] Creation d'une vue HTML dediee `src/Vues/recipe_print.tpl.php`, sans JavaScript.
+- [x] Remplacement du bouton `window.print()` par un lien `Version imprimable`.
+- [x] Mise a jour README, CODEX, Presentation et Conformite.
+- [x] Tests finaux, commit et push.
+
 ## Phase 11 — Refonte design AAA + UX premium + SEO/A11y (2026-05-06)
 
 ### Design system éditorial

@@ -1,8 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('[data-print-recipe]').forEach((button) => {
-    button.addEventListener('click', () => window.print());
-  });
-
   const search = document.querySelector('[data-recipe-search]');
   const chips = Array.from(document.querySelectorAll('[data-recipe-filter]'));
   const cards = Array.from(document.querySelectorAll('[data-recipe-card]'));

@@ -2,7 +2,7 @@
     <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-8 sm:px-6 lg:px-8">
         <a class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-herb shadow-sm hover:text-tomato" href="/recettes">← Retour aux recettes</a>
         <?php if ($recipe): ?>
-            <button class="btn-secondary print:hidden" type="button" data-print-recipe>Imprimer la recette</button>
+            <a class="btn-secondary print:hidden" href="<?= e(recipe_print_url((string) $recipe['slug'])) ?>">Version imprimable</a>
         <?php endif; ?>
     </div>
 </section>
