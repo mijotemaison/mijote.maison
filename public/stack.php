@@ -14,7 +14,7 @@ $stackItems = [
     ['Sessions PHP', 'Gardent l’état de connexion admin avec cookies HttpOnly, SameSite et Secure si HTTPS.'],
     ['Front controller', 'public/index.php centralise les URLs propres avec AltoRouter : /recettes, /recette/slug, /connexion, /presentation, /conformite et /stack.'],
     ['AltoRouter', 'Associe une URL et une méthode HTTP à une méthode de contrôleur, comme dans le support du prof.'],
-    ['Apache / .htaccess', 'Permet sous MAMP de rediriger les URLs propres vers public/index.php quand le fichier demandé n’existe pas.'],
+    ['Apache / .htaccess', 'Permet sous Apache/MAMP, XAMPP ou LAMP de rediriger les URLs propres vers public/index.php quand le fichier demandé n’existe pas.'],
     ['MAMP / XAMPP / LAMP', 'Environnement local recommandé par le cours : MAMP sur Mac, WAMP/XAMPP/Laragon sur Windows, LAMP sur Linux.'],
     ['src/Controller', 'Prépare les données et choisit la vue à afficher pour les pages publiques.'],
     ['src/Model', 'Fournit des modèles métier simples qui appellent les repositories PDO existants.'],
@@ -79,7 +79,7 @@ public_header('Explication de la stack');
             <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Méthode du prof</p>
             <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">MAMP, Apache, front controller et MVC classique.</h2>
             <p class="mt-4 leading-8 text-stone-700">Le cours montre une architecture avec un point d’entrée unique, une réécriture d’URL via Apache et une séparation Controller / Model / Vue. Le projet suit maintenant cette logique sur le front-office public.</p>
-            <p class="mt-4 leading-8 text-stone-700">Pour l’environnement, le prof cite MAMP sur macOS, WAMP/XAMPP/Laragon sur Windows, LAMP sur Linux, ou Docker. Le projet fonctionne avec MAMP/Apache grâce à <code class="rounded bg-orange-50 px-2 py-1">public/.htaccess</code>, et aussi avec le serveur PHP intégré pour Railway.</p>
+            <p class="mt-4 leading-8 text-stone-700">Pour l’environnement, le prof cite MAMP sur macOS, WAMP/XAMPP/Laragon sur Windows, LAMP sur Linux, ou Docker. Le projet fonctionne avec Apache sous MAMP, XAMPP ou LAMP grâce à <code class="rounded bg-orange-50 px-2 py-1">public/.htaccess</code>, et aussi avec le serveur PHP intégré pour Railway.</p>
         </div>
         <div class="grid gap-4">
             <article class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
@@ -87,8 +87,8 @@ public_header('Explication de la stack');
                 <p class="mt-2 leading-7 text-stone-600"><code class="rounded bg-orange-50 px-2 py-1">public/index.php</code> reçoit les URLs propres et utilise <code class="rounded bg-orange-50 px-2 py-1">AltoRouter</code>. Exemple : <code class="rounded bg-orange-50 px-2 py-1">/recette/veloute-de-potimarron</code> appelle <code class="rounded bg-orange-50 px-2 py-1">RecipeController::show()</code>.</p>
             </article>
             <article class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
-                <h3 class="font-serif text-2xl font-bold text-stone-950">Apache / MAMP</h3>
-                <p class="mt-2 leading-7 text-stone-600"><code class="rounded bg-orange-50 px-2 py-1">public/.htaccess</code> active <code class="rounded bg-orange-50 px-2 py-1">mod_rewrite</code> : si l’URL ne correspond pas à un vrai fichier, Apache l’envoie à <code class="rounded bg-orange-50 px-2 py-1">public/index.php</code>. Sur MAMP, le DocumentRoot doit pointer vers <code class="rounded bg-orange-50 px-2 py-1">public/</code>.</p>
+                <h3 class="font-serif text-2xl font-bold text-stone-950">Apache / MAMP / XAMPP / LAMP</h3>
+                <p class="mt-2 leading-7 text-stone-600"><code class="rounded bg-orange-50 px-2 py-1">public/.htaccess</code> active <code class="rounded bg-orange-50 px-2 py-1">mod_rewrite</code> : si l’URL ne correspond pas à un vrai fichier, Apache l’envoie à <code class="rounded bg-orange-50 px-2 py-1">public/index.php</code>. Sur MAMP, XAMPP ou LAMP, le DocumentRoot doit pointer vers <code class="rounded bg-orange-50 px-2 py-1">public/</code>.</p>
             </article>
             <article class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
                 <h3 class="font-serif text-2xl font-bold text-stone-950">MVC classique</h3>
