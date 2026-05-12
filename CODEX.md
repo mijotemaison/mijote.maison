@@ -164,7 +164,6 @@ npm run watch-css
 - `find . -name "*.php" -print0 | xargs -0 -n1 php -l`.
 - Vérifier `git status`.
 - Ne pas commiter `.env`.
-- Compléter `PLAN.md`.
 - Générer le PDF du rapport.
 - Commit clair.
 

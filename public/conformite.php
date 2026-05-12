@@ -338,8 +338,8 @@ PHP,
     [
         'criterion' => 'Documentation sécurité',
         'expected' => 'Explication claire des failles et des protections mises en place.',
-        'answer' => 'Le projet contient README, PLAN, CODEX, SOUL, rapport Markdown, rapport PDF, présentation interactive, page Stack et cette page Conformité.',
-        'files' => ['README.md', 'PLAN.md', 'docs/rapport-securite.md', 'docs/rapport-securite-projet-final-greta92.pdf'],
+        'answer' => 'Le projet contient README, CODEX, rapport Markdown, rapport PDF, présentation interactive, page Stack et cette page Conformité.',
+        'files' => ['README.md', 'CODEX.md', 'docs/rapport-securite.md', 'docs/rapport-securite-projet-final-greta92.pdf'],
         'code' => [
             'title' => 'Documentation liée aux protections',
             'file' => 'README.md',
