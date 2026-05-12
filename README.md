@@ -208,6 +208,18 @@ Le serveur doit pointer vers `public/`. `railway.json` et `Procfile` utilisent :
 php -S 0.0.0.0:$PORT -t public public/index.php
 ```
 
+Pour la base de données Railway :
+
+- Ajouter un service **MySQL** dans le projet Railway.
+- Importer `database.sql` dans MySQL.
+- Vérifier les variables côté service web :
+  - `APP_ENV=production`
+  - `APP_URL=https://mijotemaison.up.railway.app`
+  - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` peuvent reprendre les valeurs Railway `MYSQLHOST`, `MYSQLPORT`, `MYSQLUSER`, `MYSQLPASSWORD`.
+  - `DB_NAME` doit correspondre à la base importée. Avec le fichier `database.sql` actuel : `secure_recipes_greta92`.
+
+Le code accepte aussi les variables natives Railway `MYSQLHOST`, `MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD` en fallback si les variables `DB_*` ne sont pas définies.
+
 Les vrais fichiers admin restent dans `admin/`. Les fichiers `public/admin/*` sont des wrappers qui chargent ces pages pour rendre les URLs `/admin/...` compatibles avec une racine web `public/`.
 
 ## Maintenance sécurité
