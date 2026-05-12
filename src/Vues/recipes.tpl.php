@@ -11,9 +11,12 @@
 <section class="bg-cream py-10">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <form class="grid gap-4 rounded-[2rem] border border-orange-100 bg-white p-4 shadow-sm lg:grid-cols-[1fr_auto] lg:items-center" action="/recettes" method="get">
+            <?php if ($category !== ''): ?>
+                <input type="hidden" name="category" value="<?= e($category) ?>">
+            <?php endif; ?>
             <label class="relative block">
                 <span class="sr-only">Rechercher une recette</span>
-                <input class="w-full rounded-full border border-orange-200 bg-orange-50 px-5 py-4 pr-24 text-stone-900 outline-none transition placeholder:text-stone-500 focus:border-tomato focus:ring-4 focus:ring-orange-200" name="q" value="<?= e($query) ?>" data-recipe-search type="search" placeholder="Rechercher une recette, un ingrédient, une envie...">
+                <input class="w-full rounded-full border border-orange-200 bg-orange-50 px-5 py-4 pr-24 text-stone-900 outline-none transition placeholder:text-stone-500 focus:border-tomato focus:ring-4 focus:ring-orange-200" name="q" value="<?= e($query) ?>" data-recipe-search type="search" maxlength="100" placeholder="Rechercher une recette, un ingrédient, une envie...">
                 <button class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-tomato px-4 py-2 text-sm font-extrabold text-white" type="submit">OK</button>
             </label>
             <div class="flex flex-wrap gap-2">

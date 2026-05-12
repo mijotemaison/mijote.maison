@@ -16,8 +16,16 @@ final class RecipeController extends AbstractController
         $ratingSummaries = [];
         $dbError = null;
         $query = trim((string) ($_GET['q'] ?? ''));
-        $category = (string) ($_GET['category'] ?? '');
-        $page = max(1, (int) ($_GET['page'] ?? 1));
+        if (mb_strlen($query) > 100) {
+            $query = mb_substr($query, 0, 100);
+        }
+
+        $category = trim((string) ($_GET['category'] ?? ''));
+        if ($category !== '' && !array_key_exists($category, \recipe_categories())) {
+            $category = '';
+        }
+
+        $page = max(1, min(1000, (int) ($_GET['page'] ?? 1)));
         $perPage = 6;
         $totalRecipes = 0;
         $totalPages = 1;
