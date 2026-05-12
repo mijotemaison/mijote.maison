@@ -39,7 +39,7 @@ final class RecipeController extends AbstractController
         if ($query !== '') {
             $baseParams['q'] = $query;
         }
-        if ($category !== '' && array_key_exists($category, \recipe_categories(), true)) {
+        if ($category !== '' && array_key_exists($category, \recipe_categories())) {
             $baseParams['category'] = $category;
         }
 
