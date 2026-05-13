@@ -21,13 +21,11 @@ Secure Recipes GRETA 92 est un site de recettes de cuisine concu comme une appli
 
 ## 2. Architecture
 
-- `public/index.php` : front controller AltoRouter pour les URLs propres.
-- `public/` : wrappers `.php` compatibles, presentation, stack, assets.
-- `src/Controller/` : controleurs MVC publics.
+- `public/index.php` : point d'entrée unique AltoRouter pour les URLs propres publiques et admin.
+- `public/` : `.htaccess`, assets, favicon et uploads publics.
+- `src/Controller/` : controleurs MVC publics et back-office.
 - `src/Model/` : modeles publics deleguant aux repositories.
-- `src/Vues/` : templates PHP du front-office.
-- `admin/` : dashboard, CRUD recettes, CRUD administrateurs.
-- `public/admin/` : wrappers compatibles avec une racine web `public/` pour exposer les URLs `/admin/...`.
+- `src/Vues/` : templates PHP du front-office et du back-office.
 - `app/config/` : configuration applicative et connexion PDO.
 - `app/security/` : sessions, authentification, CSRF, CSP, brute force, upload.
 - `app/repositories/` : requetes SQL preparees.
@@ -55,7 +53,7 @@ Menace : vol ou lecture directe des mots de passe si la base est compromise.
 
 Solution appliquee : les mots de passe admins sont haches via une fonction centrale. Les nouveaux mots de passe utilisent Argon2id quand PHP le supporte, avec fallback compatible. Le login compare le mot de passe saisi avec le hash stocke et peut re-hacher automatiquement un ancien hash après une connexion valide.
 
-Fichiers concernes : `app/security/auth.php`, `src/Controller/AuthController.php`, `app/repositories/AdminRepository.php`, `admin/admins/create.php`, `admin/admins/edit.php`.
+Fichiers concernes : `app/security/auth.php`, `src/Controller/AuthController.php`, `app/repositories/AdminRepository.php`, `src/Controller/Admin/AdminUserController.php`.
 
 Extrait reel :
 
@@ -148,7 +146,7 @@ Menace : execution de JavaScript injecte dans une recette ou un compte admin.
 
 Solution appliquee : toutes les donnees affichees depuis la base passent par `e()`.
 
-Fichiers concernes : `app/helpers/functions.php`, `src/Vues/home.tpl.php`, `src/Vues/recipe.tpl.php`, `admin/*`.
+Fichiers concernes : `app/helpers/functions.php`, `src/Vues/home.tpl.php`, `src/Vues/recipe.tpl.php`, `src/Vues/admin/*`.
 
 Extrait reel :
 
@@ -265,7 +263,7 @@ Menace : forcer un admin connecte a executer une action sensible.
 
 Solution appliquee : les formulaires de connexion, creation, modification et suppression incluent un token.
 
-Fichiers concernes : `app/security/csrf.php`, `src/Controller/AuthController.php`, `admin/recipes/*`, `admin/admins/*`.
+Fichiers concernes : `app/security/csrf.php`, `src/Controller/AuthController.php`, `src/Controller/Admin/RecipeAdminController.php`, `src/Controller/Admin/AdminUserController.php`.
 
 Extrait reel :
 
@@ -354,7 +352,7 @@ Menace : acces direct aux pages `/admin` sans authentification.
 
 Solution appliquee : chaque page admin appelle `require_admin()` avant d'afficher le contenu.
 
-Fichiers concernes : `app/security/auth.php`, `admin/*`.
+Fichiers concernes : `app/security/auth.php`, `src/Controller/Admin/*`, `src/Vues/admin/*`.
 
 Extrait reel :
 
@@ -363,7 +361,7 @@ function require_admin(): void
 {
     if (!is_admin_authenticated()) {
         flash('error', 'Acces reserve aux administrateurs authentifies.');
-        redirect('/login.php');
+        redirect('/connexion');
     }
 }
 ```
@@ -405,10 +403,10 @@ Menace : un administrateur (ou un attaquant ayant volé sa session) supprime son
 Solution appliquée :
 
 - **Côté UI** : le bouton « Supprimer » est remplacé par un badge inerte « ● Vous » sur la ligne correspondant au compte connecté. L'admin ne peut donc pas déclencher l'action depuis l'interface.
-- **Côté serveur** : `admin/admins/delete.php` rejette toute requête où `id` correspond à `$_SESSION['admin_id']`, indépendamment de l'origine (formulaire forgé, curl, etc.).
+- **Côté serveur** : `src/Controller/Admin/AdminUserController.php` rejette toute route de suppression où `id` correspond à `current_admin_id()`, indépendamment de l'origine (formulaire forgé, curl, etc.).
 - **Garde-fou supplémentaire** : la suppression du dernier administrateur restant est également bloquée par `$repo->count() <= 1`.
 
-Fichiers concernés : `app/security/auth.php` (helper `current_admin_id()`), `admin/admins/index.php` (UI), `admin/admins/delete.php` (serveur).
+Fichiers concernés : `app/security/auth.php` (helper `current_admin_id()`), `src/Vues/admin/admins/index.tpl.php` (UI), `src/Controller/Admin/AdminUserController.php` (serveur).
 
 Extrait réel :
 
@@ -421,25 +419,24 @@ function current_admin_id(): int
 ```
 
 ```php
-// admin/admins/delete.php
+// src/Controller/Admin/AdminUserController.php
 if ($repo->count() <= 1) {
     flash('error', 'Impossible de supprimer le dernier administrateur.');
-    redirect('/admin/admins/index.php');
+    redirect('/admin/administrateurs');
 }
-if ($id === (int) ($_SESSION['admin_id'] ?? 0)) {
+if ($adminId === current_admin_id()) {
     flash('error', 'Suppression de votre propre compte refusee pendant la session active.');
-    redirect('/admin/admins/index.php');
+    redirect('/admin/administrateurs');
 }
 ```
 
 ```php
-// admin/admins/index.php — UI conditionnelle
+// src/Vues/admin/admins/index.tpl.php — UI conditionnelle
 if ((int) $admin['id'] === $currentAdminId): ?>
     <span class="badge-self" title="Vous ne pouvez pas supprimer votre propre compte.">● Vous</span>
 <?php else: ?>
-    <form method="post" action="/admin/admins/delete.php" data-confirm="Êtes-vous sûr de vouloir supprimer définitivement l'administrateur « <?= e($admin['username']) ?> » ?">
+    <form method="post" action="/admin/administrateurs/<?= e($admin['id']) ?>/supprimer" data-confirm="Êtes-vous sûr de vouloir supprimer définitivement l'administrateur « <?= e($admin['username']) ?> » ?">
         <?= csrf_field() ?>
-        <input type="hidden" name="id" value="<?= e($admin['id']) ?>">
         <button class="btn-danger" type="submit">Supprimer</button>
     </form>
 <?php endif;
@@ -457,16 +454,15 @@ Solution appliquée : tout `<form>` exécutant une action destructive porte un a
 
 La modale est construite par DOM API (`document.createElement` + `textContent`) — aucun `innerHTML` avec contenu dynamique, donc zéro surface d'XSS même si le message contient des caractères spéciaux.
 
-Fichiers concernés : `public/assets/js/admin.js`, `admin/recipes/index.php`, `admin/admins/index.php`, `app/helpers/functions.php` (`admin_footer` charge `admin.js`).
+Fichiers concernés : `public/assets/js/admin.js`, `src/Vues/admin/recipes/index.tpl.php`, `src/Vues/admin/admins/index.tpl.php`, `app/helpers/functions.php` (`admin_footer` charge `admin.js`).
 
 Extrait réel :
 
 ```php
-// admin/recipes/index.php
-<form method="post" action="/admin/recipes/delete.php"
+// src/Vues/admin/recipes/index.tpl.php
+<form method="post" action="/admin/recettes/<?= e($recipe['id']) ?>/supprimer"
       data-confirm="Êtes-vous sûr de vouloir supprimer définitivement la recette « <?= e($recipe['title']) ?> » ? Cette action est irréversible.">
     <?= csrf_field() ?>
-    <input type="hidden" name="id" value="<?= e($recipe['id']) ?>">
     <button class="btn-danger" type="submit">Supprimer</button>
 </form>
 ```
@@ -495,7 +491,7 @@ Menace : XSS via commentaires, spam public, modification non autorisée des avis
 
 Solution appliquée : les notes utilisent une empreinte visiteur hashée (`public_actor_hash`) avec une clé unique par recette/visiteur. Les commentaires publics sont insérés avec le statut `pending` et ne sont affichés côté front-office que lorsqu'un administrateur les passe en `approved`. Les actions admin de modération passent par POST et CSRF.
 
-Fichiers concernés : `src/Controller/RecipeController.php`, `src/Vues/recipe.tpl.php`, `app/repositories/RecipeInteractionRepository.php`, `admin/comments/index.php`, `database.sql`.
+Fichiers concernés : `src/Controller/RecipeController.php`, `src/Vues/recipe.tpl.php`, `app/repositories/RecipeInteractionRepository.php`, `src/Controller/Admin/CommentAdminController.php`, `database.sql`.
 
 Extrait réel :
 
@@ -536,7 +532,7 @@ Menace : session administrateur laissée ouverte sur un poste partagé, absence 
 
 Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail. Une page admin dédiée permet ensuite de filtrer ce journal par type, recherche libre et plage de dates, de le paginer, de l'exporter en CSV et de nettoyer les anciennes entrées. Un script CLI permet aussi d'automatiser le nettoyage via une tâche planifiée.
 
-Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/repositories/LoginAttemptRepository.php`, `app/helpers/functions.php`, `admin/dashboard.php`, `admin/security-logs/index.php`, `scripts/cleanup_security_data.php`, `database.sql`.
+Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/repositories/LoginAttemptRepository.php`, `app/helpers/functions.php`, `src/Controller/Admin/DashboardController.php`, `src/Controller/Admin/SecurityLogAdminController.php`, `scripts/cleanup_security_data.php`, `database.sql`.
 
 Extrait réel :
 
@@ -609,7 +605,7 @@ private function filteredQueryParts(array $filters): array
 ```
 
 ```php
-// admin/security-logs/index.php — export CSV réservé aux admins
+// src/Controller/Admin/SecurityLogAdminController.php — export CSV réservé aux admins
 if (!$error && (string) ($_GET['export'] ?? '') === 'csv') {
     $exportLogs = $securityLogRepo->filtered($filters, 5000, 0);
     header('Content-Type: text/csv; charset=UTF-8');
@@ -638,7 +634,7 @@ Limite restante : envoyer ces logs vers un service externe en production pour é
 - Tentative XSS dans titre recette : affichée comme texte avec `e()`.
 - Tentative SQLi dans login : requête préparée, pas de concaténation SQL.
 - Suppression recette sans CSRF : refusée par `require_valid_csrf()`.
-- Accès `/admin/dashboard.php` sans connexion : redirection login.
+- Accès `/admin/dashboard` sans connexion : redirection login.
 - Upload fichier `.php` : extension refusée.
 - Upload image trop lourde : limite 2 Mo.
 - Plusieurs échecs login : blocage après 5 échecs récents.
@@ -648,8 +644,8 @@ Limite restante : envoyer ces logs vers un service externe en production pour é
 - **Tentative d'auto-suppression admin** (curl POST avec id du compte courant) : refusée serveur avec flash explicite.
 - **Confirmation modale** : Escape annule, Enter confirme, Tab reste dans la modale (focus trap), bouton Annuler n'envoie aucune requête.
 - **Commentaire public** : insertion en `pending`, invisible côté public avant approbation admin.
-- **Journal sécurité** : duplication recette et login admin créent une entrée `security_logs`; la page `/admin/security-logs/index.php` filtre par type, recherche, dates et pagine les événements.
-- **Export CSV journal** : `/admin/security-logs/index.php?export=csv` renvoie un fichier CSV après authentification admin avec les mêmes filtres que l'écran.
+- **Journal sécurité** : duplication recette et login admin créent une entrée `security_logs`; la page `/admin/journal-securite` filtre par type, recherche, dates et pagine les événements.
+- **Export CSV journal** : `/admin/journal-securite?export=csv` renvoie un fichier CSV après authentification admin avec les mêmes filtres que l'écran.
 - **Nettoyage journal** : l'action de nettoyage est en POST + CSRF et supprime les logs/tentatives anciennes via requêtes préparées.
 - **Maintenance CLI** : `php scripts/cleanup_security_data.php --dry-run` compte les entrées anciennes et `php scripts/cleanup_security_data.php --days=90` les supprime puis journalise `maintenance_cleanup`.
 - **Tests automatisés PHPUnit** : `composer test` exécute 12 tests / 25 assertions sur hash admin, CSRF, HTTPS, validation serveur, repositories de logs et nettoyage.

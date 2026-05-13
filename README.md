@@ -17,7 +17,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - JavaScript vanilla (4 fichiers : `presentation.js`, `recipes.js`, `admin.js`, `toasts.js`).
 - Tailwind CSS 3.4 compilé localement.
 - Google Fonts (Fraunces + Inter + JetBrains Mono) servis via une CSP nonce.
-- Front controller AltoRouter (`public/index.php`) + URLs propres compatibles Apache/MAMP.
+- Point d'entrée unique AltoRouter (`public/index.php`) + URLs propres compatibles Apache/MAMP, XAMPP, LAMP et Railway.
 - Architecture MVC classique demandée en cours : `src/Controller`, `src/Model`, `src/Vues`.
 
 ## Fonctionnalités front-office
@@ -49,7 +49,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Aperçu admin avant publication.
 - Duplication d'une recette en brouillon.
 - Modération des commentaires : approuver, refuser, supprimer.
-- Journal sécurité complet `/admin/security-logs/index.php` avec filtres, plage de dates, pagination serveur et nettoyage des anciens événements.
+- Journal sécurité complet `/admin/journal-securite` avec filtres, plage de dates, pagination serveur et nettoyage des anciens événements.
 - Export CSV du journal sécurité avec les mêmes filtres que l'écran, y compris la plage de dates.
 - Upload sécurisé des images de recettes.
 - CRUD complet des administrateurs avec **recherche live** + **pagination**.
@@ -141,10 +141,10 @@ Le projet suit maintenant la logique vue en cours :
 - **DocumentRoot MAMP/Apache** : pointer vers `public/`.
 - **Front controller** : `public/index.php` reçoit les URLs propres et les envoie vers les contrôleurs.
 - **Réécriture URL** : `public/.htaccess` renvoie les URLs non-fichiers vers `public/index.php`.
-- **URLs principales** : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/conformite`, `/stack`.
+- **URLs principales** : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/conformite`, `/stack`, `/admin/dashboard`.
 - **Page conformité** : `/conformite` justifie chaque critère du sujet avec preuves de code.
-- **Compatibilité** : les anciennes URLs `.php` restent accessibles (`/recipes.php`, `/recipe.php?slug=...`, `/login.php`).
-- **MVC classique côté public** : `src/Controller` prépare les données, `src/Model` appelle les repositories PDO, `src/Vues` affiche le HTML.
+- **MVC classique** : `src/Controller` et `src/Controller/Admin` préparent les données, `src/Model` appelle les repositories PDO, `src/Vues` affiche le HTML.
+- **Back-office routé** : l'admin passe par AltoRouter (`/admin/dashboard`, `/admin/recettes`, `/admin/administrateurs`) et non par des fichiers PHP directs.
 - **Repositories conservés** : `app/repositories` garde les requêtes PDO préparées pour ne pas dupliquer l'accès SQL.
 
 Configuration MAMP recommandée :
@@ -230,7 +230,7 @@ Pour la base de données Railway :
 
 Le code accepte aussi les variables natives Railway `MYSQLHOST`, `MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD` en fallback si les variables `DB_*` ne sont pas définies.
 
-Les vrais fichiers admin restent dans `admin/`. Les fichiers `public/admin/*` sont des wrappers qui chargent ces pages pour rendre les URLs `/admin/...` compatibles avec une racine web `public/`.
+Le dossier `public/` ne contient plus de pages PHP directes hors `index.php` : le front-office et le back-office passent par AltoRouter.
 
 ## Maintenance sécurité
 

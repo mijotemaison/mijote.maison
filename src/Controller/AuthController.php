@@ -14,7 +14,7 @@ final class AuthController extends AbstractController
     public function login(): void
     {
         if (\is_admin_authenticated()) {
-            \redirect('/admin/dashboard.php');
+            \redirect('/admin/dashboard');
         }
 
         if (\is_post()) {
@@ -64,7 +64,7 @@ final class AuthController extends AbstractController
             \login_admin($admin);
             \record_security_event($pdo, 'login_success', 'Connexion administrateur reussie.', (string) $admin['email']);
             \flash('success', 'Connexion réussie.');
-            \redirect('/admin/dashboard.php');
+            \redirect('/admin/dashboard');
         } catch (Throwable) {
             \flash('error', 'Connexion impossible pour le moment.');
             \redirect('/connexion');

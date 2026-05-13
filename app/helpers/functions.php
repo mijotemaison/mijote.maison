@@ -133,12 +133,8 @@ function is_nav_active(string $href): bool
     }
 
     return match ($href) {
-        '/recettes' => $path === '/recipes.php' || $path === '/recipe.php' || str_starts_with($path, '/recette/'),
-        '/connexion' => $path === '/login.php',
-        '/presentation' => $path === '/presentation.php',
-        '/conformite' => $path === '/conformite.php',
-        '/stack' => $path === '/stack.php',
-        '/a-propos' => $path === '/about.php',
+        '/recettes' => str_starts_with($path, '/recette/'),
+        '/admin/dashboard' => str_starts_with($path, '/admin'),
         default => false,
     };
 }
@@ -220,6 +216,7 @@ function public_header(string $title, ?array $og = null): void
     <meta name="twitter:title" content="{$ogTitle}">
     <meta name="twitter:description" content="{$ogDesc}">
     <meta name="twitter:image" content="{$ogImage}">
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
@@ -248,13 +245,16 @@ HTML;
     echo nav_link('/conformite', 'Conformité');
     echo nav_link('/stack', 'Stack');
     if (is_admin_authenticated()) {
-        echo nav_link('/admin/dashboard.php', 'Back-office');
+        echo nav_link('/admin/dashboard', 'Back-office');
     } else {
         echo nav_link('/connexion', 'Connexion');
     }
     echo <<<HTML
         </div>
     </nav>
+    <div class="border-t border-orange-100/70 bg-white/70 px-4 py-2 text-center text-xs font-bold uppercase tracking-[0.14em] text-ink/60">
+        Projet factice réalisé dans le cadre d’une formation.
+    </div>
 </header>
 <main id="main">
 HTML;
@@ -273,7 +273,13 @@ function public_footer(): void
                 <p class="text-xs text-ink/60">Des recettes simples pour cuisiner avec plaisir.</p>
             </div>
         </div>
-        <p class="smallcaps text-xs font-semibold text-ink/55">Recettes familiales · Plats maison · Desserts gourmands</p>
+        <div class="flex flex-col items-start gap-2 sm:items-end">
+            <p class="smallcaps text-xs font-semibold text-ink/55">Recettes familiales · Plats maison · Desserts gourmands</p>
+            <div class="flex flex-wrap gap-3 text-xs font-bold text-ink/60">
+                <a class="hover:text-tomato" href="/mentions-legales">Mentions légales</a>
+                <a class="hover:text-tomato" href="/politique-confidentialite">Politique de confidentialité</a>
+            </div>
+        </div>
     </div>
 </footer>
 </body>
@@ -283,7 +289,7 @@ HTML;
 
 function admin_header(string $title): void
 {
-    $pageTitle = e($title . ' - Espace équipe');
+    $pageTitle = e($title . ' - Back-office Mijoté Maison');
     echo <<<HTML
 <!doctype html>
 <html lang="fr">
@@ -292,6 +298,7 @@ function admin_header(string $title): void
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0a0a12">
     <title>{$pageTitle}</title>
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
@@ -302,18 +309,18 @@ function admin_header(string $title): void
 <div class="min-h-screen lg:flex">
     <aside class="border-b border-white/10 bg-slate-950/95 lg:min-h-screen lg:w-72 lg:border-b-0 lg:border-r">
         <div class="flex items-center justify-between px-5 py-5 lg:block">
-            <a class="flex items-center gap-3 font-semibold text-white" href="/admin/dashboard.php">
+            <a class="flex items-center gap-3 font-semibold text-white" href="/admin/dashboard">
                 <img class="h-10 w-10 rounded-xl bg-white" src="/assets/img/logo-mijote-maison.svg" alt="">
-                <span>Espace équipe</span>
+                <span>Back-office</span>
             </a>
             <a class="text-sm text-slate-400 hover:text-white lg:hidden" href="/deconnexion">Sortir</a>
         </div>
         <nav class="grid gap-1 px-3 pb-5 text-sm">
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/dashboard.php">Dashboard</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/recipes/index.php">Recettes</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/comments/index.php">Commentaires</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/security-logs/index.php">Journal</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/admins/index.php">Administrateurs</a>
+            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/dashboard">Dashboard</a>
+            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/recettes">Recettes</a>
+            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/commentaires">Commentaires</a>
+            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/journal-securite">Journal</a>
+            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/administrateurs">Administrateurs</a>
             <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/presentation">Presentation</a>
             <a class="hidden rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white lg:block" href="/deconnexion">Deconnexion</a>
         </nav>

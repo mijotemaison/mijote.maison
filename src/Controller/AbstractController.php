@@ -19,9 +19,4 @@ abstract class AbstractController
         extract($data, EXTR_SKIP);
         require $viewPath;
     }
-
-    protected function renderLegacyPublicPage(string $file): void
-    {
-        require PUBLIC_PATH . '/' . $file;
-    }
 }

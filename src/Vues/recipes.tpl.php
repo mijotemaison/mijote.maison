@@ -42,7 +42,9 @@
     <?php if ($dbError): ?>
         <div class="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-amber-900"><?= e($dbError) ?></div>
     <?php elseif (!$recipes): ?>
-        <div class="rounded-3xl border border-orange-100 bg-white p-5 text-stone-600">Aucune recette publiée pour le moment.</div>
+        <div class="rounded-3xl border border-orange-100 bg-white p-5 text-stone-600">
+            <?= e(($query !== '' || $category !== '') ? 'Aucune recette ne correspond à votre recherche ou au filtre choisi.' : 'Aucune recette publiée pour le moment.') ?>
+        </div>
     <?php else: ?>
         <div class="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
             <?php foreach ($recipes as $recipe): ?>

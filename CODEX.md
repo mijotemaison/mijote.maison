@@ -21,14 +21,12 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 
 ## Architecture
 
-- `public/` contient le front controller, les wrappers de compatibilite `.php` et les assets.
-- `public/index.php` est le front controller AltoRouter pour les URLs propres.
-- `public/router.php` reste un proxy de compatibilite pour le serveur PHP lance avec l'ancienne commande.
+- `public/` contient uniquement le front controller, `.htaccess`, les assets publics, les uploads et le favicon.
+- `public/index.php` est le point d'entrée unique AltoRouter pour le front-office et le back-office.
 - `public/.htaccess` permet a Apache/MAMP de renvoyer les URLs non-fichiers vers `public/index.php`.
-- `src/Controller/` contient les controleurs MVC publics.
+- `src/Controller/` contient les controleurs MVC publics et les controleurs admin.
 - `src/Model/` contient les modeles MVC publics qui appellent les repositories PDO.
-- `src/Vues/` contient les vues PHP publiques.
-- `admin/` contient les pages réservées aux administrateurs.
+- `src/Vues/` contient les vues PHP publiques et admin.
 - `app/config/` contient la configuration.
 - `app/helpers/` contient les fonctions transverses (`e()`, `public_header()`, `nav_link()`, `render_flash()`, etc.).
 - `app/security/` contient les protections (auth, CSRF, brute force, upload, headers + nonce CSP).
@@ -38,11 +36,11 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 
 ## Methode du prof / MVC classique
 
-- URLs principales : `/`, `/recettes`, `/recette/{slug}`, `/recette/{slug}/impression`, `/connexion`, `/presentation`, `/conformite`, `/stack`.
-- Anciennes URLs `.php` conservees pendant la transition : `/recipes.php`, `/recipe.php?slug=...`, `/recipe-print.php?slug=...`, `/login.php`, `/presentation.php`, `/conformite.php`, `/stack.php`.
-- Controller = `src/Controller/*` pour le front-office public.
+- URLs principales : `/`, `/recettes`, `/recette/{slug}`, `/recette/{slug}/impression`, `/connexion`, `/presentation`, `/conformite`, `/stack`, `/admin/dashboard`, `/admin/recettes`, `/admin/administrateurs`.
+- Les anciennes URLs `.php` publiques et admin ont été supprimées : tout passe par `public/index.php`.
+- Controller = `src/Controller/*` pour le front-office public et `src/Controller/Admin/*` pour le back-office.
 - Model = `src/Model/*`, avec delegation vers `app/repositories/*` pour les requetes PDO prepare/execute.
-- Vue = `src/Vues/*.tpl.php`.
+- Vue = `src/Vues/*.tpl.php` et `src/Vues/admin/*.tpl.php`.
 - Front controller = `public/index.php` avec AltoRouter.
 - Rewrite Apache/MAMP = `public/.htaccess`.
 - DocumentRoot MAMP/Apache = dossier `public/`.
@@ -71,7 +69,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - Tableaux admin → `<table data-table="<key>" data-page-size="10">` + lignes `<tr data-search="<haystack>">` + toolbar `[data-table-toolbar="<key>"]` avec `[data-table-search]`, `[data-table-prev]`, `[data-table-next]`, `[data-table-indicator]`. Activation automatique par `admin.js`.
 - Skip link → injecté en première ligne du `<body>` par `public_header()` (`<a class="skip-link" href="#main">`).
 - Open Graph & SEO → `public_header($title, $og)` accepte un tableau optionnel `['type' => 'article', 'title' => '...', 'description' => '...', 'image' => '/path/relatif']`. URL et image sont normalisées en absolu automatiquement.
-- JSON-LD → uniquement sur `/recipe.php`, généré depuis les colonnes `ingredients` et `preparation_steps`, encodé avec `JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES`, injecté avec nonce CSP.
+- JSON-LD → uniquement sur `/recette/{slug}`, généré depuis les colonnes `ingredients` et `preparation_steps`, encodé avec `JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES`, injecté avec nonce CSP.
 - Classes design AAA dans `input.css` (`.btn-primary`, `.btn-secondary`, `.flash-toast`, `.modal-confirm`, `.presenter-bar`, etc.). Ne **pas** redéfinir ces classes en inline.
 
 ## Règles de sécurité
@@ -87,7 +85,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - Vérification MIME avec `finfo_file()`.
 - Nom de fichier aléatoire via `random_bytes()`.
 - Protection brute force via table `login_attempts`.
-- **Self-delete admin bloqué** côté UI (badge « Vous » via `current_admin_id()`) ET côté serveur (rejet dans `admin/admins/delete.php`).
+- **Self-delete admin bloqué** côté UI (badge « Vous » via `current_admin_id()`) ET côté serveur (rejet dans `src/Controller/Admin/AdminUserController.php`).
 - **Suppression du dernier admin bloquée**.
 
 ## Installation locale
@@ -96,7 +94,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 npm install
 npm run build-css
 mysql -u root -p < database.sql
-php -S localhost:8000 -t public
+php -S 127.0.0.1:8888 -t public public/index.php
 ```
 
 Avec les URLs propres, utiliser de preference :
@@ -152,7 +150,7 @@ npm run watch-css
 - SQLi login sans effet.
 - Brute force déclenche le blocage.
 - CSP présente avec nonce différent à chaque requête.
-- JSON-LD `Recipe` valide sur `/recipe.php` ([validator.schema.org](https://validator.schema.org/)).
+- JSON-LD `Recipe` valide sur `/recette/{slug}` ([validator.schema.org](https://validator.schema.org/)).
 - Open Graph présent (vérifier dans la source HTML).
 - Skip link visible au focus clavier (Tab depuis la barre d'adresse).
 - `prefers-reduced-motion` honoré (animations désactivées).

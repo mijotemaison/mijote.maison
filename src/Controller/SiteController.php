@@ -45,16 +45,30 @@ final class SiteController extends AbstractController
 
     public function presentation(): void
     {
-        $this->renderLegacyPublicPage('presentation.php');
+        $this->render('presentation');
     }
 
     public function conformite(): void
     {
-        $this->renderLegacyPublicPage('conformite.php');
+        $this->render('conformite');
     }
 
     public function stack(): void
     {
-        $this->renderLegacyPublicPage('stack.php');
+        $this->render('stack');
+    }
+
+    public function legalNotice(): void
+    {
+        \public_header('Mentions légales');
+        $this->render('legal_notice');
+        \public_footer();
+    }
+
+    public function privacyPolicy(): void
+    {
+        \public_header('Politique de confidentialité');
+        $this->render('privacy_policy');
+        \public_footer();
     }
 }
