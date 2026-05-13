@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
     <title><?= e(($recipe['title'] ?? 'Recette') . ' - version imprimable - Mijoté Maison') ?></title>
-    <link rel="stylesheet" href="/assets/css/output.css">
+    <link rel="stylesheet" href="<?= e(versioned_asset('assets/css/output.css')) ?>">
 </head>
 <body class="bg-white text-stone-950 antialiased">
 <main class="mx-auto max-w-4xl px-6 py-8">

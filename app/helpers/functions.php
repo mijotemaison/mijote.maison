@@ -33,6 +33,14 @@ function asset(string $path): string
     return '/' . ltrim($path, '/');
 }
 
+function versioned_asset(string $path): string
+{
+    $publicPath = dirname(__DIR__, 2) . '/public/' . ltrim($path, '/');
+    $url = asset($path);
+
+    return is_file($publicPath) ? $url . '?v=' . filemtime($publicPath) : $url;
+}
+
 function recipe_image_url(?string $imagePath): string
 {
     if ($imagePath === null || $imagePath === '') {
@@ -185,6 +193,11 @@ function nav_link(string $href, string $label): string
 
 function public_header(string $title, ?array $og = null): void
 {
+    $faviconUrl = e(versioned_asset('assets/img/favicon.svg'));
+    $cssUrl = e(versioned_asset('assets/css/output.css'));
+    $presentationJsUrl = e(versioned_asset('assets/js/presentation.js'));
+    $recipesJsUrl = e(versioned_asset('assets/js/recipes.js'));
+    $toastsJsUrl = e(versioned_asset('assets/js/toasts.js'));
     $pageTitle = e($title . ' - Mijoté Maison');
     $ogType = e($og['type'] ?? 'website');
     $ogTitle = e($og['title'] ?? ($title . ' — Mijoté Maison'));
@@ -216,14 +229,14 @@ function public_header(string $title, ?array $og = null): void
     <meta name="twitter:title" content="{$ogTitle}">
     <meta name="twitter:description" content="{$ogDesc}">
     <meta name="twitter:image" content="{$ogImage}">
-    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="{$faviconUrl}" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
-    <link rel="stylesheet" href="/assets/css/output.css">
-    <script src="/assets/js/presentation.js" defer></script>
-    <script src="/assets/js/recipes.js" defer></script>
-    <script src="/assets/js/toasts.js" defer></script>
+    <link rel="stylesheet" href="{$cssUrl}">
+    <script src="{$presentationJsUrl}" defer></script>
+    <script src="{$recipesJsUrl}" defer></script>
+    <script src="{$toastsJsUrl}" defer></script>
 </head>
 <body class="min-h-screen bg-parchment text-ink antialiased font-sans">
 <a class="skip-link" href="#main">Aller au contenu</a>
@@ -289,6 +302,9 @@ HTML;
 
 function admin_header(string $title): void
 {
+    $faviconUrl = e(versioned_asset('assets/img/favicon.svg'));
+    $cssUrl = e(versioned_asset('assets/css/output.css'));
+    $toastsJsUrl = e(versioned_asset('assets/js/toasts.js'));
     $pageTitle = e($title . ' - Back-office Mijoté Maison');
     echo <<<HTML
 <!doctype html>
@@ -298,12 +314,12 @@ function admin_header(string $title): void
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0a0a12">
     <title>{$pageTitle}</title>
-    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="{$faviconUrl}" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
-    <link rel="stylesheet" href="/assets/css/output.css">
-    <script src="/assets/js/toasts.js" defer></script>
+    <link rel="stylesheet" href="{$cssUrl}">
+    <script src="{$toastsJsUrl}" defer></script>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans">
 <div class="min-h-screen lg:flex">
@@ -332,11 +348,12 @@ HTML;
 
 function admin_footer(): void
 {
+    $adminJsUrl = e(versioned_asset('assets/js/admin.js'));
     echo <<<HTML
         </div>
     </main>
 </div>
-<script src="/assets/js/admin.js" defer></script>
+<script src="{$adminJsUrl}" defer></script>
 </body>
 </html>
 HTML;

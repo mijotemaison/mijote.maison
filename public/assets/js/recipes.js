@@ -6,7 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!search || cards.length === 0) return;
 
-  let activeCategory = 'all';
+  const currentParams = new URLSearchParams(window.location.search);
+  let activeCategory = currentParams.get('category') || 'all';
+  if (activeCategory !== 'all' && !chips.some((chip) => chip.dataset.recipeFilter === activeCategory)) {
+    activeCategory = 'all';
+  }
 
   function normalize(value) {
     return value.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
@@ -30,8 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   chips.forEach((chip) => {
-    chip.addEventListener('click', () => {
+    chip.addEventListener('click', (event) => {
+      event.preventDefault();
       activeCategory = chip.dataset.recipeFilter || 'all';
+
+      const url = new URL('/recettes', window.location.origin);
+      const query = search.value.trim();
+      if (query !== '') {
+        url.searchParams.set('q', query);
+      }
+      if (activeCategory !== 'all') {
+        url.searchParams.set('category', activeCategory);
+      }
+
       chips.forEach((item) => {
         const active = item === chip;
         item.classList.toggle('bg-tomato', active);
@@ -42,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         item.classList.toggle('border-orange-200', !active);
       });
       render();
+      window.location.href = url.toString();
     });
   });
 
