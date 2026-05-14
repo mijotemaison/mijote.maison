@@ -1,145 +1,167 @@
-<section class="relative overflow-hidden bg-[#fff1dc]">
-    <div class="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[.95fr_1.05fr] lg:items-center lg:px-8 lg:py-14">
-        <div class="relative z-10">
-            <span class="inline-flex rounded-full border border-orange-200 bg-white px-4 py-2 text-sm font-extrabold text-tomato shadow-sm">Cuisine familiale · Recettes de saison</span>
-            <h1 class="mt-6 max-w-3xl font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-7xl">Des recettes maison, simples et généreuses.</h1>
-            <p class="mt-5 max-w-2xl text-lg leading-8 text-stone-700">Mijoté Maison rassemble des idées gourmandes pour tous les jours : entrées fraîches, plats réconfortants, desserts à partager et recettes faciles à refaire à la maison.</p>
-            <div class="mt-8 flex flex-wrap gap-3">
-                <a class="btn-primary" href="/recettes">Voir toutes les recettes</a>
-                <a class="btn-secondary" href="#apercu-recettes">Découvrir la sélection</a>
+<section class="hero-section py-5">
+    <div class="container py-lg-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="kicker">Cuisine familiale · Recettes de saison</span>
+                <h1 class="display-3 fw-bold mt-4 mb-4">Des recettes maison, simples et généreuses.</h1>
+                <p class="lead lead-luxe mb-4">Mijoté Maison rassemble des idées gourmandes pour tous les jours : entrées fraîches, plats réconfortants, desserts à partager et recettes faciles à refaire à la maison.</p>
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <a class="btn btn-primary" href="/recettes">Voir toutes les recettes</a>
+                    <a class="btn btn-outline-secondary" href="#apercu-recettes">Découvrir la sélection</a>
+                </div>
+                <div class="row g-3 text-center">
+                    <div class="col-4"><div class="stat-card"><strong><?= e($totalRecipes > 0 ? (string) $totalRecipes : '10') ?></strong><span class="small text-muted">recettes</span></div></div>
+                    <div class="col-4"><div class="stat-card"><strong><?= e((string) count(recipe_categories())) ?></strong><span class="small text-muted">catégories</span></div></div>
+                    <div class="col-4"><div class="stat-card"><strong>15-45</strong><span class="small text-muted">minutes</span></div></div>
+                </div>
             </div>
-            <div class="mt-8 grid max-w-xl grid-cols-3 gap-3 text-center text-sm">
-                <div class="rounded-2xl bg-white p-4 shadow-sm"><strong class="block text-2xl text-tomato"><?= e($totalRecipes > 0 ? (string) $totalRecipes : '10') ?></strong><span class="text-stone-600">recettes</span></div>
-                <div class="rounded-2xl bg-white p-4 shadow-sm"><strong class="block text-2xl text-herb"><?= e((string) count(recipe_categories())) ?></strong><span class="text-stone-600">catégories</span></div>
-                <div class="rounded-2xl bg-white p-4 shadow-sm"><strong class="block text-2xl text-amber-600">15-45</strong><span class="text-stone-600">minutes</span></div>
-            </div>
-        </div>
-        <div class="relative">
-            <img class="aspect-[16/10] w-full rounded-[2rem] object-cover shadow-2xl shadow-orange-900/20" src="/assets/img/recipes/hero-cuisine-familiale.webp" alt="Table conviviale avec plusieurs plats maison">
-            <div class="absolute -bottom-6 left-6 max-w-xs rounded-3xl bg-white p-5 shadow-xl">
-                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-herb">Recette du moment</p>
-                <p class="mt-2 font-serif text-2xl font-bold text-stone-950">Fondant au chocolat</p>
-                <p class="mt-1 text-sm text-stone-600">Un cœur coulant, une boule de glace, et le dessert disparaît vite.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="bg-cream py-16">
-    <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:px-8">
-        <div>
-            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Bienvenue</p>
-            <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">Une page d'accueil claire pour trouver vite une bonne idée.</h2>
-            <p class="mt-4 text-lg leading-8 text-stone-700">Le site présente une sélection de recettes accessibles au grand public. Chaque carte affiche le titre, une image et une courte description, puis renvoie vers une page recette détaillée.</p>
-        </div>
-        <div class="grid gap-4 sm:grid-cols-3">
-            <div class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
-                <p class="text-3xl">🍲</p>
-                <h3 class="mt-4 font-serif text-2xl font-bold text-stone-950">Entrées</h3>
-                <p class="mt-2 text-sm leading-6 text-stone-600">Veloutés, salades et idées fraîches.</p>
-            </div>
-            <div class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
-                <p class="text-3xl">🍝</p>
-                <h3 class="mt-4 font-serif text-2xl font-bold text-stone-950">Plats</h3>
-                <p class="mt-2 text-sm leading-6 text-stone-600">Recettes simples pour le quotidien.</p>
-            </div>
-            <div class="rounded-[1.5rem] border border-orange-100 bg-white p-5 shadow-sm">
-                <p class="text-3xl">🍫</p>
-                <h3 class="mt-4 font-serif text-2xl font-bold text-stone-950">Desserts</h3>
-                <p class="mt-2 text-sm leading-6 text-stone-600">Douceurs familiales à partager.</p>
+            <div class="col-lg-6 position-relative pb-4">
+                <img class="hero-img" src="/assets/img/recipes/hero-cuisine-familiale.webp" alt="Table conviviale avec plusieurs plats maison">
+                <div class="floating-note d-none d-md-block">
+                    <p class="kicker mb-2">Recette du moment</p>
+                    <p class="display-font fs-3 fw-bold mb-1">Fondant au chocolat</p>
+                    <p class="small text-muted mb-0">Un cœur coulant, une boule de glace, et le dessert disparaît vite.</p>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<section id="apercu-recettes" class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-    <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">À table</p>
-            <h2 class="mt-2 font-serif text-4xl font-bold text-stone-950">Quelques recettes à découvrir</h2>
-            <p class="mt-2 max-w-2xl text-stone-600">Un aperçu des recettes disponibles, avec navigation vers les pages détaillées.</p>
+<section class="section-soft py-5">
+    <div class="container py-lg-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-5">
+                <span class="kicker">Bienvenue</span>
+                <h2 class="display-font display-6 fw-bold mt-3">Une page d'accueil claire pour trouver vite une bonne idée.</h2>
+                <p class="lead-luxe mb-0">Le site présente une sélection de recettes accessibles au grand public. Chaque carte affiche le titre, une image et une courte description, puis renvoie vers une page recette détaillée.</p>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <article class="lux-card h-100 p-4">
+                            <p class="fs-1 mb-3">🍲</p>
+                            <h3 class="display-font fs-3 fw-bold">Entrées</h3>
+                            <p class="text-muted mb-0">Veloutés, salades et idées fraîches.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-4">
+                        <article class="lux-card h-100 p-4">
+                            <p class="fs-1 mb-3">🍝</p>
+                            <h3 class="display-font fs-3 fw-bold">Plats</h3>
+                            <p class="text-muted mb-0">Recettes simples pour le quotidien.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-4">
+                        <article class="lux-card h-100 p-4">
+                            <p class="fs-1 mb-3">🍫</p>
+                            <h3 class="display-font fs-3 fw-bold">Desserts</h3>
+                            <p class="text-muted mb-0">Douceurs familiales à partager.</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
         </div>
-        <a class="btn-secondary" href="/recettes">Voir la liste complète</a>
     </div>
+</section>
 
-    <?php if ($dbError): ?>
-        <div class="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-amber-900"><?= e($dbError) ?></div>
-    <?php elseif (!$recipes): ?>
-        <div class="rounded-3xl border border-orange-100 bg-white p-5 text-stone-600">Aucune recette publiée pour le moment.</div>
-    <?php else: ?>
-        <div class="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-            <?php foreach ($recipes as $recipe): ?>
-                <?php $meta = recipe_public_meta($recipe['slug'] ?? null); ?>
-                <?php $rating = $ratingSummaries[(int) $recipe['id']] ?? ['average' => 0, 'count' => 0]; ?>
-                <article class="group overflow-hidden rounded-[1.6rem] border border-orange-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-900/10">
-                    <a href="<?= e(recipe_url((string) $recipe['slug'])) ?>" class="block">
-                        <div class="relative">
-                            <img class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
-                            <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-tomato shadow-sm"><?= e(recipe_category_label($recipe['category'] ?? null)) ?></span>
-                        </div>
-                        <div class="p-5">
-                            <div class="mb-3 flex flex-wrap gap-2 text-xs font-extrabold text-stone-600">
-                                <span class="rounded-full bg-orange-50 px-3 py-1"><?= e($meta['time']) ?></span>
-                                <span class="rounded-full bg-emerald-50 px-3 py-1 text-herb"><?= e($meta['level']) ?></span>
-                            </div>
-                            <div class="mb-3 flex items-center gap-2 text-xs font-bold text-stone-500">
-                                <?= render_stars((float) $rating['average'], 'text-base') ?>
-                                <span><?= e($rating['count'] > 0 ? number_format((float) $rating['average'], 1, ',', ' ') . '/5 · ' . $rating['count'] . ' avis' : 'Pas encore notée') ?></span>
-                            </div>
-                            <h3 class="font-serif text-2xl font-bold leading-tight text-stone-950"><?= e($recipe['title']) ?></h3>
-                            <p class="mt-3 min-h-16 text-sm leading-6 text-stone-600"><?= e($recipe['short_description']) ?></p>
-                            <span class="mt-5 inline-flex font-extrabold text-tomato">Voir la recette →</span>
-                        </div>
-                    </a>
-                </article>
-            <?php endforeach; ?>
+<section id="apercu-recettes" class="py-5">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
+            <div>
+                <span class="kicker">À table</span>
+                <h2 class="display-font display-6 fw-bold mt-2">Quelques recettes à découvrir</h2>
+                <p class="text-muted mb-0">Un aperçu des recettes disponibles, avec navigation vers les pages détaillées.</p>
+            </div>
+            <a class="btn btn-outline-secondary" href="/recettes">Voir la liste complète</a>
         </div>
-    <?php endif; ?>
+
+        <?php if ($dbError): ?>
+            <div class="alert alert-warning rounded-4"><?= e($dbError) ?></div>
+        <?php elseif (!$recipes): ?>
+            <div class="alert alert-light border rounded-4">Aucune recette publiée pour le moment.</div>
+        <?php else: ?>
+            <div class="row g-4">
+                <?php foreach ($recipes as $recipe): ?>
+                    <?php $meta = recipe_public_meta($recipe['slug'] ?? null); ?>
+                    <?php $rating = $ratingSummaries[(int) $recipe['id']] ?? ['average' => 0, 'count' => 0]; ?>
+                    <div class="col-md-6 col-lg-4">
+                        <article class="recipe-card">
+                            <a href="<?= e(recipe_url((string) $recipe['slug'])) ?>" class="text-reset">
+                                <div class="position-relative overflow-hidden">
+                                    <img src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
+                                    <span class="recipe-badge"><?= e(recipe_category_label($recipe['category'] ?? null)) ?></span>
+                                </div>
+                                <div class="p-4">
+                                    <div class="d-flex flex-wrap gap-2 mb-3">
+                                        <span class="meta-pill"><?= e($meta['time']) ?></span>
+                                        <span class="meta-pill badge-herb"><?= e($meta['level']) ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 small text-muted mb-3">
+                                        <?= render_stars((float) $rating['average'], 'stars stars-sm') ?>
+                                        <span><?= e($rating['count'] > 0 ? number_format((float) $rating['average'], 1, ',', ' ') . '/5 · ' . $rating['count'] . ' avis' : 'Pas encore notée') ?></span>
+                                    </div>
+                                    <h3 class="display-font fs-3 fw-bold"><?= e($recipe['title']) ?></h3>
+                                    <p class="text-muted"><?= e($recipe['short_description']) ?></p>
+                                    <span class="fw-bold text-primary">Voir la recette →</span>
+                                </div>
+                            </a>
+                        </article>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
 </section>
 
 <?php if (!$dbError && $popularRecipes): ?>
-<section class="bg-[#fff1dc] py-14">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+<section class="section-blue-soft py-5">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
             <div>
-                <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Les plus consultées</p>
-                <h2 class="mt-2 font-serif text-4xl font-bold text-stone-950">Recettes populaires</h2>
-                <p class="mt-2 max-w-2xl text-stone-600">Un classement simple basé sur le nombre de vues enregistrées sur chaque page recette.</p>
+                <span class="kicker">Les plus consultées</span>
+                <h2 class="display-font display-6 fw-bold mt-2">Recettes populaires</h2>
+                <p class="text-muted mb-0">Un classement simple basé sur le nombre de vues enregistrées sur chaque page recette.</p>
             </div>
-            <a class="btn-secondary" href="/recettes">Explorer toutes les recettes</a>
+            <a class="btn btn-outline-secondary" href="/recettes">Explorer toutes les recettes</a>
         </div>
-        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <div class="row g-4">
             <?php foreach ($popularRecipes as $rank => $recipe): ?>
                 <?php $rating = $ratingSummaries[(int) $recipe['id']] ?? ['average' => 0, 'count' => 0]; ?>
-                <a class="group rounded-[1.5rem] border border-orange-100 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-900/10" href="<?= e(recipe_url((string) $recipe['slug'])) ?>">
-                    <div class="relative overflow-hidden rounded-[1.1rem]">
-                        <img class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
-                        <span class="absolute left-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-tomato text-sm font-black text-white shadow-lg">#<?= e((string) ($rank + 1)) ?></span>
-                    </div>
-                    <h3 class="mt-4 font-serif text-2xl font-bold leading-tight text-stone-950"><?= e($recipe['title']) ?></h3>
-                    <div class="mt-3 flex items-center gap-2 text-xs font-bold text-stone-500">
-                        <?= render_stars((float) $rating['average'], 'text-base') ?>
-                        <span><?= e(number_format((float) $rating['average'], 1, ',', ' ')) ?>/5</span>
-                    </div>
-                    <p class="mt-2 text-sm font-bold text-tomato"><?= e((string) ($recipe['view_count'] ?? 0)) ?> vues</p>
-                </a>
+                <div class="col-md-6 col-lg-3">
+                    <a class="recipe-card d-block text-reset p-3" href="<?= e(recipe_url((string) $recipe['slug'])) ?>">
+                        <div class="position-relative overflow-hidden rounded-4">
+                            <img src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
+                            <span class="position-absolute top-0 start-0 m-3 badge rounded-pill text-bg-primary">#<?= e((string) ($rank + 1)) ?></span>
+                        </div>
+                        <h3 class="display-font fs-4 fw-bold mt-3"><?= e($recipe['title']) ?></h3>
+                        <div class="d-flex align-items-center gap-2 small text-muted">
+                            <?= render_stars((float) $rating['average'], 'stars stars-sm') ?>
+                            <span><?= e(number_format((float) $rating['average'], 1, ',', ' ')) ?>/5</span>
+                        </div>
+                        <p class="fw-bold text-primary mt-2 mb-0"><?= e((string) ($recipe['view_count'] ?? 0)) ?> vues</p>
+                    </a>
+                </div>
             <?php endforeach; ?>
         </div>
     </div>
 </section>
 <?php endif; ?>
 
-<section class="bg-[#fff1dc] py-14">
-    <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:px-8">
-        <img class="aspect-[16/9] w-full rounded-[2rem] object-cover shadow-xl shadow-orange-900/10" src="/assets/img/recipes/ingredients-frais.webp" alt="Ingrédients frais sur un plan de travail">
-        <div>
-            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-herb">Dans le panier</p>
-            <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">Des ingrédients frais, des recettes faciles à aimer.</h2>
-            <p class="mt-4 text-lg leading-8 text-stone-700">Chaque recette est pensée pour être lisible et pratique : une belle photo, une liste d'ingrédients claire et des étapes simples.</p>
-            <div class="mt-6 flex flex-wrap gap-2 text-sm font-extrabold">
-                <span class="rounded-full bg-white px-4 py-2 text-herb shadow-sm">Produits frais</span>
-                <span class="rounded-full bg-white px-4 py-2 text-tomato shadow-sm">Cuisine maison</span>
-                <span class="rounded-full bg-white px-4 py-2 text-amber-700 shadow-sm">À partager</span>
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <img class="hero-img" src="/assets/img/recipes/ingredients-frais.webp" alt="Ingrédients frais sur un plan de travail">
+            </div>
+            <div class="col-lg-6">
+                <span class="kicker">Dans le panier</span>
+                <h2 class="display-font display-6 fw-bold mt-3">Des ingrédients frais, des recettes faciles à aimer.</h2>
+                <p class="lead-luxe">Chaque recette est pensée pour être lisible et pratique : une belle photo, une liste d'ingrédients claire et des étapes simples.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge-soft badge-herb">Produits frais</span>
+                    <span class="badge-soft badge-tomato">Cuisine maison</span>
+                    <span class="badge-soft">À partager</span>
+                </div>
             </div>
         </div>
     </div>

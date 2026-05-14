@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function show(i) {
     slides.forEach((slide, k) => {
       const active = k === i;
-      slide.classList.toggle('hidden', !active);
-      slide.classList.toggle('grid', active);
+      slide.classList.toggle('d-none', !active);
+      slide.classList.toggle('d-grid', active);
       if (active) {
         slide.classList.remove('is-leaving');
       }

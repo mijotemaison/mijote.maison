@@ -5,12 +5,12 @@ declare(strict_types=1);
 function render_code_panel(string $title, string $file, string $code): void
 {
     $id = 'code-' . md5($title . $file);
-    echo '<div class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-lg">';
-    echo '<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-slate-900 px-4 py-3">';
-    echo '<div><p class="text-sm font-extrabold text-white">' . e($title) . '</p><p class="text-xs text-slate-400">' . e($file) . '</p></div>';
-    echo '<button class="rounded-full border border-slate-700 px-3 py-1.5 text-xs font-extrabold text-slate-200 transition hover:bg-slate-800" type="button" data-copy-code="' . e($id) . '">Copier</button>';
+    echo '<div class="code-panel">';
+    echo '<div class="code-panel__header">';
+    echo '<div><p class="mb-1 small fw-black text-white">' . e($title) . '</p><p class="mb-0 small text-white-50">' . e($file) . '</p></div>';
+    echo '<button class="btn btn-sm btn-outline-light" type="button" data-copy-code="' . e($id) . '">Copier</button>';
     echo '</div>';
-    echo '<pre class="max-h-72 overflow-auto p-4 text-[0.78rem] leading-6 text-slate-100"><code id="' . e($id) . '">' . e(trim($code)) . '</code></pre>';
+    echo '<pre><code id="' . e($id) . '">' . e(trim($code)) . '</code></pre>';
     echo '</div>';
 }
 
@@ -44,11 +44,11 @@ $slides = [
     ],
     [
         'kicker' => 'Stack',
-        'title' => 'PHP, MySQL, Tailwind et JavaScript',
-        'lead' => 'La stack reste conforme au sujet : PHP, HTML, JavaScript et MySQL. Bootstrap est remplacé par Tailwind CSS.',
-        'oral' => 'PHP orchestre les pages, PDO sécurise l’accès à MySQL, Tailwind construit l’interface, et JavaScript ajoute l’interaction du carrousel et des filtres.',
-        'points' => ['PHP natif structuré, sans framework lourd.', 'MySQL avec PDO et requêtes préparées.', 'Tailwind compilé localement pour le design.', 'JavaScript vanilla pour les interactions.'],
-        'files' => ['package.json', 'tailwind.config.js', 'app/config/database.php'],
+        'title' => 'PHP, MySQL, Bootstrap et JavaScript',
+        'lead' => 'La stack suit le sujet officiel : PHP, HTML, JavaScript, Bootstrap et MySQL.',
+        'oral' => 'PHP orchestre les pages, PDO sécurise l’accès à MySQL, Bootstrap fournit les composants d’interface, et JavaScript ajoute l’interaction du carrousel et des filtres.',
+        'points' => ['PHP natif structuré, sans framework lourd.', 'MySQL avec PDO et requêtes préparées.', 'Bootstrap local, sans CDN, pour rester compatible avec la CSP.', 'JavaScript vanilla pour les interactions.'],
+        'files' => ['package.json', 'public/assets/vendor/bootstrap', 'app/config/database.php'],
         'code' => [
             [
                 'title' => 'Connexion PDO centralisée',
@@ -62,7 +62,7 @@ $pdo = new PDO($dsn, $user, $password, [
 PHP,
             ],
         ],
-        'test' => 'Vérification : npm run build-css compile Tailwind et les routes PHP utilisent la connexion PDO.',
+        'test' => 'Vérification : les assets Bootstrap locaux sont chargés et les routes PHP utilisent la connexion PDO.',
     ],
     [
         'kicker' => 'Architecture',
@@ -365,9 +365,9 @@ PHP,
         'title' => 'Ce qui a été vérifié',
         'lead' => 'Les tests manuels, HTTP, MySQL et PHPUnit couvrent les routes principales, les CRUD et les protections.',
         'oral' => 'J’ai testé l’application avec une vraie base MySQL temporaire, puis ajouté une suite PHPUnit pour vérifier automatiquement les fonctions sensibles et les repositories.',
-        'points' => ['29 tests MySQL réels passés.', '12 tests PHPUnit / 25 assertions.', 'Lint PHP complet sans erreur.', 'CSS Tailwind reconstruit.', 'CSP vérifiée dans les headers.'],
+        'points' => ['29 tests MySQL réels passés.', '12 tests PHPUnit / 25 assertions.', 'Lint PHP complet sans erreur.', 'Assets Bootstrap locaux vérifiés.', 'CSP vérifiée dans les headers.'],
         'files' => ['README.md', 'docs/rapport-securite.md', 'tests/*'],
-        'test' => 'Vérification : composer test, npm run build-css, lint PHP complet, HTTP 200 sur les pages publiques et login admin fonctionnel.',
+        'test' => 'Vérification : composer test, lint PHP complet, HTTP 200 sur les pages publiques et login admin fonctionnel.',
     ],
     [
         'kicker' => 'Conclusion',
@@ -382,90 +382,96 @@ PHP,
 
 public_header('Présentation');
 ?>
-<section class="bg-[#fff1dc]">
-    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+<section class="section-blue-soft py-4">
+    <div class="container py-lg-3">
+        <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-3 mb-4">
             <div>
-                <span class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato" data-counter>Slide 1 / <?= count($slides) ?></span>
-                <h1 class="mt-2 font-serif text-4xl font-bold text-stone-950">Présentation jury</h1>
+                <span class="kicker mb-2" data-counter>Slide 1 / <?= count($slides) ?></span>
+                <h1 class="section-title mb-0">Présentation jury</h1>
             </div>
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="d-flex flex-wrap align-items-center gap-2">
                 <div class="presenter-bar" data-presenter-bar>
                     <button type="button" class="presenter-bar__btn" data-presenter-toggle aria-pressed="false" title="Afficher les repères de lecture">Repères</button>
-                    <span class="presenter-bar__timer tabular" data-presenter-timer aria-label="Chronomètre">00:00</span>
+                    <span class="presenter-bar__timer" data-presenter-timer aria-label="Chronomètre">00:00</span>
                     <button type="button" class="presenter-bar__btn" data-presenter-reset title="Réinitialiser le chrono">↺</button>
                     <button type="button" class="presenter-bar__btn" data-presenter-fullscreen title="Plein écran">⛶</button>
                 </div>
-                <a class="btn-secondary" href="/">Accueil</a>
-                <a class="btn-secondary" href="/stack">Stack</a>
-                <a class="btn-secondary" href="/conformite">Conformité</a>
+                <a class="btn btn-outline-secondary" href="/">Accueil</a>
+                <a class="btn btn-outline-secondary" href="/stack">Stack</a>
+                <a class="btn btn-outline-secondary" href="/conformite">Conformité</a>
                 <?php if (is_admin_authenticated()): ?>
-                    <a class="btn-secondary" href="/admin/dashboard">Back-office</a>
+                    <a class="btn btn-outline-secondary" href="/admin/dashboard">Back-office</a>
                 <?php endif; ?>
             </div>
         </div>
 
-        <progress class="mb-5 h-2 w-full overflow-hidden rounded-full bg-white accent-tomato" value="1" max="<?= count($slides) ?>" data-progress></progress>
+        <progress class="w-100 mb-4 presentation-progress" value="1" max="<?= count($slides) ?>" data-progress></progress>
 
-        <div class="overflow-hidden rounded-[2rem] border border-orange-100 bg-white shadow-xl shadow-orange-900/10" data-deck>
+        <div class="presentation-deck lux-card lux-card-lg overflow-hidden" data-deck>
             <?php foreach ($slides as $index => $slide): ?>
-                <article class="<?= $index === 0 ? 'grid' : 'hidden' ?> min-h-[620px] gap-8 p-6 lg:grid-cols-[.82fr_1.18fr] lg:p-9" data-slide>
-                    <div class="flex flex-col justify-between gap-8">
-                        <div>
-                            <img class="h-16 w-16 rounded-3xl" src="/assets/img/logo-mijote-maison.svg" alt="">
-                            <span class="mt-8 inline-flex rounded-full bg-orange-50 px-4 py-2 text-sm font-extrabold text-tomato">Slide <?= $index + 1 ?></span>
-                            <p class="mt-6 text-sm font-extrabold uppercase tracking-[0.18em] text-herb"><?= e($slide['kicker']) ?></p>
-                            <h2 class="mt-3 font-serif text-4xl font-bold leading-tight text-stone-950 sm:text-6xl"><?= e($slide['title']) ?></h2>
-                            <p class="mt-5 text-xl leading-9 text-stone-700"><?= e($slide['lead']) ?></p>
-                        </div>
-                        <div class="rounded-3xl bg-[#fff7ed] p-5" data-presenter-only>
-                            <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Fil conducteur</p>
-                            <p class="mt-3 leading-7 text-stone-700"><?= e($slide['oral']) ?></p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-5">
-                        <div class="grid gap-4 sm:grid-cols-2">
-                            <div class="rounded-3xl border border-orange-100 bg-orange-50 p-5">
-                                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Points clés</p>
-                                <ul class="mt-4 space-y-3 text-sm leading-6 text-stone-700">
-                                    <?php foreach ($slide['points'] as $point): ?>
-                                        <li class="flex gap-3"><span class="mt-2 h-2 w-2 flex-none rounded-full bg-tomato"></span><span><?= e($point) ?></span></li>
-                                    <?php endforeach; ?>
-                                </ul>
+                <article class="presentation-slide <?= $index === 0 ? 'd-grid' : 'd-none' ?> p-4 p-lg-5" data-slide>
+                    <div class="row g-4 g-xl-5">
+                        <div class="col-xl-5 d-flex flex-column justify-content-between gap-4">
+                            <div>
+                                <img class="site-logo mb-4" src="/assets/img/logo-mijote-maison.svg" alt="">
+                                <span class="badge rounded-pill text-bg-light border mb-4 px-3 py-2">Slide <?= $index + 1 ?></span>
+                                <p class="kicker text-herb"><?= e($slide['kicker']) ?></p>
+                                <h2 class="display-5 fw-black text-ink mb-3"><?= e($slide['title']) ?></h2>
+                                <p class="lead text-secondary lh-lg"><?= e($slide['lead']) ?></p>
                             </div>
-                            <div class="rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
-                                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-herb">Fichiers concernés</p>
-                                <div class="mt-4 flex flex-wrap gap-2">
-                                    <?php foreach ($slide['files'] as $file): ?>
-                                        <span class="rounded-full bg-white px-3 py-1.5 text-xs font-extrabold text-stone-700 shadow-sm"><?= e($file) ?></span>
+                            <div class="rounded-4 bg-white border p-4 shadow-sm" data-presenter-only>
+                                <p class="kicker mb-2">Fil conducteur</p>
+                                <p class="mb-0 text-secondary lh-lg"><?= e($slide['oral']) ?></p>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-7">
+                            <div class="row g-4">
+                                <div class="col-lg-6">
+                                    <div class="lux-card h-100 p-4 bg-white">
+                                        <p class="kicker mb-3">Points clés</p>
+                                        <ul class="list-unstyled vstack gap-3 mb-0 text-secondary">
+                                            <?php foreach ($slide['points'] as $point): ?>
+                                                <li class="d-flex gap-2"><span class="text-primary fw-black">•</span><span><?= e($point) ?></span></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="lux-card h-100 p-4 bg-white">
+                                        <p class="kicker text-herb mb-3">Fichiers concernés</p>
+                                        <div class="d-flex flex-wrap gap-2 mb-4">
+                                            <?php foreach ($slide['files'] as $file): ?>
+                                                <span class="badge-soft"><?= e($file) ?></span>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <p class="kicker mb-2">Preuve de test</p>
+                                        <p class="small text-secondary lh-lg mb-0"><?= e($slide['test']) ?></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php if (!empty($slide['code'])): ?>
+                                <div class="vstack gap-3 mt-4">
+                                    <?php foreach ($slide['code'] as $block): ?>
+                                        <?php render_code_panel($block['title'], $block['file'], $block['body']); ?>
                                     <?php endforeach; ?>
                                 </div>
-                                <p class="mt-5 text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Preuve de test</p>
-                                <p class="mt-2 text-sm leading-6 text-stone-700"><?= e($slide['test']) ?></p>
-                            </div>
+                            <?php else: ?>
+                                <div class="lux-card p-4 mt-4">
+                                    <p class="kicker mb-2">Lecture de la slide</p>
+                                    <p class="mb-0 text-secondary lh-lg">Cette slide pose le contexte et relie la démonstration au sujet officiel. Les slides sécurité suivantes affichent directement les extraits de code.</p>
+                                </div>
+                            <?php endif; ?>
                         </div>
-
-                        <?php if (!empty($slide['code'])): ?>
-                            <div class="space-y-4">
-                                <?php foreach ($slide['code'] as $block): ?>
-                                    <?php render_code_panel($block['title'], $block['file'], $block['body']); ?>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php else: ?>
-                            <div class="rounded-3xl border border-orange-100 bg-white p-6 shadow-sm">
-                                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Lecture de la slide</p>
-                                <p class="mt-3 leading-7 text-stone-700">Cette slide sert à poser le contexte et à relier la démonstration au sujet officiel. Les slides sécurité suivantes affichent directement les extraits de code.</p>
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </article>
             <?php endforeach; ?>
         </div>
 
-        <div class="mt-6 flex justify-between gap-3">
-            <button class="btn-secondary" type="button" data-prev>Précédent</button>
-            <button class="btn-primary" type="button" data-next>Suivant</button>
+        <div class="d-flex justify-content-between gap-3 mt-4">
+            <button class="btn btn-outline-secondary" type="button" data-prev>Précédent</button>
+            <button class="btn btn-primary" type="button" data-next>Suivant</button>
         </div>
     </div>
 </section>

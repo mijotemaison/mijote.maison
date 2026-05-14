@@ -15,7 +15,8 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - PDO obligatoire.
 - HTML.
 - JavaScript vanilla (DOM API, **pas** d'`innerHTML` avec contenu dynamique).
-- Tailwind CSS 3.4 en remplacement de Bootstrap.
+- Bootstrap 5 local, sans CDN, comme demandé par le sujet.
+- CSS applicatif dans `public/assets/css/app.css`.
 - Google Fonts (Fraunces + Inter + JetBrains Mono) servis via CSP nonce.
 - Markdown / HTML / PDF pour la documentation.
 
@@ -51,7 +52,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 
 - PHP clair, fonctions courtes, noms explicites.
 - Pas de framework lourd.
-- Pas de Bootstrap.
+- Ne pas réintroduire l’ancien framework CSS utilitaire.
 - Pas de secret en dur.
 - Toujours échapper les données affichées avec `e()`.
 - Toujours utiliser PDO `prepare()` puis `execute()`.
@@ -70,7 +71,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - Skip link → injecté en première ligne du `<body>` par `public_header()` (`<a class="skip-link" href="#main">`).
 - Open Graph & SEO → `public_header($title, $og)` accepte un tableau optionnel `['type' => 'article', 'title' => '...', 'description' => '...', 'image' => '/path/relatif']`. URL et image sont normalisées en absolu automatiquement.
 - JSON-LD → uniquement sur `/recette/{slug}`, généré depuis les colonnes `ingredients` et `preparation_steps`, encodé avec `JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES`, injecté avec nonce CSP.
-- Classes design AAA dans `input.css` (`.btn-primary`, `.btn-secondary`, `.flash-toast`, `.modal-confirm`, `.presenter-bar`, etc.). Ne **pas** redéfinir ces classes en inline.
+- Classes design AAA dans `public/assets/css/app.css` (`.lux-card`, `.recipe-card`, `.flash-toast`, `.modal-confirm`, `.presenter-bar`, etc.). Ne **pas** redéfinir ces classes en inline.
 
 ## Règles de sécurité
 
@@ -92,7 +93,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 
 ```bash
 npm install
-npm run build-css
+npm run check-assets
 mysql -u root -p < database.sql
 php -S 127.0.0.1:8888 -t public public/index.php
 ```
@@ -117,11 +118,10 @@ APP_ENV=local
 APP_URL=http://localhost:8888
 ```
 
-## Commandes Tailwind
+## Commandes assets
 
 ```bash
-npm run build-css       # ~280 ms, output ~36 KB minifié
-npm run watch-css
+npm run check-assets    # vérifie Bootstrap local + app.css
 ```
 
 ## Checklist de tests
@@ -158,7 +158,7 @@ npm run watch-css
 
 ## Checklist avant push
 
-- `npm run build-css`.
+- `npm run check-assets`.
 - `find . -name "*.php" -print0 | xargs -0 -n1 php -l`.
 - Vérifier `git status`.
 - Ne pas commiter `.env`.

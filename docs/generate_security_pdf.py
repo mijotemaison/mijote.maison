@@ -47,7 +47,7 @@ def build_pdf() -> None:
     story.append(Paragraph("Projet final formation GRETA 92", styles["Title"]))
     story.append(Paragraph("Developpement securise d'un site de recettes de cuisine", styles["BodyText"]))
     story.append(Paragraph("Otmane Aiboud", styles["BodyText"]))
-    story.append(Paragraph("PHP · HTML · JavaScript · Tailwind CSS · MySQL", styles["BodyText"]))
+    story.append(Paragraph("PHP · HTML · CSS · JavaScript · Bootstrap · MySQL", styles["BodyText"]))
     story.append(PageBreak())
 
     for is_code, part in split_code_blocks(markdown):

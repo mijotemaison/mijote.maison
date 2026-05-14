@@ -3,7 +3,7 @@
 Projet final formation GRETA 92  
 Developpement securise d'un site de recettes de cuisine  
 Otmane Aiboud  
-Stack : PHP, HTML, JavaScript, Tailwind CSS, MySQL  
+Stack : PHP, HTML, CSS, JavaScript, Bootstrap, MySQL
 Theme : securite applicative web
 
 ## Sommaire
@@ -158,7 +158,7 @@ function e(mixed $value): string
 ```
 
 ```php
-<h1 class="mt-6 max-w-4xl font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-7xl"><?= e($recipe['title']) ?></h1>
+<h1 class="display-3 fw-bold mb-4"><?= e($recipe['title']) ?></h1>
 ```
 
 Limite restante : si un jour du HTML enrichi est autorise, il faudra ajouter une liste blanche stricte.
@@ -652,7 +652,7 @@ Limite restante : envoyer ces logs vers un service externe en production pour é
 - **Timeout session** : la session admin expire après 30 minutes d'inactivité.
 - **HTTPS production** : `APP_ENV=production` redirige les requêtes GET/HEAD HTTP vers HTTPS et refuse les POST HTTP.
 - **Argon2id / rehash** : connexion admin valide avec ancien hash déclenche un rehash vers l'algorithme courant si nécessaire.
-- Navigation responsive : Tailwind compilé localement.
+- Navigation responsive : Bootstrap local + CSS applicatif.
 
 ## 6. Conclusion
 

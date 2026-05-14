@@ -1,64 +1,73 @@
 <?php render_flash(); ?>
-<div class="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+<div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
     <div>
-        <p class="text-sm font-medium text-cyan-200">Connecte : <?= e(current_admin_email()) ?></p>
-        <h1 class="mt-2 text-3xl font-bold text-white">Dashboard securite</h1>
+        <p class="text-primary fw-bold mb-1">Connecté : <?= e(current_admin_email()) ?></p>
+        <h1 class="display-font display-6 fw-bold mb-0">Dashboard sécurité</h1>
     </div>
-    <a class="btn-primary" href="/admin/recettes/creer">Nouvelle recette</a>
+    <a class="btn btn-primary" href="/admin/recettes/creer">Nouvelle recette</a>
 </div>
 
 <?php if ($error): ?>
-    <div class="panel-card p-5 text-amber-100"><?= e($error) ?></div>
+    <div class="alert alert-warning rounded-4"><?= e($error) ?></div>
 <?php else: ?>
-    <div class="grid gap-5 md:grid-cols-4">
-        <div class="panel-card p-5"><p class="text-sm text-slate-400">Recettes</p><p class="mt-2 text-4xl font-bold text-white"><?= e($recipeCount) ?></p></div>
-        <div class="panel-card p-5"><p class="text-sm text-slate-400">Administrateurs</p><p class="mt-2 text-4xl font-bold text-white"><?= e($adminCount) ?></p></div>
-        <div class="panel-card p-5"><p class="text-sm text-slate-400">Commentaires en attente</p><p class="mt-2 text-4xl font-bold text-white"><?= e($pendingCommentCount) ?></p></div>
-        <div class="panel-card p-5"><p class="text-sm text-slate-400">Protections</p><p class="mt-2 text-lg font-semibold text-cyan-100">CSRF · CSP · PDO · Upload</p></div>
+    <div class="row g-4">
+        <div class="col-sm-6 col-xl-3"><div class="admin-card p-4"><p class="text-muted mb-1">Recettes</p><p class="display-5 fw-bold mb-0"><?= e($recipeCount) ?></p></div></div>
+        <div class="col-sm-6 col-xl-3"><div class="admin-card p-4"><p class="text-muted mb-1">Administrateurs</p><p class="display-5 fw-bold mb-0"><?= e($adminCount) ?></p></div></div>
+        <div class="col-sm-6 col-xl-3"><div class="admin-card p-4"><p class="text-muted mb-1">Commentaires en attente</p><p class="display-5 fw-bold mb-0"><?= e($pendingCommentCount) ?></p></div></div>
+        <div class="col-sm-6 col-xl-3"><div class="admin-card p-4"><p class="text-muted mb-1">Protections</p><p class="fw-bold text-primary mb-0">CSRF · CSP · PDO · Upload</p></div></div>
     </div>
-    <div class="mt-8 grid gap-6 lg:grid-cols-2">
-        <section class="panel-card p-5">
-            <h2 class="text-xl font-semibold text-white">Dernieres recettes</h2>
-            <div class="mt-4 space-y-3">
-                <?php foreach ($latestRecipes as $recipe): ?>
-                    <div class="rounded-lg border border-white/10 bg-slate-950/50 p-3">
-                        <p class="font-medium text-white"><?= e($recipe['title']) ?></p>
-                        <p class="text-sm text-slate-400"><?= e($recipe['created_at']) ?></p>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-        <section class="panel-card p-5">
-            <h2 class="text-xl font-semibold text-white">Tentatives echouees recentes</h2>
-            <div class="mt-4 space-y-3">
-                <?php if (!$latestFailures): ?>
-                    <p class="text-sm text-slate-400">Aucune tentative suspecte recente.</p>
-                <?php endif; ?>
-                <?php foreach ($latestFailures as $attempt): ?>
-                    <div class="rounded-lg border border-white/10 bg-slate-950/50 p-3 text-sm">
-                        <p class="text-white"><?= e($attempt['email'] ?: 'email vide') ?> · <?= e($attempt['ip_address']) ?></p>
-                        <p class="text-slate-400"><?= e($attempt['created_at']) ?></p>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-        <section class="panel-card p-5 lg:col-span-2">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <h2 class="text-xl font-semibold text-white">Journal securite recent</h2>
-                <a class="text-sm font-semibold text-cyan-200 hover:text-white" href="/admin/journal-securite">Voir tout le journal</a>
-            </div>
-            <div class="mt-4 grid gap-3 lg:grid-cols-2">
-                <?php if (!$latestSecurityLogs): ?>
-                    <p class="text-sm text-slate-400">Aucun evenement securite enregistre.</p>
-                <?php endif; ?>
-                <?php foreach ($latestSecurityLogs as $log): ?>
-                    <div class="rounded-lg border border-white/10 bg-slate-950/50 p-3 text-sm">
-                        <p class="font-semibold text-white"><?= e($log['event_type']) ?> · <?= e($log['actor_email'] ?: 'visiteur') ?></p>
-                        <p class="mt-1 text-slate-400"><?= e($log['details'] ?? '') ?></p>
-                        <p class="mt-2 text-xs text-slate-500"><?= e($log['ip_address']) ?> · <?= e($log['created_at']) ?></p>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+            <section class="admin-card p-4 h-100">
+                <h2 class="fs-4 fw-bold">Dernières recettes</h2>
+                <div class="vstack gap-3 mt-3">
+                    <?php foreach ($latestRecipes as $recipe): ?>
+                        <div class="border rounded-4 bg-light p-3">
+                            <p class="fw-bold mb-1"><?= e($recipe['title']) ?></p>
+                            <p class="small text-muted mb-0"><?= e($recipe['created_at']) ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+        </div>
+        <div class="col-lg-6">
+            <section class="admin-card p-4 h-100">
+                <h2 class="fs-4 fw-bold">Tentatives échouées récentes</h2>
+                <div class="vstack gap-3 mt-3">
+                    <?php if (!$latestFailures): ?>
+                        <p class="text-muted mb-0">Aucune tentative suspecte récente.</p>
+                    <?php endif; ?>
+                    <?php foreach ($latestFailures as $attempt): ?>
+                        <div class="border rounded-4 bg-light p-3 small">
+                            <p class="fw-bold mb-1"><?= e($attempt['email'] ?: 'email vide') ?> · <?= e($attempt['ip_address']) ?></p>
+                            <p class="text-muted mb-0"><?= e($attempt['created_at']) ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+        </div>
+        <div class="col-12">
+            <section class="admin-card p-4">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+                    <h2 class="fs-4 fw-bold mb-0">Journal sécurité récent</h2>
+                    <a class="fw-bold" href="/admin/journal-securite">Voir tout le journal</a>
+                </div>
+                <div class="row g-3 mt-2">
+                    <?php if (!$latestSecurityLogs): ?>
+                        <p class="text-muted mb-0">Aucun événement sécurité enregistré.</p>
+                    <?php endif; ?>
+                    <?php foreach ($latestSecurityLogs as $log): ?>
+                        <div class="col-lg-6">
+                            <div class="border rounded-4 bg-light p-3 small h-100">
+                                <p class="fw-bold mb-1"><?= e($log['event_type']) ?> · <?= e($log['actor_email'] ?: 'visiteur') ?></p>
+                                <p class="text-muted mb-2"><?= e($log['details'] ?? '') ?></p>
+                                <p class="text-muted small mb-0"><?= e($log['ip_address']) ?> · <?= e($log['created_at']) ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+        </div>
     </div>
 <?php endif; ?>

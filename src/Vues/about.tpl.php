@@ -1,35 +1,47 @@
-<section class="bg-[#fff1dc] py-14">
-    <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:px-8">
-        <div>
-            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Mijoté Maison</p>
-            <h1 class="mt-3 font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-6xl">Des recettes simples, familiales et faciles à refaire.</h1>
-            <p class="mt-5 text-lg leading-8 text-stone-700">Mijoté Maison rassemble des idées de cuisine du quotidien : des plats généreux, des desserts réconfortants et des recettes de saison pensées pour être lisibles dès la première visite.</p>
-            <div class="mt-7 flex flex-wrap gap-3">
-                <a class="btn-primary" href="/recettes">Voir les recettes</a>
-                <a class="btn-secondary" href="/">Retour accueil</a>
+<section class="hero-section py-5">
+    <div class="container py-lg-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-5">
+                <span class="kicker">Mijoté Maison</span>
+                <h1 class="display-4 fw-bold mt-3">Des recettes simples, familiales et faciles à refaire.</h1>
+                <p class="lead lead-luxe">Mijoté Maison rassemble des idées de cuisine du quotidien : des plats généreux, des desserts réconfortants et des recettes de saison pensées pour être lisibles dès la première visite.</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a class="btn btn-primary" href="/recettes">Voir les recettes</a>
+                    <a class="btn btn-outline-secondary" href="/">Retour accueil</a>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <img class="hero-img" src="/assets/img/recipes/ingredients-frais.webp" alt="Ingrédients frais préparés sur une table">
             </div>
         </div>
-        <img class="aspect-[4/3] w-full rounded-[2rem] object-cover shadow-2xl shadow-orange-900/20" src="/assets/img/recipes/ingredients-frais.webp" alt="Ingrédients frais préparés sur une table">
     </div>
 </section>
 
-<section class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-    <div class="grid gap-5 md:grid-cols-3">
-        <article class="rounded-[1.5rem] border border-orange-100 bg-white p-6 shadow-sm">
-            <p class="text-3xl">🍲</p>
-            <h2 class="mt-4 font-serif text-3xl font-bold text-stone-950">Cuisine accessible</h2>
-            <p class="mt-3 leading-7 text-stone-600">Chaque recette garde une structure claire : une description courte, des ingrédients lisibles et des étapes séparées.</p>
-        </article>
-        <article class="rounded-[1.5rem] border border-orange-100 bg-white p-6 shadow-sm">
-            <p class="text-3xl">🧺</p>
-            <h2 class="mt-4 font-serif text-3xl font-bold text-stone-950">Produits du quotidien</h2>
-            <p class="mt-3 leading-7 text-stone-600">Les recettes privilégient des ingrédients faciles à trouver et des préparations réalistes pour la maison.</p>
-        </article>
-        <article class="rounded-[1.5rem] border border-orange-100 bg-white p-6 shadow-sm">
-            <p class="text-3xl">⭐</p>
-            <h2 class="mt-4 font-serif text-3xl font-bold text-stone-950">Avis lecteurs</h2>
-            <p class="mt-3 leading-7 text-stone-600">Les visiteurs peuvent noter les recettes et proposer un commentaire, affiché après validation.</p>
-        </article>
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <article class="lux-card h-100 p-4">
+                    <p class="fs-1">🍲</p>
+                    <h2 class="display-font fs-2 fw-bold">Cuisine accessible</h2>
+                    <p class="text-muted mb-0">Chaque recette garde une structure claire : une description courte, des ingrédients lisibles et des étapes séparées.</p>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="lux-card h-100 p-4">
+                    <p class="fs-1">🧺</p>
+                    <h2 class="display-font fs-2 fw-bold">Produits du quotidien</h2>
+                    <p class="text-muted mb-0">Les recettes privilégient des ingrédients faciles à trouver et des préparations réalistes pour la maison.</p>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="lux-card h-100 p-4">
+                    <p class="fs-1">⭐</p>
+                    <h2 class="display-font fs-2 fw-bold">Avis lecteurs</h2>
+                    <p class="text-muted mb-0">Les visiteurs peuvent noter les recettes et proposer un commentaire, affiché après validation.</p>
+                </article>
+            </div>
+        </div>
     </div>
 </section>
 <?php public_footer(); ?>

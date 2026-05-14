@@ -6,7 +6,7 @@ Projet final GRETA 92 cybersécurité : site web sécurisé de recettes de cuisi
 
 Le sujet demande une application PHP/MySQL exposée au public, avec une partie publique consultable et une partie admin réservée. La sécurité est prioritaire : XSS, SQLi, CSRF, brute force, upload sécurisé, sessions et documentation.
 
-Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le reste de la stack reste conforme au sujet.
+La stack est alignée avec le sujet officiel : PHP, HTML, CSS, JavaScript, Bootstrap et MySQL. Bootstrap est chargé localement, sans CDN, pour rester compatible avec la CSP.
 
 ## Stack
 
@@ -15,7 +15,8 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - PDO avec requêtes préparées.
 - HTML.
 - JavaScript vanilla (4 fichiers : `presentation.js`, `recipes.js`, `admin.js`, `toasts.js`).
-- Tailwind CSS 3.4 compilé localement.
+- Bootstrap 5 auto-hébergé dans `public/assets/vendor/bootstrap/`.
+- CSS applicatif dans `public/assets/css/app.css`.
 - Google Fonts (Fraunces + Inter + JetBrains Mono) servis via une CSP nonce.
 - Point d'entrée unique AltoRouter (`public/index.php`) + URLs propres compatibles Apache/MAMP, XAMPP, LAMP et Railway.
 - Architecture MVC classique demandée en cours : `src/Controller`, `src/Model`, `src/Vues`.
@@ -40,7 +41,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
   - Transitions fade entre slides + `prefers-reduced-motion` honoré.
 - Page `/conformite` : grille officielle sans colonne points, avec réponse du projet, fichiers concernés, extraits réels du code et explications pour le jury.
 - Données issues de la base échappées avec `e()`.
-- Design éditorial premium AAA : palette parchment/tomato/saffron/herb, typographie Fraunces (display) + Inter (UI), grain papier subtil, ombres multi-couches, filets dorés, header en verre dépoli.
+- Design éditorial premium AAA : fond blanc bleuté très léger, accents tomate/cuisine et bleu doux, typographie Fraunces (display) + Inter (UI), cartes Bootstrap personnalisées, ombres propres et header respirant.
 
 ## Fonctionnalités back-office
 
@@ -99,7 +100,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 - Skip link `Aller au contenu` visible au focus clavier.
 - `aria-live="polite"` sur le compteur de slides et les toasts.
 - Focus management sur le carrousel (`tabindex="-1"` sur l'`<article>` actif).
-- Contrastes AA sur tous les textes (`text-ink` sur `bg-parchment`).
+- Contrastes AA sur les textes principaux avec fond clair `#f8fbff` et surfaces blanches.
 - `prefers-reduced-motion: reduce` désactive transitions, hover-lift et fade slides.
 - Navigation clavier complète : ←/→ pour slides, Esc pour modale, Tab pour focus trap.
 
@@ -114,7 +115,7 @@ Adaptation demandée : Tailwind CSS remplace Bootstrap et le CSS classique. Le r
 
 ```bash
 npm install
-npm run build-css
+npm run check-assets
 mysql -u root -p < database.sql
 cp .env.example .env
 php -S 127.0.0.1:8888 -t public public/index.php
@@ -177,8 +178,7 @@ Ces identifiants doivent être changés en production.
 ## Commandes utiles
 
 ```bash
-npm run build-css           # compile Tailwind (~280 ms, output ~36 KB)
-npm run watch-css           # recompile à la volée
+npm run check-assets        # vérifie Bootstrap local + app.css
 find . -name "*.php" -print0 | xargs -0 -n1 php -l    # lint PHP
 python3 docs/generate_security_pdf.py                 # régénère le rapport PDF
 ```
@@ -195,8 +195,9 @@ Le rapport contient les protections et des extraits réels du code du projet.
 ```
 public/assets/
 ├── css/
-│   ├── input.css       # source Tailwind + design system AAA
-│   └── output.css      # compilé minifié
+│   └── app.css         # design Bootstrap personnalisé
+├── vendor/
+│   └── bootstrap/      # bootstrap.min.css + bootstrap.bundle.min.js locaux
 ├── js/
 │   ├── presentation.js # carrousel + mode présentateur + chrono
 │   ├── recipes.js      # recherche/filtres front-office

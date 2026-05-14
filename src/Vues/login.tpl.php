@@ -1,38 +1,40 @@
-<section class="relative overflow-hidden bg-[#fff1dc]">
-    <div class="mx-auto grid min-h-[calc(100vh-10rem)] max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_.9fr] lg:items-center lg:px-8">
-        <div class="hidden lg:block">
-            <img class="aspect-[4/3] w-full rounded-[2rem] object-cover shadow-2xl shadow-orange-900/20" src="/assets/img/recipes/ingredients-frais.webp" alt="Ingrédients frais">
-            <div class="mt-6 rounded-[2rem] bg-white p-6 shadow-sm">
-                <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-herb">Page de connexion</p>
-                <p class="mt-2 text-stone-700">Formulaire de connexion permettant l'accès au back-office.</p>
-                <div class="mt-4 flex flex-wrap gap-2 text-sm font-extrabold">
-                    <span class="rounded-full bg-orange-50 px-4 py-2 text-tomato">Rôle : admin</span>
-                    <span class="rounded-full bg-emerald-50 px-4 py-2 text-herb">Aucune inscription publique</span>
+<section class="hero-section py-5">
+    <div class="container">
+        <div class="row align-items-center justify-content-center g-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <img class="hero-img" src="/assets/img/recipes/ingredients-frais.webp" alt="Ingrédients frais">
+                <div class="lux-card p-4 mt-4">
+                    <span class="kicker">Page de connexion</span>
+                    <p class="text-muted mt-3 mb-3">Formulaire de connexion permettant l'accès au back-office.</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge-soft badge-tomato">Rôle : admin</span>
+                        <span class="badge-soft badge-herb">Aucune inscription publique</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="mx-auto w-full max-w-md">
-            <?php render_flash(); ?>
-            <form class="rounded-[2rem] border border-orange-100 bg-white p-7 shadow-xl shadow-orange-900/10" method="post" action="/connexion" novalidate>
-                <?= csrf_field() ?>
-                <img class="h-16 w-16 rounded-2xl" src="/assets/img/logo-mijote-maison.svg" alt="">
-                <span class="mt-6 inline-flex rounded-full bg-orange-50 px-4 py-2 text-sm font-extrabold text-tomato">Accès back-office</span>
-                <h1 class="mt-4 font-serif text-4xl font-bold text-stone-950">Page de connexion</h1>
-                <p class="mt-2 text-sm leading-6 text-stone-600">Formulaire de connexion permettant l'accès au back-office.</p>
-                <div class="mt-4 grid gap-2 text-sm text-stone-700">
-                    <p class="rounded-2xl bg-orange-50 px-4 py-3"><strong>Rôle :</strong> admin</p>
-                    <p class="rounded-2xl bg-emerald-50 px-4 py-3"><strong>Inscription publique :</strong> non disponible</p>
-                </div>
-                <div class="mt-6">
-                    <label class="mb-2 block text-sm font-extrabold text-stone-700" for="email">Email</label>
-                    <input class="w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-tomato focus:ring-4 focus:ring-orange-200" id="email" name="email" type="email" autocomplete="email" required>
-                </div>
-                <div class="mt-4">
-                    <label class="mb-2 block text-sm font-extrabold text-stone-700" for="password">Mot de passe</label>
-                    <input class="w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-tomato focus:ring-4 focus:ring-orange-200" id="password" name="password" type="password" autocomplete="current-password" required>
-                </div>
-                <button class="btn-primary mt-6 w-full" type="submit">Se connecter au back-office</button>
-            </form>
+            <div class="col-md-9 col-lg-5">
+                <?php render_flash(); ?>
+                <form class="lux-card lux-card-lg p-4 p-lg-5" method="post" action="/connexion" novalidate>
+                    <?= csrf_field() ?>
+                    <img class="site-logo mb-4" src="/assets/img/logo-mijote-maison.svg" alt="">
+                    <span class="badge-soft badge-tomato">Accès back-office</span>
+                    <h1 class="display-font display-6 fw-bold mt-3">Page de connexion</h1>
+                    <p class="small text-muted">Formulaire de connexion permettant l'accès au back-office.</p>
+                    <div class="alert alert-light border rounded-4 small">
+                        <p class="mb-1"><strong>Rôle :</strong> admin</p>
+                        <p class="mb-0"><strong>Inscription publique :</strong> non disponible</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" for="email">Email</label>
+                        <input class="form-control" id="email" name="email" type="email" autocomplete="email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold" for="password">Mot de passe</label>
+                        <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" required>
+                    </div>
+                    <button class="btn btn-primary w-100" type="submit">Se connecter au back-office</button>
+                </form>
+            </div>
         </div>
     </div>
 </section>

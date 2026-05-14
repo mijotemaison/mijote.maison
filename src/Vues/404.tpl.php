@@ -1,8 +1,10 @@
-<section class="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-    <div class="rounded-[2rem] border border-orange-100 bg-white p-8 text-center shadow-sm">
-        <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Erreur 404</p>
-        <h1 class="mt-3 font-serif text-5xl font-bold text-stone-950"><?= e($title ?? 'Page introuvable') ?></h1>
-        <p class="mx-auto mt-4 max-w-2xl leading-7 text-stone-600"><?= e($message ?? 'Cette page est introuvable.') ?></p>
-        <a class="btn-primary mt-7" href="/">Retour a l'accueil</a>
+<section class="py-5">
+    <div class="container">
+        <div class="lux-card lux-card-lg p-5 text-center mx-auto max-w-820">
+            <span class="kicker">Erreur 404</span>
+            <h1 class="display-font display-4 fw-bold mt-3"><?= e($title ?? 'Page introuvable') ?></h1>
+            <p class="lead-luxe mx-auto max-w-620"><?= e($message ?? 'Cette page est introuvable.') ?></p>
+            <a class="btn btn-primary mt-3" href="/">Retour à l'accueil</a>
+        </div>
     </div>
 </section>

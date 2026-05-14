@@ -5,12 +5,12 @@ declare(strict_types=1);
 function conformite_code_panel(string $title, string $file, string $code): void
 {
     $id = 'conformite-code-' . md5($title . $file);
-    echo '<div class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-lg">';
-    echo '<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-slate-900 px-4 py-3">';
-    echo '<div><p class="text-sm font-extrabold text-white">' . e($title) . '</p><p class="text-xs text-slate-400">' . e($file) . '</p></div>';
-    echo '<button class="rounded-full border border-slate-700 px-3 py-1.5 text-xs font-extrabold text-slate-200 transition hover:bg-slate-800" type="button" data-copy-code="' . e($id) . '">Copier</button>';
+    echo '<div class="code-panel">';
+    echo '<div class="code-panel__header">';
+    echo '<div><p class="mb-1 small fw-black text-white">' . e($title) . '</p><p class="mb-0 small text-white-50">' . e($file) . '</p></div>';
+    echo '<button class="btn btn-sm btn-outline-light" type="button" data-copy-code="' . e($id) . '">Copier</button>';
     echo '</div>';
-    echo '<pre class="max-h-80 overflow-auto p-4 text-[0.78rem] leading-6 text-slate-100"><code id="' . e($id) . '">' . e(trim($code)) . '</code></pre>';
+    echo '<pre><code id="' . e($id) . '">' . e(trim($code)) . '</code></pre>';
     echo '</div>';
 }
 
@@ -360,83 +360,91 @@ MD,
 
 public_header('Conformité au sujet officiel');
 ?>
-<section class="bg-[#fff1dc] py-14">
-    <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:px-8">
-        <div>
-            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Sujet officiel GRETA 92</p>
-            <h1 class="mt-3 font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-6xl">Conformité au sujet officiel.</h1>
-            <p class="mt-5 text-lg leading-8 text-stone-700">Cette page reprend la grille d’évaluation sans la colonne points. Pour chaque critère, elle explique ce que le projet réalise et montre le morceau de code qui le prouve.</p>
-            <div class="mt-7 flex flex-wrap gap-3">
-                <a class="btn-primary" href="/presentation">Voir la présentation</a>
-                <a class="btn-secondary" href="/stack">Comprendre la stack</a>
-            </div>
-        </div>
-        <div class="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-xl shadow-orange-900/10">
-            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-herb">Lecture rapide</p>
-            <div class="mt-6 grid gap-4">
-                <div class="rounded-2xl bg-orange-50 p-4">
-                    <p class="font-serif text-2xl font-bold text-stone-950">Front-office</p>
-                    <p class="mt-2 text-sm leading-6 text-stone-600">Accueil, liste, détail recette, connexion, navigation publique sans action sensible.</p>
-                </div>
-                <div class="rounded-2xl bg-emerald-50 p-4">
-                    <p class="font-serif text-2xl font-bold text-stone-950">Back-office</p>
-                    <p class="mt-2 text-sm leading-6 text-stone-600">CRUD recettes, CRUD admins, upload, dashboard, modération et journal sécurité.</p>
-                </div>
-                <div class="rounded-2xl bg-white p-4 shadow-sm">
-                    <p class="font-serif text-2xl font-bold text-stone-950">Sécurité</p>
-                    <p class="mt-2 text-sm leading-6 text-stone-600">PDO, XSS, CSP, CSRF, brute force, sessions, headers et upload sécurisé.</p>
+<section class="section-blue-soft py-5">
+    <div class="container py-lg-4">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6">
+                <p class="kicker">Sujet officiel GRETA 92</p>
+                <h1 class="display-4 fw-black text-ink mb-4">Conformité au sujet officiel.</h1>
+                <p class="lead text-secondary mb-4">Cette page reprend la grille d’évaluation sans la colonne points. Pour chaque critère, elle explique ce que le projet réalise et montre le morceau de code qui le prouve.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary btn-lg" href="/presentation">Voir la présentation</a>
+                    <a class="btn btn-outline-primary btn-lg" href="/stack">Comprendre la stack</a>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-
-<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-    <div class="mb-8 max-w-3xl">
-        <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Grille officielle</p>
-        <h2 class="mt-3 font-serif text-4xl font-bold text-stone-950">Réponse point par point.</h2>
-        <p class="mt-3 leading-7 text-stone-600">La colonne “points” a volontairement été retirée. Le but ici est de justifier techniquement chaque attente devant le jury.</p>
-    </div>
-
-    <div class="overflow-hidden rounded-[2rem] border border-orange-100 bg-white shadow-xl shadow-orange-900/10">
-        <div class="grid gap-3 border-b border-orange-100 bg-orange-50 px-5 py-4 text-sm font-extrabold uppercase tracking-[0.12em] text-stone-700 md:grid-cols-[.8fr_1.2fr_1.5fr]">
-            <span>Critère évalué</span>
-            <span>Description attendue</span>
-            <span>Réponse du projet</span>
-        </div>
-        <?php foreach ($criteria as $index => $item): ?>
-            <article class="border-b border-orange-100 last:border-b-0">
-                <div class="grid gap-4 px-5 py-6 md:grid-cols-[.8fr_1.2fr_1.5fr]">
-                    <div>
-                        <span class="rounded-full bg-tomato px-3 py-1 text-xs font-extrabold text-white"><?= e((string) ($index + 1)) ?></span>
-                        <h3 class="mt-3 font-serif text-2xl font-bold text-stone-950"><?= e($item['criterion']) ?></h3>
-                    </div>
-                    <p class="leading-7 text-stone-600"><?= e($item['expected']) ?></p>
-                    <p class="leading-7 text-stone-700"><?= e($item['answer']) ?></p>
-                </div>
-                <div class="grid gap-5 bg-[#fffaf3] px-5 py-6 lg:grid-cols-[.9fr_1.4fr]">
-                    <div>
-                        <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-herb">Fichiers concernés</p>
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <?php foreach ($item['files'] as $file): ?>
-                                <span class="rounded-full bg-white px-3 py-1.5 text-xs font-extrabold text-stone-700 shadow-sm"><?= e($file) ?></span>
-                            <?php endforeach; ?>
+            <div class="col-lg-6">
+                <div class="lux-card lux-card-lg p-4 p-lg-5">
+                    <p class="kicker text-herb">Lecture rapide</p>
+                    <div class="vstack gap-3 mt-4">
+                        <div class="rounded-4 bg-white border p-4">
+                            <p class="h4 font-display fw-black mb-2">Front-office</p>
+                            <p class="small text-secondary lh-lg mb-0">Accueil, liste, détail recette, connexion, navigation publique sans action sensible.</p>
                         </div>
-                        <p class="mt-6 text-sm font-extrabold uppercase tracking-[0.16em] text-tomato">Explication pour le jury</p>
-                        <p class="mt-3 leading-7 text-stone-700"><?= e($item['explanation']) ?></p>
+                        <div class="rounded-4 bg-white border p-4">
+                            <p class="h4 font-display fw-black mb-2">Back-office</p>
+                            <p class="small text-secondary lh-lg mb-0">CRUD recettes, CRUD admins, upload, dashboard, modération et journal sécurité.</p>
+                        </div>
+                        <div class="rounded-4 bg-white border p-4">
+                            <p class="h4 font-display fw-black mb-2">Sécurité</p>
+                            <p class="small text-secondary lh-lg mb-0">PDO, XSS, CSP, CSRF, brute force, sessions, headers et upload sécurisé.</p>
+                        </div>
                     </div>
-                    <?php conformite_code_panel($item['code']['title'], $item['code']['file'], $item['code']['body']); ?>
                 </div>
-            </article>
-        <?php endforeach; ?>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="bg-[#fff1dc] py-14">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-xl shadow-orange-900/10 sm:p-8">
-            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-tomato">Conclusion défendable</p>
-            <blockquote class="mt-4 font-serif text-3xl font-bold leading-tight text-stone-950">Le projet répond au sujet officiel : un site de recettes public, un back-office admin, des CRUD fonctionnels et des protections web visibles dans le code.</blockquote>
+<section class="py-5">
+    <div class="container">
+        <div class="mb-4 col-lg-8">
+            <p class="kicker">Grille officielle</p>
+            <h2 class="section-title">Réponse point par point.</h2>
+            <p class="text-secondary lh-lg">La colonne “points” a volontairement été retirée. Le but ici est de justifier techniquement chaque attente devant le jury.</p>
+        </div>
+
+        <div class="lux-card lux-card-lg overflow-hidden">
+            <div class="row g-0 border-bottom bg-white fw-black text-uppercase small letter-spaced d-none d-lg-flex">
+                <div class="col-lg-3 p-4">Critère évalué</div>
+                <div class="col-lg-4 p-4">Description attendue</div>
+                <div class="col-lg-5 p-4">Réponse du projet</div>
+            </div>
+            <?php foreach ($criteria as $index => $item): ?>
+                <article class="border-bottom">
+                    <div class="row g-0">
+                        <div class="col-lg-3 p-4">
+                            <span class="badge rounded-pill text-bg-primary mb-3"><?= e((string) ($index + 1)) ?></span>
+                            <h3 class="h4 font-display fw-black"><?= e($item['criterion']) ?></h3>
+                        </div>
+                        <div class="col-lg-4 p-4 text-secondary lh-lg"><?= e($item['expected']) ?></div>
+                        <div class="col-lg-5 p-4 text-secondary lh-lg"><?= e($item['answer']) ?></div>
+                    </div>
+                    <div class="row g-4 bg-light-subtle border-top p-4">
+                        <div class="col-lg-5">
+                            <p class="kicker text-herb mb-3">Fichiers concernés</p>
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <?php foreach ($item['files'] as $file): ?>
+                                    <span class="badge-soft"><?= e($file) ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                            <p class="kicker mb-2">Explication pour le jury</p>
+                            <p class="text-secondary lh-lg mb-0"><?= e($item['explanation']) ?></p>
+                        </div>
+                        <div class="col-lg-7">
+                            <?php conformite_code_panel($item['code']['title'], $item['code']['file'], $item['code']['body']); ?>
+                        </div>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<section class="section-blue-soft py-5">
+    <div class="container">
+        <div class="lux-card lux-card-lg p-4 p-lg-5">
+            <p class="kicker">Conclusion défendable</p>
+            <blockquote class="blockquote fs-3 font-display fw-black text-ink mb-0">Le projet répond au sujet officiel : un site de recettes public, un back-office admin, des CRUD fonctionnels et des protections web visibles dans le code.</blockquote>
         </div>
     </div>
 </section>

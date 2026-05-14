@@ -26,11 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const matchQuery = query === '' || haystack.includes(query);
       const matchCategory = activeCategory === 'all' || category === activeCategory;
       const show = matchQuery && matchCategory;
-      card.classList.toggle('hidden', !show);
+      card.classList.toggle('d-none', !show);
       if (show) visible += 1;
     });
 
-    if (empty) empty.classList.toggle('hidden', visible > 0);
+    if (empty) empty.classList.toggle('d-none', visible > 0);
   }
 
   chips.forEach((chip) => {
@@ -49,12 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       chips.forEach((item) => {
         const active = item === chip;
-        item.classList.toggle('bg-tomato', active);
-        item.classList.toggle('text-white', active);
-        item.classList.toggle('border-tomato', active);
-        item.classList.toggle('bg-white', !active);
-        item.classList.toggle('text-stone-700', !active);
-        item.classList.toggle('border-orange-200', !active);
+        item.classList.toggle('btn-primary', active);
+        item.classList.toggle('active', active);
+        item.classList.toggle('btn-outline-secondary', !active);
       });
       render();
       window.location.href = url.toString();

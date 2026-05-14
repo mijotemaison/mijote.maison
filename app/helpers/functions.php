@@ -120,10 +120,10 @@ function record_security_event(PDO $pdo, string $eventType, string $details, ?st
     }
 }
 
-function render_stars(float $average, string $class = 'text-xl'): string
+function render_stars(float $average, string $class = 'stars'): string
 {
     $rounded = (int) round($average);
-    $html = '<span class="' . e($class) . ' tracking-tight text-amber-500" aria-hidden="true">';
+    $html = '<span class="' . e($class) . '" aria-hidden="true">';
     for ($i = 1; $i <= 5; $i++) {
         $html .= $i <= $rounded ? '★' : '☆';
     }
@@ -185,16 +185,17 @@ function recipe_category_label(?string $category): string
 function nav_link(string $href, string $label): string
 {
     $isActive = is_nav_active($href);
-    $state = $isActive
-        ? 'nav-link-active bg-white text-tomato shadow-soft-2 ring-1 ring-embers-100'
-        : 'text-ink/70 hover:bg-white/70 hover:text-tomato hover:shadow-soft-1';
-    return '<a class="' . $state . ' relative inline-flex items-center whitespace-nowrap rounded-full px-4 py-2.5 font-sans text-[0.92rem] font-bold tracking-wide transition-all duration-200 ease-editorial" href="' . e($href) . '">' . e($label) . '</a>';
+    $state = $isActive ? 'nav-link active' : 'nav-link';
+
+    return '<a class="' . $state . '" href="' . e($href) . '">' . e($label) . '</a>';
 }
 
 function public_header(string $title, ?array $og = null): void
 {
     $faviconUrl = e(versioned_asset('assets/img/favicon.svg'));
-    $cssUrl = e(versioned_asset('assets/css/output.css'));
+    $bootstrapCssUrl = e(versioned_asset('assets/vendor/bootstrap/css/bootstrap.min.css'));
+    $cssUrl = e(versioned_asset('assets/css/app.css'));
+    $bootstrapJsUrl = e(versioned_asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'));
     $presentationJsUrl = e(versioned_asset('assets/js/presentation.js'));
     $recipesJsUrl = e(versioned_asset('assets/js/recipes.js'));
     $toastsJsUrl = e(versioned_asset('assets/js/toasts.js'));
@@ -216,7 +217,7 @@ function public_header(string $title, ?array $og = null): void
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#fbf3e3">
+    <meta name="theme-color" content="#f8fbff">
     <meta name="description" content="{$ogDesc}">
     <title>{$pageTitle}</title>
     <meta property="og:type" content="{$ogType}">
@@ -233,23 +234,30 @@ function public_header(string $title, ?array $og = null): void
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+    <link rel="stylesheet" href="{$bootstrapCssUrl}">
     <link rel="stylesheet" href="{$cssUrl}">
+    <script src="{$bootstrapJsUrl}" defer></script>
     <script src="{$presentationJsUrl}" defer></script>
     <script src="{$recipesJsUrl}" defer></script>
     <script src="{$toastsJsUrl}" defer></script>
 </head>
-<body class="min-h-screen bg-parchment text-ink antialiased font-sans">
+<body>
 <a class="skip-link" href="#main">Aller au contenu</a>
-<header class="sticky top-0 z-40 border-b border-orange-100/60 bg-parchment/80 backdrop-blur-xl supports-[backdrop-filter]:bg-parchment/70">
-    <nav class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-        <a href="/" class="group flex items-center gap-3 text-ink">
-            <img class="h-12 w-12 rounded-2xl shadow-soft-2 ring-1 ring-embers-100 transition-transform duration-300 ease-editorial group-hover:rotate-[-3deg]" src="/assets/img/logo-mijote-maison.svg" alt="">
-            <span class="leading-snug">
-                <span class="block font-display text-2xl font-bold tracking-tight text-ink">Mijoté Maison</span>
-                <span class="mt-1 block text-[0.7rem] font-extrabold uppercase tracking-[0.22em] text-herb">Recettes de saison</span>
-            </span>
-        </a>
-        <div class="flex w-full max-w-full items-center gap-1.5 overflow-x-auto rounded-full border border-embers-100/70 bg-ivory/75 p-1 text-sm shadow-soft-1 lg:w-auto lg:flex-wrap lg:justify-end lg:overflow-visible">
+<header class="site-header sticky-top">
+    <nav class="navbar navbar-expand-xl">
+        <div class="container py-2">
+            <a href="/" class="navbar-brand d-flex align-items-center gap-3">
+                <img class="site-logo" src="/assets/img/logo-mijote-maison.svg" alt="">
+                <span>
+                    <span class="brand-title d-block fs-3">Mijoté Maison</span>
+                    <span class="brand-subtitle d-block mt-1">Recettes de saison</span>
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Ouvrir la navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="mainNavigation">
+                <div class="navbar-nav gap-1 rounded-pill bg-white p-1 shadow-sm mt-3 mt-xl-0">
 HTML;
     echo nav_link('/', 'Accueil');
     echo nav_link('/recettes', 'Recettes');
@@ -263,9 +271,11 @@ HTML;
         echo nav_link('/connexion', 'Connexion');
     }
     echo <<<HTML
+                </div>
+            </div>
         </div>
     </nav>
-    <div class="border-t border-orange-100/70 bg-white/70 px-4 py-2 text-center text-xs font-bold uppercase tracking-[0.14em] text-ink/60">
+    <div class="formation-banner text-center py-2 px-3">
         Projet factice réalisé dans le cadre d’une formation.
     </div>
 </header>
@@ -277,20 +287,22 @@ function public_footer(): void
 {
     echo <<<HTML
 </main>
-<footer class="border-t border-orange-100/80 bg-gradient-to-b from-parchment to-fog">
-    <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-12 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <div class="flex items-center gap-3">
-            <img class="h-10 w-10 rounded-xl ring-1 ring-embers-100 shadow-soft-1" src="/assets/img/logo-mijote-maison.svg" alt="">
+<footer class="site-footer">
+    <div class="container py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6 d-flex align-items-center gap-3">
+            <img class="site-logo" src="/assets/img/logo-mijote-maison.svg" alt="">
             <div>
-                <p class="font-display text-base font-bold text-ink">Mijoté Maison</p>
-                <p class="text-xs text-ink/60">Des recettes simples pour cuisiner avec plaisir.</p>
+                <p class="brand-title fs-5 mb-1">Mijoté Maison</p>
+                <p class="text-muted small mb-0">Des recettes simples pour cuisiner avec plaisir.</p>
             </div>
         </div>
-        <div class="flex flex-col items-start gap-2 sm:items-end">
-            <p class="smallcaps text-xs font-semibold text-ink/55">Recettes familiales · Plats maison · Desserts gourmands</p>
-            <div class="flex flex-wrap gap-3 text-xs font-bold text-ink/60">
-                <a class="hover:text-tomato" href="/mentions-legales">Mentions légales</a>
-                <a class="hover:text-tomato" href="/politique-confidentialite">Politique de confidentialité</a>
+            <div class="col-lg-6 text-lg-end">
+                <p class="text-uppercase small fw-bold text-muted mb-2">Recettes familiales · Plats maison · Desserts gourmands</p>
+                <div class="d-flex flex-wrap gap-3 justify-content-lg-end small fw-bold">
+                    <a href="/mentions-legales">Mentions légales</a>
+                    <a href="/politique-confidentialite">Politique de confidentialité</a>
+                </div>
             </div>
         </div>
     </div>
@@ -303,7 +315,9 @@ HTML;
 function admin_header(string $title): void
 {
     $faviconUrl = e(versioned_asset('assets/img/favicon.svg'));
-    $cssUrl = e(versioned_asset('assets/css/output.css'));
+    $bootstrapCssUrl = e(versioned_asset('assets/vendor/bootstrap/css/bootstrap.min.css'));
+    $cssUrl = e(versioned_asset('assets/css/app.css'));
+    $bootstrapJsUrl = e(versioned_asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'));
     $toastsJsUrl = e(versioned_asset('assets/js/toasts.js'));
     $pageTitle = e($title . ' - Back-office Mijoté Maison');
     echo <<<HTML
@@ -312,37 +326,39 @@ function admin_header(string $title): void
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#0a0a12">
+    <meta name="theme-color" content="#f8fbff">
     <title>{$pageTitle}</title>
     <link rel="icon" href="{$faviconUrl}" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+    <link rel="stylesheet" href="{$bootstrapCssUrl}">
     <link rel="stylesheet" href="{$cssUrl}">
+    <script src="{$bootstrapJsUrl}" defer></script>
     <script src="{$toastsJsUrl}" defer></script>
 </head>
-<body class="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans">
-<div class="min-h-screen lg:flex">
-    <aside class="border-b border-white/10 bg-slate-950/95 lg:min-h-screen lg:w-72 lg:border-b-0 lg:border-r">
-        <div class="flex items-center justify-between px-5 py-5 lg:block">
-            <a class="flex items-center gap-3 font-semibold text-white" href="/admin/dashboard">
-                <img class="h-10 w-10 rounded-xl bg-white" src="/assets/img/logo-mijote-maison.svg" alt="">
+<body class="admin-body">
+<div class="admin-shell d-lg-flex">
+    <aside class="admin-sidebar p-3">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <a class="d-flex align-items-center gap-3 fw-bold text-white" href="/admin/dashboard">
+                <img class="site-logo bg-white" src="/assets/img/logo-mijote-maison.svg" alt="">
                 <span>Back-office</span>
             </a>
-            <a class="text-sm text-slate-400 hover:text-white lg:hidden" href="/deconnexion">Sortir</a>
+            <a class="d-lg-none small text-white-50" href="/deconnexion">Sortir</a>
         </div>
-        <nav class="grid gap-1 px-3 pb-5 text-sm">
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/dashboard">Dashboard</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/recettes">Recettes</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/commentaires">Commentaires</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/journal-securite">Journal</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/admin/administrateurs">Administrateurs</a>
-            <a class="rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white" href="/presentation">Presentation</a>
-            <a class="hidden rounded-lg px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white lg:block" href="/deconnexion">Deconnexion</a>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+            <a class="nav-link" href="/admin/recettes">Recettes</a>
+            <a class="nav-link" href="/admin/commentaires">Commentaires</a>
+            <a class="nav-link" href="/admin/journal-securite">Journal</a>
+            <a class="nav-link" href="/admin/administrateurs">Administrateurs</a>
+            <a class="nav-link" href="/presentation">Présentation</a>
+            <a class="nav-link d-none d-lg-block" href="/deconnexion">Déconnexion</a>
         </nav>
     </aside>
-    <main class="flex-1">
-        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <main class="admin-content flex-grow-1">
+        <div class="container-fluid px-3 px-lg-4 py-4 py-lg-5">
 HTML;
 }
 
