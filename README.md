@@ -135,6 +135,12 @@ DB_PASSWORD=root
 
 > MAMP utilise généralement MySQL sur le port `8889` avec `root/root`. Avec un MySQL local classique, utiliser souvent `3306`. Avec l'instance temporaire de test du projet, utiliser `3307`.
 
+Si la base existe déjà et que l'on veut seulement ajouter les recettes de démonstration complémentaires sans réimport complet :
+
+```bash
+php scripts/seed_additional_recipes.php
+```
+
 ## MAMP / Apache / méthode du prof
 
 Le projet suit maintenant la logique vue en cours :
@@ -223,6 +229,7 @@ Pour la base de données Railway :
 
 - Ajouter un service **MySQL** dans le projet Railway.
 - Importer `database.sql` dans MySQL.
+- Si `database.sql` a déjà été importé avant l'ajout de nouvelles recettes, lancer `php scripts/seed_additional_recipes.php` avec les variables Railway configurées.
 - Vérifier les variables côté service web :
   - `APP_ENV=production`
   - `APP_URL=https://mijotemaison.up.railway.app`
