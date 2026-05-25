@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const progress = document.querySelector('[data-progress]');
   let index = 0;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let resizeTimer = null;
 
   // a11y : annonce changements de slide
   if (counter) {
@@ -20,7 +21,52 @@ document.addEventListener('DOMContentLoaded', () => {
     slide.setAttribute('tabindex', '-1');
   });
 
-  function show(i) {
+  function slideHeight(slide) {
+    const wasHidden = slide.classList.contains('d-none');
+    const hadGrid = slide.classList.contains('d-grid');
+    const previous = {
+      position: slide.style.position,
+      visibility: slide.style.visibility,
+      pointerEvents: slide.style.pointerEvents,
+      inset: slide.style.inset,
+      width: slide.style.width
+    };
+
+    slide.classList.remove('d-none');
+    slide.classList.add('d-grid');
+    slide.style.position = 'absolute';
+    slide.style.visibility = 'hidden';
+    slide.style.pointerEvents = 'none';
+    slide.style.inset = '0';
+    slide.style.width = '100%';
+
+    const height = slide.scrollHeight;
+
+    slide.style.position = previous.position;
+    slide.style.visibility = previous.visibility;
+    slide.style.pointerEvents = previous.pointerEvents;
+    slide.style.inset = previous.inset;
+    slide.style.width = previous.width;
+    slide.classList.toggle('d-none', wasHidden);
+    slide.classList.toggle('d-grid', hadGrid);
+
+    return height;
+  }
+
+  function syncDeckHeight() {
+    if (!slides.length) return;
+    const maxHeight = Math.max(...slides.map(slideHeight));
+    deck.style.minHeight = `${maxHeight}px`;
+  }
+
+  function preservePagePosition(y) {
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: y, left: window.scrollX, behavior: 'auto' });
+    });
+  }
+
+  function show(i, preserveScroll = false) {
+    const y = window.scrollY;
     slides.forEach((slide, k) => {
       const active = k === i;
       slide.classList.toggle('d-none', !active);
@@ -39,6 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
         active.focus({ preventScroll: true });
       }
     }
+    if (preserveScroll) {
+      preservePagePosition(y);
+    }
   }
 
   function go(delta) {
@@ -46,19 +95,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (target === index) return;
     if (reduce) {
       index = target;
-      show(index);
+      show(index, true);
       return;
     }
     const current = slides[index];
     if (current) current.classList.add('is-leaving');
     window.setTimeout(() => {
       index = target;
-      show(index);
+      show(index, true);
     }, 200);
   }
 
-  prev?.addEventListener('click', () => go(-1));
-  next?.addEventListener('click', () => go(1));
+  prev?.addEventListener('click', (event) => {
+    event.preventDefault();
+    go(-1);
+  });
+  next?.addEventListener('click', (event) => {
+    event.preventDefault();
+    go(1);
+  });
   document.addEventListener('keydown', (event) => {
     const tag = (document.activeElement?.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea') return;
@@ -66,7 +121,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.key === 'ArrowRight') go(1);
   });
 
+  syncDeckHeight();
   show(0);
+
+  window.addEventListener('resize', () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      const y = window.scrollY;
+      syncDeckHeight();
+      preservePagePosition(y);
+    }, 120);
+  });
 
   /* ============ Mode présentateur (toggle + chrono + plein écran) ============ */
 
@@ -134,8 +199,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setPresenter(on) {
+    const y = window.scrollY;
     document.body.classList.toggle('is-presenter', !!on);
     if (presenterToggle) presenterToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+    syncDeckHeight();
+    preservePagePosition(y);
     saveState();
   }
 

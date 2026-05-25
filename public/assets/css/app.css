@@ -649,10 +649,12 @@ a {
 }
 
 .presentation-deck {
+  position: relative;
   background: rgba(255, 255, 255, .96);
 }
 
 .presentation-slide {
+  width: 100%;
   min-height: 620px;
 }
 
