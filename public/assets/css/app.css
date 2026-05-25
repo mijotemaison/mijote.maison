@@ -356,12 +356,15 @@ a {
 .badge-soft {
   display: inline-flex;
   align-items: center;
+  max-width: 100%;
   border-radius: 999px;
   background: var(--mm-surface-soft);
   color: var(--mm-blue-dark);
   font-size: .8rem;
   font-weight: 800;
   padding: .42rem .75rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .icon-bubble {
@@ -447,6 +450,8 @@ a {
 }
 
 .code-panel {
+  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   border: 1px solid #22304a;
   border-radius: 1.1rem;
@@ -473,6 +478,8 @@ a {
   color: #e5edf8;
   font-size: .78rem;
   line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .admin-body {
@@ -651,11 +658,20 @@ a {
 .presentation-deck {
   position: relative;
   background: rgba(255, 255, 255, .96);
+  max-width: 100%;
 }
 
 .presentation-slide {
   width: 100%;
+  max-width: 100%;
   min-height: 620px;
+  overflow-x: hidden;
+}
+
+.presentation-slide .row,
+.presentation-slide [class^="col-"],
+.presentation-slide [class*=" col-"] {
+  min-width: 0;
 }
 
 .presentation-progress {
