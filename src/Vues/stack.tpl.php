@@ -18,7 +18,7 @@ $stackItems = [
     ['src/Controller', 'Prépare les données et choisit la vue à afficher.'],
     ['src/Model', 'Fournit des modèles métier simples qui appellent les repositories PDO existants.'],
     ['src/Vues', 'Contient les templates PHP qui affichent le HTML.'],
-    ['app/security', 'Regroupe CSRF, authentification, brute force, upload sécurisé et headers HTTP.'],
+    ['src/Utils/Security', 'Regroupe CSRF, authentification, brute force, upload sécurisé et headers HTTP.'],
 ];
 
 $responsibilities = [
@@ -97,7 +97,7 @@ public_header('Explication de la stack');
                     </article>
                     <article class="lux-card p-4">
                         <h3 class="h4 font-display fw-black">MVC classique</h3>
-                        <p class="mb-0 text-secondary lh-lg"><code>src/Controller</code> prépare les données, <code>src/Model</code> appelle les repositories PDO, et <code>src/Vues</code> affiche le HTML. Les protections transversales restent dans <code>app/security</code>.</p>
+                        <p class="mb-0 text-secondary lh-lg"><code>src/Controller</code> prépare les données, <code>src/Model</code> appelle les repositories PDO, et <code>src/Vues</code> affiche le HTML. Les protections transversales restent dans <code>src/Utils/Security</code>.</p>
                     </article>
                 </div>
             </div>

@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Controller\AbstractController;
+use App\Repository\AdminRepository;
+use App\Repository\LoginAttemptRepository;
+use App\Repository\RecipeInteractionRepository;
+use App\Repository\RecipeRepository;
+use App\Repository\SecurityLogRepository;
 use Throwable;
-
-require_once BASE_PATH . '/app/repositories/AdminRepository.php';
-require_once BASE_PATH . '/app/repositories/LoginAttemptRepository.php';
-require_once BASE_PATH . '/app/repositories/RecipeInteractionRepository.php';
-require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
-require_once BASE_PATH . '/app/repositories/SecurityLogRepository.php';
 
 final class DashboardController extends AbstractController
 {
@@ -29,11 +28,11 @@ final class DashboardController extends AbstractController
 
         try {
             $pdo = \db();
-            $recipeRepo = new \RecipeRepository($pdo);
-            $adminRepo = new \AdminRepository($pdo);
-            $attemptRepo = new \LoginAttemptRepository($pdo);
-            $interactionRepo = new \RecipeInteractionRepository($pdo);
-            $securityLogRepo = new \SecurityLogRepository($pdo);
+            $recipeRepo = new RecipeRepository($pdo);
+            $adminRepo = new AdminRepository($pdo);
+            $attemptRepo = new LoginAttemptRepository($pdo);
+            $interactionRepo = new RecipeInteractionRepository($pdo);
+            $securityLogRepo = new SecurityLogRepository($pdo);
             $recipeCount = $recipeRepo->count();
             $adminCount = $adminRepo->count();
             $pendingCommentCount = $interactionRepo->countPendingComments();

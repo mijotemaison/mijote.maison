@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use App\Repository\RecipeRepository;
 use PDO;
-
-require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
 
 final class Recipe
 {
-    private \RecipeRepository $repository;
+    private RecipeRepository $repository;
 
     public function __construct(private PDO $pdo)
     {
-        $this->repository = new \RecipeRepository($pdo);
+        $this->repository = new RecipeRepository($pdo);
     }
 
     public function latest(int $limit = 6): array

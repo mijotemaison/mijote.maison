@@ -26,10 +26,10 @@ Secure Recipes GRETA 92 est un site de recettes de cuisine concu comme une appli
 - `src/Controller/` : controleurs MVC publics et back-office.
 - `src/Model/` : modeles publics deleguant aux repositories.
 - `src/Vues/` : templates PHP du front-office et du back-office.
-- `app/config/` : configuration applicative et connexion PDO.
-- `app/security/` : sessions, authentification, CSRF, CSP, brute force, upload.
-- `app/repositories/` : requetes SQL preparees.
-- `app/validation/` : validation serveur.
+- `config/` : configuration applicative et connexion PDO.
+- `src/Utils/Security/` : sessions, authentification, CSRF, CSP, brute force, upload.
+- `src/Repository/` : requetes SQL preparees.
+- `src/Utils/Validation/` : validation serveur.
 - `docs/` : rapport Markdown et PDF.
 - `database.sql` : schema MySQL, donnees de demonstration et admin initial.
 
@@ -53,7 +53,7 @@ Menace : vol ou lecture directe des mots de passe si la base est compromise.
 
 Solution appliquee : les mots de passe admins sont haches via une fonction centrale. Les nouveaux mots de passe utilisent Argon2id quand PHP le supporte, avec fallback compatible. Le login compare le mot de passe saisi avec le hash stocke et peut re-hacher automatiquement un ancien hash après une connexion valide.
 
-Fichiers concernes : `app/security/auth.php`, `src/Controller/AuthController.php`, `app/repositories/AdminRepository.php`, `src/Controller/Admin/AdminUserController.php`.
+Fichiers concernes : `src/Utils/Security/auth.php`, `src/Controller/AuthController.php`, `src/Repository/AdminRepository.php`, `src/Controller/Admin/AdminUserController.php`.
 
 Extrait reel :
 
@@ -92,7 +92,7 @@ Menace : fixation de session et vol de cookie.
 
 Solution appliquee : session `HttpOnly`, `SameSite=Lax`, `Secure` si HTTPS et regeneration apres connexion. En production, une requête HTTP en GET/HEAD est redirigée vers HTTPS ; une requête POST non HTTPS est refusée pour éviter de rejouer un formulaire sensible sur une URL différente.
 
-Fichiers concernes : `app/security/auth.php`, `app/security/headers.php`.
+Fichiers concernes : `src/Utils/Security/auth.php`, `src/Utils/Security/headers.php`.
 
 Extrait reel :
 
@@ -146,7 +146,7 @@ Menace : execution de JavaScript injecte dans une recette ou un compte admin.
 
 Solution appliquee : toutes les donnees affichees depuis la base passent par `e()`.
 
-Fichiers concernes : `app/helpers/functions.php`, `src/Vues/home.tpl.php`, `src/Vues/recipe.tpl.php`, `src/Vues/admin/*`.
+Fichiers concernes : `src/Utils/Helpers/functions.php`, `src/Vues/home.tpl.php`, `src/Vues/recipe.tpl.php`, `src/Vues/admin/*`.
 
 Extrait reel :
 
@@ -173,7 +173,7 @@ Solution appliquée : CSP `default-src 'self'`, `script-src 'self' 'nonce-{nonce
 
 Le nonce est généré via `random_bytes(16)` à chaque requête (helper `csp_nonce()`) et n'est jamais réutilisé. Les rares scripts inline indispensables (JSON-LD `Recipe`) portent l'attribut `nonce="<?= e(csp_nonce()) ?>"` ; tout script inline non noncé est rejeté par le navigateur.
 
-Fichiers concernés : `app/security/headers.php`, `app/bootstrap.php`, `src/Controller/RecipeController.php` (JSON-LD avec nonce).
+Fichiers concernés : `src/Utils/Security/headers.php`, `src/bootstrap.php`, `src/Controller/RecipeController.php` (JSON-LD avec nonce).
 
 Extrait réel :
 
@@ -220,7 +220,7 @@ Menace : modification d'une requete SQL par saisie utilisateur.
 
 Solution appliquee : les repositories utilisent des requetes preparees et des parametres.
 
-Fichiers concernes : `app/repositories/RecipeRepository.php`, `app/repositories/AdminRepository.php`, `app/repositories/LoginAttemptRepository.php`.
+Fichiers concernes : `src/Repository/RecipeRepository.php`, `src/Repository/AdminRepository.php`, `src/Repository/LoginAttemptRepository.php`.
 
 Lecture :
 
@@ -263,7 +263,7 @@ Menace : forcer un admin connecte a executer une action sensible.
 
 Solution appliquee : les formulaires de connexion, creation, modification et suppression incluent un token.
 
-Fichiers concernes : `app/security/csrf.php`, `src/Controller/AuthController.php`, `src/Controller/Admin/RecipeAdminController.php`, `src/Controller/Admin/AdminUserController.php`.
+Fichiers concernes : `src/Utils/Security/csrf.php`, `src/Controller/AuthController.php`, `src/Controller/Admin/RecipeAdminController.php`, `src/Controller/Admin/AdminUserController.php`.
 
 Extrait reel :
 
@@ -297,7 +297,7 @@ Menace : tentative automatisee de deviner le mot de passe admin.
 
 Solution appliquee : apres 5 echecs sur 15 minutes par email ou IP, la connexion est temporairement refusee.
 
-Fichiers concernes : `app/security/brute_force.php`, `src/Controller/AuthController.php`, `app/repositories/LoginAttemptRepository.php`.
+Fichiers concernes : `src/Utils/Security/brute_force.php`, `src/Controller/AuthController.php`, `src/Repository/LoginAttemptRepository.php`.
 
 Extrait reel :
 
@@ -322,7 +322,7 @@ Menace : televersement de fichier executable ou fichier deguise.
 
 Solution appliquee : seuls `jpg`, `jpeg`, `png`, `webp` sont acceptes. Le MIME est verifie avec `finfo`. Le nom original n'est jamais reutilise.
 
-Fichiers concernes : `app/security/upload.php`, `public/uploads/recipes/.htaccess`.
+Fichiers concernes : `src/Utils/Security/upload.php`, `public/uploads/recipes/.htaccess`.
 
 Extrait reel :
 
@@ -352,7 +352,7 @@ Menace : acces direct aux pages `/admin` sans authentification.
 
 Solution appliquee : chaque page admin appelle `require_admin()` avant d'afficher le contenu.
 
-Fichiers concernes : `app/security/auth.php`, `src/Controller/Admin/*`, `src/Vues/admin/*`.
+Fichiers concernes : `src/Utils/Security/auth.php`, `src/Controller/Admin/*`, `src/Vues/admin/*`.
 
 Extrait reel :
 
@@ -376,7 +376,7 @@ Menace : donnees incompletes, trop longues ou non conformes.
 
 Solution appliquee : les recettes et admins sont controles avant toute insertion ou modification.
 
-Fichiers concernes : `app/validation/recipe_validation.php`, `app/validation/admin_validation.php`.
+Fichiers concernes : `src/Utils/Validation/recipe_validation.php`, `src/Utils/Validation/admin_validation.php`.
 
 Extrait reel :
 
@@ -406,12 +406,12 @@ Solution appliquée :
 - **Côté serveur** : `src/Controller/Admin/AdminUserController.php` rejette toute route de suppression où `id` correspond à `current_admin_id()`, indépendamment de l'origine (formulaire forgé, curl, etc.).
 - **Garde-fou supplémentaire** : la suppression du dernier administrateur restant est également bloquée par `$repo->count() <= 1`.
 
-Fichiers concernés : `app/security/auth.php` (helper `current_admin_id()`), `src/Vues/admin/admins/index.tpl.php` (UI), `src/Controller/Admin/AdminUserController.php` (serveur).
+Fichiers concernés : `src/Utils/Security/auth.php` (helper `current_admin_id()`), `src/Vues/admin/admins/index.tpl.php` (UI), `src/Controller/Admin/AdminUserController.php` (serveur).
 
 Extrait réel :
 
 ```php
-// app/security/auth.php
+// src/Utils/Security/auth.php
 function current_admin_id(): int
 {
     return (int) ($_SESSION['admin_id'] ?? 0);
@@ -454,7 +454,7 @@ Solution appliquée : tout `<form>` exécutant une action destructive porte un a
 
 La modale est construite par DOM API (`document.createElement` + `textContent`) — aucun `innerHTML` avec contenu dynamique, donc zéro surface d'XSS même si le message contient des caractères spéciaux.
 
-Fichiers concernés : `public/assets/js/admin.js`, `src/Vues/admin/recipes/index.tpl.php`, `src/Vues/admin/admins/index.tpl.php`, `app/helpers/functions.php` (`admin_footer` charge `admin.js`).
+Fichiers concernés : `public/assets/js/admin.js`, `src/Vues/admin/recipes/index.tpl.php`, `src/Vues/admin/admins/index.tpl.php`, `src/Utils/Helpers/functions.php` (`admin_footer` charge `admin.js`).
 
 Extrait réel :
 
@@ -491,7 +491,7 @@ Menace : XSS via commentaires, spam public, modification non autorisée des avis
 
 Solution appliquée : les notes utilisent une empreinte visiteur hashée (`public_actor_hash`) avec une clé unique par recette/visiteur. Les commentaires publics sont insérés avec le statut `pending` et ne sont affichés côté front-office que lorsqu'un administrateur les passe en `approved`. Les actions admin de modération passent par POST et CSRF.
 
-Fichiers concernés : `src/Controller/RecipeController.php`, `src/Vues/recipe.tpl.php`, `app/repositories/RecipeInteractionRepository.php`, `src/Controller/Admin/CommentAdminController.php`, `database.sql`.
+Fichiers concernés : `src/Controller/RecipeController.php`, `src/Vues/recipe.tpl.php`, `src/Repository/RecipeInteractionRepository.php`, `src/Controller/Admin/CommentAdminController.php`, `database.sql`.
 
 Extrait réel :
 
@@ -508,7 +508,7 @@ if ($authorName === '' || mb_strlen($authorName) > 80) {
 ```
 
 ```php
-// app/repositories/RecipeInteractionRepository.php — affichage public modéré
+// src/Repository/RecipeInteractionRepository.php — affichage public modéré
 public function approvedComments(int $recipeId): array
 {
     $stmt = $this->pdo->prepare(
@@ -532,12 +532,12 @@ Menace : session administrateur laissée ouverte sur un poste partagé, absence 
 
 Solution appliquée : `require_admin()` vérifie l'âge de la dernière activité et coupe la session admin après 30 minutes d'inactivité. Les événements importants (connexion, échec, commentaire public, modération, duplication/suppression recette) sont journalisés en base avec type, email, IP, user-agent et détail. Une page admin dédiée permet ensuite de filtrer ce journal par type, recherche libre et plage de dates, de le paginer, de l'exporter en CSV et de nettoyer les anciennes entrées. Un script CLI permet aussi d'automatiser le nettoyage via une tâche planifiée.
 
-Fichiers concernés : `app/security/auth.php`, `app/repositories/SecurityLogRepository.php`, `app/repositories/LoginAttemptRepository.php`, `app/helpers/functions.php`, `src/Controller/Admin/DashboardController.php`, `src/Controller/Admin/SecurityLogAdminController.php`, `scripts/cleanup_security_data.php`, `database.sql`.
+Fichiers concernés : `src/Utils/Security/auth.php`, `src/Repository/SecurityLogRepository.php`, `src/Repository/LoginAttemptRepository.php`, `src/Utils/Helpers/functions.php`, `src/Controller/Admin/DashboardController.php`, `src/Controller/Admin/SecurityLogAdminController.php`, `scripts/cleanup_security_data.php`, `database.sql`.
 
 Extrait réel :
 
 ```php
-// app/security/auth.php — timeout admin
+// src/Utils/Security/auth.php — timeout admin
 const ADMIN_SESSION_TIMEOUT_SECONDS = 1800;
 
 function enforce_admin_session_timeout(): void
@@ -558,7 +558,7 @@ function enforce_admin_session_timeout(): void
 ```
 
 ```php
-// app/helpers/functions.php — journal non bloquant
+// src/Utils/Helpers/functions.php — journal non bloquant
 function record_security_event(PDO $pdo, string $eventType, string $details, ?string $actorEmail = null): void
 {
     try {
@@ -576,7 +576,7 @@ function record_security_event(PDO $pdo, string $eventType, string $details, ?st
 ```
 
 ```php
-// app/repositories/SecurityLogRepository.php — filtrage prepare
+// src/Repository/SecurityLogRepository.php — filtrage prepare
 public function filtered(array $filters = [], int $limit = 20, int $offset = 0): array
 {
     [$where, $params] = $this->filteredQueryParts($filters);

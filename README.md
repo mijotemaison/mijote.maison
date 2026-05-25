@@ -82,11 +82,11 @@ La stack est alignée avec le sujet officiel : PHP, HTML, CSS, JavaScript, Boots
 - Régénération de session après connexion (`session_regenerate_id(true)`).
 - Cookies de session `HttpOnly`, `SameSite=Lax`, `Secure` si HTTPS.
 - Redirection HTTPS forcée quand `APP_ENV=production`.
-- Headers de sécurité et **CSP avec nonce par requête** dans `app/security/headers.php` :
+- Headers de sécurité et **CSP avec nonce par requête** dans `src/Utils/Security/headers.php` :
   `default-src 'self'; script-src 'self' 'nonce-{nonce}'; style-src 'self' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; ...`
 - Requêtes SQL préparées dans les repositories.
 - Échappement HTML centralisé avec `e()`.
-- Tokens CSRF centralisés dans `app/security/csrf.php`.
+- Tokens CSRF centralisés dans `src/Utils/Security/csrf.php`.
 - Limitation brute force via table `login_attempts`.
 - Upload limité aux images `jpg`, `jpeg`, `png`, `webp` avec contrôle MIME et taille 2 Mo.
 - `.htaccess` dans le dossier upload pour bloquer l'exécution PHP sous Apache.
@@ -146,7 +146,7 @@ Le projet suit maintenant la logique vue en cours :
 - **Page conformité** : `/conformite` justifie chaque critère du sujet avec preuves de code.
 - **MVC classique** : `src/Controller` et `src/Controller/Admin` préparent les données, `src/Model` appelle les repositories PDO, `src/Vues` affiche le HTML.
 - **Back-office routé** : l'admin passe par AltoRouter (`/admin/dashboard`, `/admin/recettes`, `/admin/administrateurs`) et non par des fichiers PHP directs.
-- **Repositories conservés** : `app/repositories` garde les requêtes PDO préparées pour ne pas dupliquer l'accès SQL.
+- **Repositories conservés** : `src/Repository` garde les requêtes PDO préparées pour ne pas dupliquer l'accès SQL.
 
 Configuration MAMP recommandée :
 

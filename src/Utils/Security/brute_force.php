@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once BASE_PATH . '/app/repositories/LoginAttemptRepository.php';
+use App\Repository\LoginAttemptRepository;
 
 const MAX_LOGIN_FAILURES = 5;
 const LOGIN_WINDOW_MINUTES = 15;

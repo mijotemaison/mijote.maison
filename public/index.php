@@ -12,7 +12,7 @@ use App\Controller\ErreurController;
 use App\Controller\RecipeController;
 use App\Controller\SiteController;
 
-require_once __DIR__ . '/../app/bootstrap.php';
+require_once __DIR__ . '/../src/bootstrap.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $path = rtrim($path, '/') ?: '/';

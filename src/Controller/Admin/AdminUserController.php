@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Controller\AbstractController;
+use App\Repository\AdminRepository;
 use Throwable;
-
-require_once BASE_PATH . '/app/repositories/AdminRepository.php';
-require_once BASE_PATH . '/app/validation/admin_validation.php';
 
 final class AdminUserController extends AbstractController
 {
@@ -21,7 +19,7 @@ final class AdminUserController extends AbstractController
         $currentAdminId = \current_admin_id();
 
         try {
-            $admins = (new \AdminRepository(\db()))->all();
+            $admins = (new AdminRepository(\db()))->all();
         } catch (Throwable) {
             $error = 'Base de donnees indisponible.';
         }
@@ -45,7 +43,7 @@ final class AdminUserController extends AbstractController
 
             if (!$errors) {
                 try {
-                    $repo = new \AdminRepository(\db());
+                    $repo = new AdminRepository(\db());
                     if ($repo->emailExists($data['email'])) {
                         $errors['email'] = 'Cet email est deja utilise.';
                     } else {
@@ -72,7 +70,7 @@ final class AdminUserController extends AbstractController
     {
         \require_admin();
 
-        $repo = new \AdminRepository(\db());
+        $repo = new AdminRepository(\db());
         $admin = $repo->find((int) $id);
         if (!$admin) {
             \flash('error', 'Administrateur introuvable.');
@@ -120,7 +118,7 @@ final class AdminUserController extends AbstractController
         \require_admin();
         \require_valid_csrf();
 
-        $repo = new \AdminRepository(\db());
+        $repo = new AdminRepository(\db());
         $adminId = (int) $id;
 
         if ($repo->count() <= 1) {

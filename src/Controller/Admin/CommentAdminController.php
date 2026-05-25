@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Controller\AbstractController;
+use App\Repository\RecipeInteractionRepository;
+use PDO;
 use Throwable;
-
-require_once BASE_PATH . '/app/repositories/RecipeInteractionRepository.php';
 
 final class CommentAdminController extends AbstractController
 {
@@ -16,7 +16,7 @@ final class CommentAdminController extends AbstractController
         \require_admin();
 
         $pdo = \db();
-        $repo = new \RecipeInteractionRepository($pdo);
+        $repo = new RecipeInteractionRepository($pdo);
 
         if (\is_post()) {
             $this->handleAction($pdo, $repo);
@@ -36,7 +36,7 @@ final class CommentAdminController extends AbstractController
         \admin_footer();
     }
 
-    private function handleAction(\PDO $pdo, \RecipeInteractionRepository $repo): void
+    private function handleAction(PDO $pdo, RecipeInteractionRepository $repo): void
     {
         \require_valid_csrf();
         $id = (int) ($_POST['id'] ?? 0);

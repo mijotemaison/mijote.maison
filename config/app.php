@@ -28,7 +28,7 @@ function load_env_file(string $path): void
     }
 }
 
-load_env_file(dirname(__DIR__, 2) . '/.env');
+load_env_file(dirname(__DIR__) . '/.env');
 
 function env_value(string $key, ?string $default = null): ?string
 {

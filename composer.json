@@ -19,6 +19,20 @@
     "test": "phpunit"
   },
   "autoload": {
+    "files": [
+      "config/app.php",
+      "config/database.php",
+      "src/Utils/Helpers/functions.php",
+      "src/Utils/Helpers/flash.php",
+      "src/Utils/Helpers/layout.php",
+      "src/Utils/Security/headers.php",
+      "src/Utils/Security/auth.php",
+      "src/Utils/Security/csrf.php",
+      "src/Utils/Security/brute_force.php",
+      "src/Utils/Security/upload.php",
+      "src/Utils/Validation/admin_validation.php",
+      "src/Utils/Validation/recipe_validation.php"
+    ],
     "psr-4": {
       "App\\": "src/"
     }

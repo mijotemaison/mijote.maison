@@ -39,7 +39,7 @@ $slides = [
         'lead' => 'L’objectif est de montrer un produit utilisable et de prouver que les protections web sont comprises.',
         'oral' => 'Chaque protection est visible dans le projet : il y a un fichier ou une fonction identifiable pour l’authentification, SQLi, XSS, CSRF, brute force et upload.',
         'points' => ['Fonctionnalités réelles : CRUD recettes et admins.', 'Données stockées en MySQL.', 'Explications techniques appuyées par des extraits réels.'],
-        'files' => ['app/security/*', 'app/repositories/*', 'docs/rapport-securite.md'],
+        'files' => ['src/Utils/Security/*', 'src/Repository/*', 'docs/rapport-securite.md'],
         'test' => 'Vérification : le rapport PDF et cette présentation citent les mêmes protections que le code.',
     ],
     [
@@ -48,11 +48,11 @@ $slides = [
         'lead' => 'La stack suit le sujet officiel : PHP, HTML, JavaScript, Bootstrap et MySQL.',
         'oral' => 'PHP orchestre les pages, PDO sécurise l’accès à MySQL, Bootstrap fournit les composants d’interface, et JavaScript ajoute l’interaction du carrousel et des filtres.',
         'points' => ['PHP natif structuré, sans framework lourd.', 'MySQL avec PDO et requêtes préparées.', 'Bootstrap local, sans CDN, pour rester compatible avec la CSP.', 'JavaScript vanilla pour les interactions.'],
-        'files' => ['package.json', 'public/assets/vendor/bootstrap', 'app/config/database.php'],
+        'files' => ['package.json', 'public/assets/vendor/bootstrap', 'config/database.php'],
         'code' => [
             [
                 'title' => 'Connexion PDO centralisée',
-                'file' => 'app/config/database.php',
+                'file' => 'config/database.php',
                 'body' => <<<'PHP'
 $pdo = new PDO($dsn, $user, $password, [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -113,7 +113,7 @@ APACHE,
         'code' => [
             [
                 'title' => 'Recherche publique préparée',
-                'file' => 'app/repositories/RecipeRepository.php',
+                'file' => 'src/Repository/RecipeRepository.php',
                 'body' => <<<'PHP'
 public function published(int $limit = 12, int $offset = 0, string $query = '', string $category = ''): array
 {
@@ -139,7 +139,7 @@ PHP,
         'lead' => 'Le back-office permet de gérer les recettes et les administrateurs après connexion.',
         'oral' => 'Toutes les actions sensibles passent par des formulaires POST avec CSRF. Le public ne peut pas créer, modifier ou supprimer.',
         'points' => ['Dashboard avec statistiques et journal sécurité.', 'CRUD recettes avec upload image.', 'Aperçu avant publication et duplication en brouillon.', 'Modération des commentaires lecteurs.', 'Journal sécurité filtrable par type, recherche, dates, avec export CSV.'],
-        'files' => ['src/Controller/Admin/*', 'src/Vues/admin/*', 'app/repositories/SecurityLogRepository.php'],
+        'files' => ['src/Controller/Admin/*', 'src/Vues/admin/*', 'src/Repository/SecurityLogRepository.php'],
         'test' => 'Vérification : accès /admin/dashboard sans session redirige vers /connexion ; duplication crée un brouillon et écrit un log consultable dans /admin/journal-securite.',
     ],
     [
@@ -148,7 +148,7 @@ PHP,
         'lead' => 'Le mot de passe n’est jamais stocké en clair, et la session est régénérée après connexion.',
         'oral' => 'La connexion vérifie un hash avec password_verify. Ensuite login_admin() régénère l’identifiant de session pour limiter la fixation de session. Les anciens hashes peuvent être réhachés automatiquement vers l’algorithme courant.',
         'points' => ['Argon2id utilisé pour les nouveaux mots de passe si disponible.', 'password_verify() utilisé au login.', 'Rehash automatique si un ancien hash est détecté.', 'session_regenerate_id(true) après succès.', 'require_admin() protège les pages admin.'],
-        'files' => ['src/Controller/AuthController.php', 'app/security/auth.php', 'src/Controller/Admin/AdminUserController.php'],
+        'files' => ['src/Controller/AuthController.php', 'src/Utils/Security/auth.php', 'src/Controller/Admin/AdminUserController.php'],
         'code' => [
             [
                 'title' => 'Vérification du mot de passe hashé',
@@ -172,7 +172,7 @@ PHP,
             ],
             [
                 'title' => 'Session régénérée et accès protégé',
-                'file' => 'app/security/auth.php',
+                'file' => 'src/Utils/Security/auth.php',
                 'body' => <<<'PHP'
 function login_admin(array $admin): void
 {
@@ -198,11 +198,11 @@ PHP,
         'lead' => 'Les variables utilisateur ne sont jamais concaténées dans les requêtes.',
         'oral' => 'Les repositories utilisent PDO prepare et execute. Le SQL garde des marqueurs comme :slug, et les valeurs sont envoyées séparément.',
         'points' => ['prepare() prépare la requête.', 'execute() injecte les valeurs comme paramètres.', 'PDO::ATTR_EMULATE_PREPARES désactivé.', 'Même logique pour lecture, création, modification et suppression.'],
-        'files' => ['app/repositories/RecipeRepository.php', 'app/repositories/AdminRepository.php'],
+        'files' => ['src/Repository/RecipeRepository.php', 'src/Repository/AdminRepository.php'],
         'code' => [
             [
                 'title' => 'Lecture paramétrée par slug',
-                'file' => 'app/repositories/RecipeRepository.php',
+                'file' => 'src/Repository/RecipeRepository.php',
                 'body' => <<<'PHP'
 public function findBySlug(string $slug): ?array
 {
@@ -223,11 +223,11 @@ PHP,
         'lead' => 'Les données issues de la base sont échappées avec e() et la CSP limite les scripts.',
         'oral' => 'La protection XSS se fait au moment de l’affichage. Si une recette contient du HTML ou du JavaScript, il est transformé en texte visible et non exécuté.',
         'points' => ['htmlspecialchars avec ENT_QUOTES.', 'Aucun HTML brut autorisé dans les recettes.', 'CSP centralisée dans headers.php.', 'Scripts limités aux fichiers locaux.'],
-        'files' => ['app/helpers/functions.php', 'src/Vues/recipe.tpl.php', 'app/security/headers.php'],
+        'files' => ['src/Utils/Helpers/functions.php', 'src/Vues/recipe.tpl.php', 'src/Utils/Security/headers.php'],
         'code' => [
             [
                 'title' => 'Helper d’échappement',
-                'file' => 'app/helpers/functions.php',
+                'file' => 'src/Utils/Helpers/functions.php',
                 'body' => <<<'PHP'
 function e(mixed $value): string
 {
@@ -237,7 +237,7 @@ PHP,
             ],
             [
                 'title' => 'CSP centralisée',
-                'file' => 'app/security/headers.php',
+                'file' => 'src/Utils/Security/headers.php',
                 'body' => <<<'PHP'
 header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
 PHP,
@@ -251,11 +251,11 @@ PHP,
         'lead' => 'Chaque formulaire sensible contient un token aléatoire vérifié côté serveur.',
         'oral' => 'Un site externe ne peut pas deviner le token stocké en session. Sans token valide, l’action est refusée avant toute modification.',
         'points' => ['Token généré avec random_bytes().', 'Champ caché csrf_token dans les formulaires.', 'hash_equals() pour comparer.', 'Suppressions uniquement en POST.'],
-        'files' => ['app/security/csrf.php', 'src/Controller/Admin/RecipeAdminController.php', 'src/Controller/Admin/AdminUserController.php'],
+        'files' => ['src/Utils/Security/csrf.php', 'src/Controller/Admin/RecipeAdminController.php', 'src/Controller/Admin/AdminUserController.php'],
         'code' => [
             [
                 'title' => 'Token CSRF',
-                'file' => 'app/security/csrf.php',
+                'file' => 'src/Utils/Security/csrf.php',
                 'body' => <<<'PHP'
 function generate_csrf_token(): string
 {
@@ -283,11 +283,11 @@ PHP,
         'lead' => 'Les tentatives de connexion sont journalisées et le login est bloqué après plusieurs échecs récents.',
         'oral' => 'Le but est de ralentir un robot qui teste beaucoup de mots de passe. Le blocage se base sur les échecs récents liés à l’email et à l’IP.',
         'points' => ['Table login_attempts.', 'Email, IP, user agent, succès ou échec.', 'Blocage après 5 échecs sur 15 minutes.', 'Message générique au login.'],
-        'files' => ['app/security/brute_force.php', 'app/repositories/LoginAttemptRepository.php', 'src/Controller/AuthController.php'],
+        'files' => ['src/Utils/Security/brute_force.php', 'src/Repository/LoginAttemptRepository.php', 'src/Controller/AuthController.php'],
         'code' => [
             [
                 'title' => 'Seuil de blocage',
-                'file' => 'app/security/brute_force.php',
+                'file' => 'src/Utils/Security/brute_force.php',
                 'body' => <<<'PHP'
 const MAX_LOGIN_FAILURES = 5;
 const LOGIN_WINDOW_MINUTES = 15;
@@ -310,11 +310,11 @@ PHP,
         'lead' => 'L’upload contrôle la taille, l’extension, le type MIME réel et le nom du fichier.',
         'oral' => 'On ne réutilise jamais le nom envoyé par l’utilisateur. Le fichier est renommé avec random_bytes et seules les extensions image autorisées passent.',
         'points' => ['Extensions autorisées : jpg, jpeg, png, webp.', 'MIME réel vérifié avec finfo.', 'Taille limitée à 2 Mo.', 'Nom de fichier aléatoire.'],
-        'files' => ['app/security/upload.php', 'public/uploads/recipes/.htaccess'],
+        'files' => ['src/Utils/Security/upload.php', 'public/uploads/recipes/.htaccess'],
         'code' => [
             [
                 'title' => 'Extension, MIME et taille',
-                'file' => 'app/security/upload.php',
+                'file' => 'src/Utils/Security/upload.php',
                 'body' => <<<'PHP'
 $maxSize = 2 * 1024 * 1024;
 if (($file['size'] ?? 0) > $maxSize) {
@@ -340,11 +340,11 @@ PHP,
         'lead' => 'La validation côté serveur protège même si le navigateur est contourné.',
         'oral' => 'Les champs obligatoires et les longueurs sont contrôlés avant insertion ou modification en base. C’est complémentaire à l’échappement.',
         'points' => ['Titre obligatoire et limité.', 'Description courte limitée.', 'Ingrédients et étapes obligatoires.', 'Email admin validé côté serveur.'],
-        'files' => ['app/validation/recipe_validation.php', 'app/validation/admin_validation.php'],
+        'files' => ['src/Utils/Validation/recipe_validation.php', 'src/Utils/Validation/admin_validation.php'],
         'code' => [
             [
                 'title' => 'Validation recette',
-                'file' => 'app/validation/recipe_validation.php',
+                'file' => 'src/Utils/Validation/recipe_validation.php',
                 'body' => <<<'PHP'
 if ($title === '' || mb_strlen($title) > 150) {
     $errors['title'] = 'Le titre est obligatoire et limite a 150 caracteres.';

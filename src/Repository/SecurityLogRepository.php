@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+namespace App\Repository;
+
+use DateTimeImmutable;
+use PDO;
+
 final class SecurityLogRepository
 {
     public function __construct(private PDO $pdo)

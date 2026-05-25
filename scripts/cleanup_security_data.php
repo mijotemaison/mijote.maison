@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Repository\LoginAttemptRepository;
+use App\Repository\SecurityLogRepository;
+
 if (PHP_SAPI !== 'cli') {
     http_response_code(403);
     echo "Ce script doit etre lance en ligne de commande.\n";
@@ -9,10 +12,10 @@ if (PHP_SAPI !== 'cli') {
 }
 
 define('BASE_PATH', dirname(__DIR__));
+define('PUBLIC_PATH', BASE_PATH . '/public');
+define('UPLOAD_RECIPE_DIR', PUBLIC_PATH . '/uploads/recipes');
 
-require_once BASE_PATH . '/app/config/database.php';
-require_once BASE_PATH . '/app/repositories/LoginAttemptRepository.php';
-require_once BASE_PATH . '/app/repositories/SecurityLogRepository.php';
+require_once BASE_PATH . '/vendor/autoload.php';
 
 $options = getopt('', ['days::', 'dry-run']);
 $envDays = (int) (env_value('LOG_RETENTION_DAYS', '90') ?? '90');

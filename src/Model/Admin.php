@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use App\Repository\AdminRepository;
 use PDO;
-
-require_once BASE_PATH . '/app/repositories/AdminRepository.php';
 
 final class Admin
 {
-    private \AdminRepository $repository;
+    private AdminRepository $repository;
 
     public function __construct(private PDO $pdo)
     {
-        $this->repository = new \AdminRepository($pdo);
+        $this->repository = new AdminRepository($pdo);
     }
 
     public function findByEmail(string $email): ?array

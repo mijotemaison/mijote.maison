@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Controller\AbstractController;
+use App\Repository\LoginAttemptRepository;
+use App\Repository\SecurityLogRepository;
+use PDO;
 use Throwable;
-
-require_once BASE_PATH . '/app/repositories/LoginAttemptRepository.php';
-require_once BASE_PATH . '/app/repositories/SecurityLogRepository.php';
 
 final class SecurityLogAdminController extends AbstractController
 {
@@ -17,8 +17,8 @@ final class SecurityLogAdminController extends AbstractController
         \require_admin();
 
         $pdo = \db();
-        $securityLogRepo = new \SecurityLogRepository($pdo);
-        $loginAttemptRepo = new \LoginAttemptRepository($pdo);
+        $securityLogRepo = new SecurityLogRepository($pdo);
+        $loginAttemptRepo = new LoginAttemptRepository($pdo);
 
         if (\is_post()) {
             $this->handleCleanup($pdo, $securityLogRepo, $loginAttemptRepo);
@@ -78,7 +78,7 @@ final class SecurityLogAdminController extends AbstractController
         \admin_footer();
     }
 
-    private function handleCleanup(\PDO $pdo, \SecurityLogRepository $securityLogRepo, \LoginAttemptRepository $loginAttemptRepo): void
+    private function handleCleanup(PDO $pdo, SecurityLogRepository $securityLogRepo, LoginAttemptRepository $loginAttemptRepo): void
     {
         \require_valid_csrf();
         $action = (string) ($_POST['action'] ?? '');
@@ -101,7 +101,7 @@ final class SecurityLogAdminController extends AbstractController
         \redirect('/admin/journal-securite');
     }
 
-    private function exportCsv(\SecurityLogRepository $securityLogRepo, array $filters): void
+    private function exportCsv(SecurityLogRepository $securityLogRepo, array $filters): void
     {
         $exportLogs = $securityLogRepo->filtered($filters, 5000, 0);
         $filename = 'journal-securite-' . date('Ymd-His') . '.csv';

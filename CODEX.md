@@ -28,11 +28,11 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - `src/Controller/` contient les controleurs MVC publics et les controleurs admin.
 - `src/Model/` contient les modeles MVC publics qui appellent les repositories PDO.
 - `src/Vues/` contient les vues PHP publiques et admin.
-- `app/config/` contient la configuration.
-- `app/helpers/` contient les fonctions transverses (`e()`, `public_header()`, `nav_link()`, `render_flash()`, etc.).
-- `app/security/` contient les protections (auth, CSRF, brute force, upload, headers + nonce CSP).
-- `app/repositories/` contient les requêtes PDO.
-- `app/validation/` contient les validations serveur.
+- `config/` contient la configuration.
+- `src/Utils/Helpers/` contient les fonctions transverses (`e()`, `public_header()`, `nav_link()`, `render_flash()`, etc.).
+- `src/Utils/Security/` contient les protections (auth, CSRF, brute force, upload, headers + nonce CSP).
+- `src/Repository/` contient les requêtes PDO.
+- `src/Utils/Validation/` contient les validations serveur.
 - `docs/` contient le rapport.
 
 ## Methode du prof / MVC classique
@@ -40,7 +40,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - URLs principales : `/`, `/recettes`, `/recette/{slug}`, `/recette/{slug}/impression`, `/connexion`, `/presentation`, `/conformite`, `/stack`, `/admin/dashboard`, `/admin/recettes`, `/admin/administrateurs`.
 - Les anciennes URLs `.php` publiques et admin ont été supprimées : tout passe par `public/index.php`.
 - Controller = `src/Controller/*` pour le front-office public et `src/Controller/Admin/*` pour le back-office.
-- Model = `src/Model/*`, avec delegation vers `app/repositories/*` pour les requetes PDO prepare/execute.
+- Model = `src/Model/*`, avec delegation vers `src/Repository/*` pour les requetes PDO prepare/execute.
 - Vue = `src/Vues/*.tpl.php` et `src/Vues/admin/*.tpl.php`.
 - Front controller = `public/index.php` avec AltoRouter.
 - Rewrite Apache/MAMP = `public/.htaccess`.
@@ -79,7 +79,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - `password_verify()` pour vérifier un mot de passe.
 - `session_regenerate_id(true)` après connexion.
 - Cookies de session `HttpOnly`, `SameSite=Lax`, `Secure` si HTTPS.
-- Headers de sécurité centralisés dans `app/security/headers.php`.
+- Headers de sécurité centralisés dans `src/Utils/Security/headers.php`.
 - **CSP avec nonce par requête** : `script-src 'self' 'nonce-{nonce}'`. Helper `csp_nonce()` génère/cache la valeur.
 - `style-src` autorise `https://fonts.googleapis.com`. `font-src` autorise `data:` + `https://fonts.gstatic.com`.
 - Upload limité aux images `jpg`, `jpeg`, `png`, `webp`.

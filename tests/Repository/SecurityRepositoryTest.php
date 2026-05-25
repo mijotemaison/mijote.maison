@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use App\Repository\LoginAttemptRepository;
+use App\Repository\SecurityLogRepository;
 
 final class SecurityRepositoryTest extends TestCase
 {

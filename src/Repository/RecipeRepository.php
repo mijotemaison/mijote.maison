@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+namespace App\Repository;
+
+use PDO;
+
 final class RecipeRepository
 {
     public function __construct(private PDO $pdo)

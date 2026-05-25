@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use App\Repository\RecipeInteractionRepository;
 use PDO;
-
-require_once BASE_PATH . '/app/repositories/RecipeInteractionRepository.php';
 
 final class RecipeInteraction
 {
-    private \RecipeInteractionRepository $repository;
+    private RecipeInteractionRepository $repository;
 
     public function __construct(private PDO $pdo)
     {
-        $this->repository = new \RecipeInteractionRepository($pdo);
+        $this->repository = new RecipeInteractionRepository($pdo);
     }
 
     public function ratingSummary(int $recipeId): array

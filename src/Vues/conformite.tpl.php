@@ -38,7 +38,7 @@ PHP,
         'criterion' => 'Page d’accueil',
         'expected' => 'Affichage correct des recettes, navigation fonctionnelle, aucune action sensible accessible publiquement.',
         'answer' => 'La page d’accueil affiche une présentation du site, des recettes récentes et des recettes populaires. Elle ne contient aucun formulaire de création, modification ou suppression.',
-        'files' => ['src/Controller/SiteController.php', 'src/Vues/home.tpl.php', 'app/repositories/RecipeRepository.php'],
+        'files' => ['src/Controller/SiteController.php', 'src/Vues/home.tpl.php', 'src/Repository/RecipeRepository.php'],
         'code' => [
             'title' => 'Accueil alimenté par les recettes publiées',
             'file' => 'src/Controller/SiteController.php',
@@ -57,10 +57,10 @@ PHP,
         'criterion' => 'Page recette',
         'expected' => 'Affichage complet et lisible d’une recette, données correctement récupérées depuis la base.',
         'answer' => 'Chaque recette dispose d’une page séparée `/recette/{slug}` avec titre, image, description, ingrédients, étapes, note, commentaires publiés et version imprimable dédiée.',
-        'files' => ['src/Controller/RecipeController.php', 'src/Vues/recipe.tpl.php', 'src/Vues/recipe_print.tpl.php', 'app/repositories/RecipeRepository.php'],
+        'files' => ['src/Controller/RecipeController.php', 'src/Vues/recipe.tpl.php', 'src/Vues/recipe_print.tpl.php', 'src/Repository/RecipeRepository.php'],
         'code' => [
             'title' => 'Lecture sécurisée par slug',
-            'file' => 'app/repositories/RecipeRepository.php',
+            'file' => 'src/Repository/RecipeRepository.php',
             'body' => <<<'PHP'
 public function findBySlug(string $slug): ?array
 {
@@ -78,7 +78,7 @@ PHP,
         'criterion' => 'Page de connexion',
         'expected' => 'Formulaire fonctionnel, gestion des erreurs, accès restreint au back-office.',
         'answer' => 'La route `/connexion` affiche une page nommée “Page de connexion”. Le formulaire utilise un token CSRF, vérifie l’email et le mot de passe, et redirige vers le dashboard après succès.',
-        'files' => ['src/Controller/AuthController.php', 'src/Vues/login.tpl.php', 'app/security/brute_force.php'],
+        'files' => ['src/Controller/AuthController.php', 'src/Vues/login.tpl.php', 'src/Utils/Security/brute_force.php'],
         'code' => [
             'title' => 'Connexion admin avec message générique',
             'file' => 'src/Controller/AuthController.php',
@@ -100,7 +100,7 @@ PHP,
         'criterion' => 'CRUD Recettes',
         'expected' => 'Création, lecture, modification et suppression fonctionnelles des recettes.',
         'answer' => 'Le back-office contient les pages de liste, création, édition, aperçu, duplication et suppression des recettes. Les actions d’écriture sont en POST et protégées par CSRF.',
-        'files' => ['src/Controller/Admin/RecipeAdminController.php', 'src/Vues/admin/recipes/*', 'app/repositories/RecipeRepository.php'],
+        'files' => ['src/Controller/Admin/RecipeAdminController.php', 'src/Vues/admin/recipes/*', 'src/Repository/RecipeRepository.php'],
         'code' => [
             'title' => 'Création recette avec validation, CSRF et upload',
             'file' => 'src/Controller/Admin/RecipeAdminController.php',
@@ -112,7 +112,7 @@ if (\is_post()) {
     $upload = \upload_recipe_image($_FILES['image'] ?? []);
 
     if (!$errors) {
-        $repo = new \RecipeRepository(\db());
+        $repo = new RecipeRepository(\db());
         $data['slug'] = $repo->uniqueSlug(\make_slug($data['title']));
         $data['image_path'] = $upload['path'];
         $repo->create($data);
@@ -126,7 +126,7 @@ PHP,
         'criterion' => 'CRUD Administrateurs',
         'expected' => 'Gestion des administrateurs accessible uniquement au back-office.',
         'answer' => 'Le back-office permet d’ajouter, modifier, lister et supprimer les administrateurs. Les hashes de mots de passe ne sont jamais affichés, et le dernier admin ne peut pas être supprimé.',
-        'files' => ['src/Controller/Admin/AdminUserController.php', 'src/Vues/admin/admins/*', 'app/repositories/AdminRepository.php'],
+        'files' => ['src/Controller/Admin/AdminUserController.php', 'src/Vues/admin/admins/*', 'src/Repository/AdminRepository.php'],
         'code' => [
             'title' => 'Suppression encadrée des administrateurs',
             'file' => 'src/Controller/Admin/AdminUserController.php',
@@ -136,7 +136,7 @@ public function delete(string|int $id): void
     \require_admin();
     \require_valid_csrf();
 
-    $repo = new \AdminRepository(\db());
+    $repo = new AdminRepository(\db());
     $adminId = (int) $id;
 
     if ($repo->count() <= 1) {
@@ -152,10 +152,10 @@ PHP,
         'criterion' => 'Authentification',
         'expected' => 'Hachage des mots de passe, gestion sécurisée des sessions, protection des accès.',
         'answer' => 'Les mots de passe admin sont hashés avec Argon2id si disponible, vérifiés avec `password_verify()`, et la session est régénérée après connexion.',
-        'files' => ['app/security/auth.php', 'src/Controller/AuthController.php', 'src/Controller/Admin/*'],
+        'files' => ['src/Utils/Security/auth.php', 'src/Controller/AuthController.php', 'src/Controller/Admin/*'],
         'code' => [
             'title' => 'Hash, session sécurisée et protection admin',
-            'file' => 'app/security/auth.php',
+            'file' => 'src/Utils/Security/auth.php',
             'body' => <<<'PHP'
 function admin_password_hash(string $password): string
 {
@@ -186,10 +186,10 @@ PHP,
         'criterion' => 'Protection contre l’injection SQL',
         'expected' => 'Utilisation de requêtes préparées, aucune concaténation SQL dangereuse.',
         'answer' => 'Les accès base sont centralisés dans les repositories et utilisent PDO avec `prepare()`, paramètres nommés et `execute()`.',
-        'files' => ['app/config/database.php', 'app/repositories/RecipeRepository.php', 'app/repositories/AdminRepository.php'],
+        'files' => ['config/database.php', 'src/Repository/RecipeRepository.php', 'src/Repository/AdminRepository.php'],
         'code' => [
             'title' => 'PDO configuré sans émulation de requêtes préparées',
-            'file' => 'app/config/database.php',
+            'file' => 'config/database.php',
             'body' => <<<'PHP'
 $pdo = new PDO($dsn, (string) $user, (string) $password, [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -204,10 +204,10 @@ PHP,
         'criterion' => 'Protection XSS',
         'expected' => 'Échappement et validation des données, aucun script utilisateur exécutable.',
         'answer' => 'Les données venant de MySQL ou des formulaires sont affichées avec le helper `e()`, basé sur `htmlspecialchars()`.',
-        'files' => ['app/helpers/functions.php', 'src/Vues/recipe.tpl.php', 'src/Vues/recipes.tpl.php'],
+        'files' => ['src/Utils/Helpers/functions.php', 'src/Vues/recipe.tpl.php', 'src/Vues/recipes.tpl.php'],
         'code' => [
             'title' => 'Échappement HTML centralisé',
-            'file' => 'app/helpers/functions.php',
+            'file' => 'src/Utils/Helpers/functions.php',
             'body' => <<<'PHP'
 function e(mixed $value): string
 {
@@ -221,10 +221,10 @@ PHP,
         'criterion' => 'Content Security Policy (CSP)',
         'expected' => 'Présence d’une CSP cohérente limitant l’exécution de scripts.',
         'answer' => 'Les headers HTTP sont centralisés. La CSP autorise le site lui-même, les polices Google nécessaires et un nonce par requête pour les scripts contrôlés.',
-        'files' => ['app/security/headers.php', 'public/.htaccess'],
+        'files' => ['src/Utils/Security/headers.php', 'public/.htaccess'],
         'code' => [
             'title' => 'CSP centralisée avec nonce',
-            'file' => 'app/security/headers.php',
+            'file' => 'src/Utils/Security/headers.php',
             'body' => <<<'PHP'
 $nonce = csp_nonce();
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{$nonce}'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' data: https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
@@ -238,10 +238,10 @@ PHP,
         'criterion' => 'Protection CSRF',
         'expected' => 'Tokens CSRF présents et vérifiés sur les formulaires sensibles.',
         'answer' => 'Les formulaires sensibles contiennent un champ caché `csrf_token`. Avant une création, modification, suppression ou connexion, le token est vérifié côté serveur.',
-        'files' => ['app/security/csrf.php', 'src/Controller/Admin/RecipeAdminController.php', 'src/Controller/Admin/AdminUserController.php'],
+        'files' => ['src/Utils/Security/csrf.php', 'src/Controller/Admin/RecipeAdminController.php', 'src/Controller/Admin/AdminUserController.php'],
         'code' => [
             'title' => 'Token CSRF généré et vérifié',
-            'file' => 'app/security/csrf.php',
+            'file' => 'src/Utils/Security/csrf.php',
             'body' => <<<'PHP'
 function generate_csrf_token(): string
 {
@@ -266,10 +266,10 @@ PHP,
         'criterion' => 'Protection contre la force brute',
         'expected' => 'Limitation des tentatives de connexion, mécanisme de blocage ou temporisation.',
         'answer' => 'Les tentatives de connexion sont stockées en base avec email, IP, user agent, succès/échec. Après 5 échecs récents, la connexion est temporairement bloquée.',
-        'files' => ['app/security/brute_force.php', 'app/repositories/LoginAttemptRepository.php', 'src/Controller/AuthController.php'],
+        'files' => ['src/Utils/Security/brute_force.php', 'src/Repository/LoginAttemptRepository.php', 'src/Controller/AuthController.php'],
         'code' => [
             'title' => 'Blocage après échecs répétés',
-            'file' => 'app/security/brute_force.php',
+            'file' => 'src/Utils/Security/brute_force.php',
             'body' => <<<'PHP'
 const MAX_LOGIN_FAILURES = 5;
 const LOGIN_WINDOW_MINUTES = 15;
@@ -290,10 +290,10 @@ PHP,
         'criterion' => 'Upload de fichiers sécurisé',
         'expected' => 'Vérification type, extension, taille, absence de fichiers exécutables.',
         'answer' => 'L’upload accepte uniquement `jpg`, `jpeg`, `png`, `webp`, vérifie la taille 2 Mo, compare extension et MIME réel, puis renomme le fichier avec un nom aléatoire.',
-        'files' => ['app/security/upload.php', 'public/uploads/recipes/.htaccess'],
+        'files' => ['src/Utils/Security/upload.php', 'public/uploads/recipes/.htaccess'],
         'code' => [
             'title' => 'Contrôles upload image',
-            'file' => 'app/security/upload.php',
+            'file' => 'src/Utils/Security/upload.php',
             'body' => <<<'PHP'
 $maxSize = 2 * 1024 * 1024;
 if (($file['size'] ?? 0) > $maxSize) {
@@ -316,24 +316,23 @@ PHP,
         'criterion' => 'Qualité du code',
         'expected' => 'Lisibilité, noms explicites, organisation claire, commentaires pertinents.',
         'answer' => 'Le code est organisé par responsabilités : configuration, helpers, sécurité, validation, repositories, contrôleurs, modèles, vues et admin.',
-        'files' => ['app/bootstrap.php', 'src/Controller/*', 'app/repositories/*', 'tests/*'],
+        'files' => ['src/bootstrap.php', 'src/Controller/*', 'src/Repository/*', 'tests/*'],
         'code' => [
             'title' => 'Bootstrap central du projet',
-            'file' => 'app/bootstrap.php',
+            'file' => 'src/bootstrap.php',
             'body' => <<<'PHP'
-require_once BASE_PATH . '/app/config/app.php';
-require_once BASE_PATH . '/app/config/database.php';
-require_once BASE_PATH . '/app/helpers/functions.php';
-require_once BASE_PATH . '/app/security/headers.php';
-require_once BASE_PATH . '/app/security/auth.php';
-require_once BASE_PATH . '/app/security/csrf.php';
+define('BASE_PATH', dirname(__DIR__));
+define('PUBLIC_PATH', BASE_PATH . '/public');
+define('UPLOAD_RECIPE_DIR', PUBLIC_PATH . '/uploads/recipes');
+
+require_once BASE_PATH . '/vendor/autoload.php';
 
 enforce_https_in_production();
 start_secure_session();
 apply_security_headers();
 PHP,
         ],
-        'explanation' => 'Le bootstrap montre les dépendances importantes au même endroit. Les protections sont chargées avant les pages, ce qui évite de répéter la configuration dans chaque fichier.',
+        'explanation' => 'Le bootstrap centralise les constantes puis charge Composer. L’autoload PSR-4 charge les classes `App\\...` et la section `files` de Composer charge les fonctions transverses dans le bon ordre.',
     ],
     [
         'criterion' => 'Documentation sécurité',
@@ -350,7 +349,7 @@ PHP,
 - Vérification avec `password_verify()`.
 - Requêtes SQL préparées dans les repositories.
 - Échappement HTML centralisé avec `e()`.
-- Tokens CSRF centralisés dans `app/security/csrf.php`.
+- Tokens CSRF centralisés dans `src/Utils/Security/csrf.php`.
 - Limitation brute force via table `login_attempts`.
 MD,
         ],

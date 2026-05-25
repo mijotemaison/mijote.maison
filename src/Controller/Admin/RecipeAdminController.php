@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Controller\AbstractController;
+use App\Repository\RecipeRepository;
 use Throwable;
-
-require_once BASE_PATH . '/app/repositories/RecipeRepository.php';
-require_once BASE_PATH . '/app/security/upload.php';
-require_once BASE_PATH . '/app/validation/recipe_validation.php';
 
 final class RecipeAdminController extends AbstractController
 {
@@ -21,7 +18,7 @@ final class RecipeAdminController extends AbstractController
         $error = null;
 
         try {
-            $recipes = (new \RecipeRepository(\db()))->all();
+            $recipes = (new RecipeRepository(\db()))->all();
         } catch (Throwable) {
             $error = 'Base de donnees indisponible.';
         }
@@ -49,7 +46,7 @@ final class RecipeAdminController extends AbstractController
 
             if (!$errors) {
                 try {
-                    $repo = new \RecipeRepository(\db());
+                    $repo = new RecipeRepository(\db());
                     $data['slug'] = $repo->uniqueSlug(\make_slug($data['title']));
                     $data['image_path'] = $upload['path'];
                     $repo->create($data);
@@ -71,7 +68,7 @@ final class RecipeAdminController extends AbstractController
     {
         \require_admin();
 
-        $repo = new \RecipeRepository(\db());
+        $repo = new RecipeRepository(\db());
         $recipe = $repo->find((int) $id);
         if (!$recipe) {
             \flash('error', 'Recette introuvable.');
@@ -116,7 +113,7 @@ final class RecipeAdminController extends AbstractController
     {
         \require_admin();
 
-        $repo = new \RecipeRepository(\db());
+        $repo = new RecipeRepository(\db());
         $recipe = $repo->find((int) $id);
 
         if (!$recipe) {
@@ -137,7 +134,7 @@ final class RecipeAdminController extends AbstractController
         \require_valid_csrf();
 
         $pdo = \db();
-        $repo = new \RecipeRepository($pdo);
+        $repo = new RecipeRepository($pdo);
         $recipe = $repo->find((int) $id);
 
         if (!$recipe) {
@@ -160,7 +157,7 @@ final class RecipeAdminController extends AbstractController
         \require_valid_csrf();
 
         $pdo = \db();
-        $repo = new \RecipeRepository($pdo);
+        $repo = new RecipeRepository($pdo);
         $newId = $repo->duplicateAsDraft((int) $id);
 
         if (!$newId) {

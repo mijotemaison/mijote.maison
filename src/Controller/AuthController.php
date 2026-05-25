@@ -7,8 +7,6 @@ namespace App\Controller;
 use App\Model\Admin;
 use Throwable;
 
-require_once BASE_PATH . '/app/security/brute_force.php';
-
 final class AuthController extends AbstractController
 {
     public function login(): void
