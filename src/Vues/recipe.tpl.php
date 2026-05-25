@@ -24,39 +24,66 @@
         </div>
     </section>
 <?php else: ?>
-    <article>
-        <section class="hero-section py-5">
+    <?php
+        $imageUrl = recipe_image_url($recipe['image_path'] ?? null);
+        $ingredients = preg_split('/\R+/', (string) ($recipe['ingredients'] ?? '')) ?: [];
+        $ingredients = array_values(array_filter(array_map('trim', $ingredients), static fn(string $line): bool => $line !== ''));
+        $steps = preg_split('/\R+/', (string) ($recipe['preparation_steps'] ?? '')) ?: [];
+        $steps = array_values(array_filter(array_map('trim', $steps), static fn(string $line): bool => $line !== ''));
+    ?>
+    <article class="recipe-page">
+        <section class="recipe-hero-clean py-5">
             <div class="container">
-                <div class="row align-items-center g-5">
+                <div class="row align-items-center g-4 g-xl-5">
                     <div class="col-lg-6">
-                        <div class="d-flex flex-wrap gap-2 mb-4">
+                        <div class="d-flex flex-wrap gap-2 mb-3">
                             <span class="badge-soft badge-tomato"><?= e(recipe_category_label($recipe['category'] ?? null)) ?></span>
                             <span class="badge-soft badge-herb"><?= e($meta['time']) ?></span>
                             <span class="badge-soft"><?= e($meta['level']) ?></span>
                             <span class="badge-soft"><?= e((string) ($recipe['view_count'] ?? 0)) ?> vues</span>
                         </div>
-                        <h1 class="display-3 fw-bold mb-4"><?= e($recipe['title']) ?></h1>
-                        <p class="lead lead-luxe"><?= e($recipe['description']) ?></p>
+                        <h1 class="recipe-hero-title display-font mb-4"><?= e($recipe['title']) ?></h1>
+                        <p class="lead lead-luxe mb-4"><?= e($recipe['description']) ?></p>
+                        <div class="recipe-facts-grid">
+                            <div class="recipe-fact">
+                                <span>Temps</span>
+                                <strong><?= e($meta['time']) ?></strong>
+                            </div>
+                            <div class="recipe-fact">
+                                <span>Difficulté</span>
+                                <strong><?= e($meta['level']) ?></strong>
+                            </div>
+                            <div class="recipe-fact">
+                                <span>Portions</span>
+                                <strong><?= e($meta['servings']) ?></strong>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-lg-6">
-                        <img class="recipe-detail-img" src="<?= e(recipe_image_url($recipe['image_path'])) ?>" alt="">
+                        <figure class="recipe-photo-card mb-0">
+                            <img class="recipe-detail-img" src="<?= e($imageUrl) ?>" alt="<?= e($recipe['title']) ?>">
+                            <figcaption class="recipe-photo-caption">
+                                <span><?= e($meta['season']) ?></span>
+                                <strong><?= e($meta['tag']) ?></strong>
+                            </figcaption>
+                        </figure>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="py-5">
+        <section class="recipe-content-section py-5">
             <div class="container">
                 <div class="row g-4">
                     <aside class="col-lg-4">
-                        <div class="lux-card p-4 mb-4">
+                        <div class="lux-card recipe-side-card p-4 mb-4">
                             <h2 class="display-font fs-2 fw-bold">En bref</h2>
                             <dl class="vstack gap-3 small mb-0 mt-4">
-                                <div class="d-flex justify-content-between rounded-4 bg-light p-3"><dt>Temps</dt><dd class="fw-bold text-primary mb-0"><?= e($meta['time']) ?></dd></div>
-                                <div class="d-flex justify-content-between rounded-4 bg-light p-3"><dt>Difficulté</dt><dd class="fw-bold text-success mb-0"><?= e($meta['level']) ?></dd></div>
-                                <div class="d-flex justify-content-between rounded-4 bg-light p-3"><dt>Portions</dt><dd class="fw-bold mb-0"><?= e($meta['servings']) ?></dd></div>
-                                <div class="d-flex justify-content-between rounded-4 bg-light p-3"><dt>Ambiance</dt><dd class="fw-bold text-warning mb-0"><?= e($meta['season']) ?></dd></div>
-                                <div class="d-flex justify-content-between rounded-4 bg-light p-3"><dt>Vues</dt><dd class="fw-bold mb-0"><?= e((string) ($recipe['view_count'] ?? 0)) ?></dd></div>
+                                <div class="recipe-info-row"><dt>Temps</dt><dd><?= e($meta['time']) ?></dd></div>
+                                <div class="recipe-info-row"><dt>Difficulté</dt><dd><?= e($meta['level']) ?></dd></div>
+                                <div class="recipe-info-row"><dt>Portions</dt><dd><?= e($meta['servings']) ?></dd></div>
+                                <div class="recipe-info-row"><dt>Ambiance</dt><dd><?= e($meta['season']) ?></dd></div>
+                                <div class="recipe-info-row"><dt>Vues</dt><dd><?= e((string) ($recipe['view_count'] ?? 0)) ?></dd></div>
                             </dl>
                             <div class="border rounded-4 p-3 mt-4 bg-white">
                                 <p class="kicker mb-2">Note des lecteurs</p>
@@ -77,14 +104,17 @@
                     <div class="col-lg-8">
                         <section class="lux-card p-4 p-lg-5 mb-4">
                             <h2 class="display-font fs-2 fw-bold">Ingrédients</h2>
-                            <div class="rounded-4 bg-light p-4 fs-5 lh-lg mt-4 pre-line"><?= e($recipe['ingredients']) ?></div>
+                            <ul class="ingredient-list mt-4 mb-0">
+                                <?php foreach ($ingredients as $ingredient): ?>
+                                    <li><?= e($ingredient) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
                         </section>
                         <section class="lux-card p-4 p-lg-5">
                             <h2 class="display-font fs-2 fw-bold">Préparation</h2>
                             <div class="vstack gap-3 mt-4">
-                                <?php foreach (preg_split('/\R+/', (string) $recipe['preparation_steps']) as $index => $step): ?>
-                                    <?php if (trim($step) === '') { continue; } ?>
-                                    <div class="d-flex gap-3 rounded-4 bg-light p-4">
+                                <?php foreach ($steps as $index => $step): ?>
+                                    <div class="preparation-step d-flex gap-3 p-4">
                                         <span class="step-number"><?= e($index + 1) ?></span>
                                         <p class="fs-5 lh-lg mb-0"><?= e($step) ?></p>
                                     </div>

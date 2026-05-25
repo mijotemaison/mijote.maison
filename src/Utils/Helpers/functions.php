@@ -45,11 +45,24 @@ function versioned_asset(string $path): string
 
 function recipe_image_url(?string $imagePath): string
 {
-    if ($imagePath === null || $imagePath === '') {
-        return asset('assets/img/recipe-placeholder.svg');
+    $fallback = asset('assets/img/recipe-placeholder.svg');
+    $imagePath = trim((string) $imagePath);
+
+    if ($imagePath === '') {
+        return $fallback;
     }
 
-    return asset($imagePath);
+    $path = parse_url($imagePath, PHP_URL_PATH);
+    if (!is_string($path) || $path === '') {
+        return $fallback;
+    }
+
+    $relativePath = ltrim($path, '/');
+    if (str_contains($relativePath, '..') || str_contains($relativePath, "\0")) {
+        return $fallback;
+    }
+
+    return is_file(PUBLIC_PATH . '/' . $relativePath) ? asset($relativePath) : $fallback;
 }
 
 function recipe_url(string $slug): string
