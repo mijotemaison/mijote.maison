@@ -249,24 +249,174 @@ VALUES
   96,
   NOW(),
   NOW()
+),
+(
+  'Couscous aux legumes',
+  'couscous-aux-legumes',
+  'Un plat vegetarien genereux, parfume et colore pour les grandes tables.',
+  'Un couscous aux legumes fondants, pois chiches et semoule legere. Une recette conviviale qui apporte du soleil au repas familial.',
+  '350 g de semoule\n3 carottes\n2 courgettes\n2 navets\n250 g de pois chiches\n1 oignon\nBouillon de legumes\nRas el hanout\nCoriandre',
+  'Faire revenir l oignon avec les epices.\nAjouter les legumes et le bouillon puis mijoter 35 minutes.\nPreparer la semoule a part.\nServir les legumes sur la semoule avec coriandre fraiche.',
+  'assets/img/recipes/couscous-legumes.webp',
+  'vegetarien',
+  'published',
+  NOW(),
+  88,
+  NOW(),
+  NOW()
+),
+(
+  'Crepes sucrees',
+  'crepes-sucrees',
+  'Des crepes fines et moelleuses pour le gouter ou un dessert rapide.',
+  'Une pate a crepes simple, doree a la poele et servie avec sucre, miel, chocolat ou fruits frais selon les envies.',
+  '250 g de farine\n3 oeufs\n50 cl de lait\n30 g de beurre fondu\n1 cuillere de sucre\n1 pincee de sel\nVanille',
+  'Melanger farine, sucre et sel.\nAjouter les oeufs puis le lait progressivement.\nIncorporer le beurre fondu.\nLaisser reposer puis cuire les crepes dans une poele chaude.',
+  'assets/img/recipes/crepes-sucrees.webp',
+  'desserts',
+  'published',
+  NOW(),
+  74,
+  NOW(),
+  NOW()
+),
+(
+  'Gaufres maison',
+  'gaufres-maison',
+  'Des gaufres dorees, croustillantes dehors et moelleuses dedans.',
+  'Une recette de gaufres maison parfaite pour un brunch ou un gouter gourmand, avec fruits rouges, chantilly ou sucre glace.',
+  '250 g de farine\n2 oeufs\n40 g de sucre\n50 cl de lait\n80 g de beurre fondu\n1 sachet de levure\n1 pincee de sel',
+  'Melanger les ingredients secs.\nAjouter les oeufs, le lait puis le beurre fondu.\nLaisser reposer 20 minutes.\nCuire dans un gaufrier bien chaud jusqu a coloration.',
+  'assets/img/recipes/gaufres-maison.webp',
+  'desserts',
+  'published',
+  NOW(),
+  69,
+  NOW(),
+  NOW()
+),
+(
+  'Lasagnes bolognaise',
+  'lasagnes-bolognaise',
+  'Un grand classique familial avec sauce bolognaise et fromage gratine.',
+  'Des couches de pates, sauce bolognaise maison, bechamel et fromage gratine au four. Un plat reconfortant et facile a partager.',
+  '12 feuilles de lasagnes\n500 g de boeuf hache\n700 g de coulis de tomate\n1 oignon\n2 carottes\n50 cl de bechamel\nParmesan\nMozzarella',
+  'Preparer la sauce bolognaise avec viande, legumes et tomate.\nMonter les couches de pates, sauce et bechamel.\nAjouter les fromages.\nCuire 40 minutes a 180 degres.',
+  'assets/img/recipes/lasagnes-bolognaise.webp',
+  'plats',
+  'published',
+  NOW(),
+  102,
+  NOW(),
+  NOW()
+),
+(
+  'Quiche lorraine maison',
+  'quiche-lorraine-maison',
+  'Une quiche doree et fondante, ideale avec une salade verte.',
+  'Une pate croustillante garnie de lardons, oeufs, creme et fromage. Une recette simple pour un repas du soir ou un buffet.',
+  '1 pate brisee\n200 g de lardons\n3 oeufs\n25 cl de creme\n10 cl de lait\n80 g de fromage rape\nMuscade\nPoivre',
+  'Precuire legerement la pate.\nFaire dorer les lardons.\nMelanger oeufs, creme, lait et assaisonnement.\nVerser sur la pate et cuire 35 minutes a 180 degres.',
+  'assets/img/recipes/quiche-lorraine-maison.webp',
+  'plats',
+  'published',
+  NOW(),
+  81,
+  NOW(),
+  NOW()
+),
+(
+  'Ratatouille provencale',
+  'ratatouille-provencale',
+  'Des legumes du soleil mijotes doucement avec herbes et huile d olive.',
+  'Une ratatouille familiale avec aubergines, courgettes, tomates et poivrons. Elle se sert chaude, tiede ou froide selon la saison.',
+  '2 aubergines\n3 courgettes\n4 tomates\n2 poivrons\n1 oignon\n2 gousses d ail\nHuile d olive\nThym\nBasilic',
+  'Couper les legumes en morceaux reguliers.\nFaire revenir chaque legume puis les rassembler.\nAjouter tomates, ail et herbes.\nMijoter 35 minutes a feu doux.',
+  'assets/img/recipes/ratatouille-provencale.webp',
+  'vegetarien',
+  'published',
+  NOW(),
+  77,
+  NOW(),
+  NOW()
+),
+(
+  'Salade nicoise',
+  'salade-nicoise',
+  'Une salade complete, fraiche et coloree pour les beaux jours.',
+  'Tomates, haricots verts, oeufs, thon, olives et pommes de terre composent une salade genereuse et equilibree.',
+  '4 tomates\n300 g de haricots verts\n4 oeufs\n250 g de thon\nOlives noires\nPommes de terre\nHuile d olive\nCitron',
+  'Cuire les oeufs, haricots et pommes de terre.\nCouper les tomates.\nDisposer tous les ingredients dans un grand plat.\nAssaisonner avec huile d olive et citron.',
+  'assets/img/recipes/salade-nicoise.webp',
+  'entrees',
+  'published',
+  NOW(),
+  66,
+  NOW(),
+  NOW()
+),
+(
+  'Soupe lentilles corail',
+  'soupe-lentilles-corail',
+  'Une soupe veloutee, rapide et pleine de douceur.',
+  'Des lentilles corail cuites avec carottes, epices douces et bouillon. Une soupe simple, nourrissante et tres pratique en semaine.',
+  '250 g de lentilles corail\n2 carottes\n1 oignon\n1 litre de bouillon\nCumin\nCurcuma\nHuile d olive\nCoriandre',
+  'Rincer les lentilles.\nFaire revenir oignon, carottes et epices.\nAjouter bouillon et lentilles puis cuire 20 minutes.\nMixer et servir avec coriandre.',
+  'assets/img/recipes/soupe-lentilles-corail.webp',
+  'entrees',
+  'published',
+  NOW(),
+  58,
+  NOW(),
+  NOW()
+),
+(
+  'Tajine poulet olives citron',
+  'tajine-poulet-olives-citron',
+  'Un plat mijote parfume avec olives vertes, citron et coriandre.',
+  'Du poulet tendre cuit lentement avec epices, olives et citron. Un plat chaleureux qui se partage directement a table.',
+  '4 cuisses de poulet\n200 g d olives vertes\n1 citron confit\n2 oignons\nAil\nCurcuma\nGingembre\nCoriandre\nHuile d olive',
+  'Faire revenir oignons, ail et epices.\nAjouter le poulet et faire dorer.\nCouvrir et mijoter 40 minutes.\nAjouter olives et citron en fin de cuisson.',
+  'assets/img/recipes/tajine-poulet-olives-citron.webp',
+  'plats',
+  'published',
+  NOW(),
+  93,
+  NOW(),
+  NOW()
+),
+(
+  'Tiramisu classique',
+  'tiramisu-classique',
+  'Un dessert italien cremeux au cafe et cacao.',
+  'Un tiramisu traditionnel avec mascarpone, biscuits imbibes de cafe et cacao. Il se prepare a l avance pour un resultat bien fondant.',
+  '250 g de mascarpone\n3 oeufs\n80 g de sucre\nBiscuits cuillere\nCafe fort\nCacao non sucre\n1 pincee de sel',
+  'Separer les blancs des jaunes.\nFouetter jaunes et sucre puis ajouter mascarpone.\nIncorporer les blancs montes.\nAlterner biscuits imbibes et creme puis reserver au frais.',
+  'assets/img/recipes/tiramisu-classique.webp',
+  'desserts',
+  'published',
+  NOW(),
+  87,
+  NOW(),
+  NOW()
 );
 
 INSERT INTO recipe_ratings (recipe_id, rating, voter_hash, created_at, updated_at)
-SELECT id, 5, SHA2(CONCAT(slug, '-seed-a'), 256), NOW(), NOW() FROM recipes WHERE slug IN ('fondant-au-chocolat', 'burger-maison-gourmand', 'pates-cremeuses-aux-champignons');
+SELECT id, 5, SHA2(CONCAT(slug, '-seed-a'), 256), NOW(), NOW() FROM recipes WHERE slug IN ('fondant-au-chocolat', 'burger-maison-gourmand', 'pates-cremeuses-aux-champignons', 'lasagnes-bolognaise', 'tajine-poulet-olives-citron', 'tiramisu-classique');
 
 INSERT INTO recipe_ratings (recipe_id, rating, voter_hash, created_at, updated_at)
-SELECT id, 4, SHA2(CONCAT(slug, '-seed-b'), 256), NOW(), NOW() FROM recipes WHERE slug IN ('veloute-de-potimarron', 'tarte-fine-aux-pommes', 'saumon-au-four-et-legumes', 'curry-de-legumes-coco');
+SELECT id, 4, SHA2(CONCAT(slug, '-seed-b'), 256), NOW(), NOW() FROM recipes WHERE slug IN ('veloute-de-potimarron', 'tarte-fine-aux-pommes', 'saumon-au-four-et-legumes', 'curry-de-legumes-coco', 'couscous-aux-legumes', 'ratatouille-provencale', 'salade-nicoise', 'soupe-lentilles-corail');
 
 INSERT INTO recipe_ratings (recipe_id, rating, voter_hash, created_at, updated_at)
-SELECT id, 5, SHA2(CONCAT(slug, '-seed-c'), 256), NOW(), NOW() FROM recipes WHERE slug IN ('poulet-citron-et-herbes', 'salade-mediterraneenne', 'risotto-parmesan-et-champignons');
+SELECT id, 5, SHA2(CONCAT(slug, '-seed-c'), 256), NOW(), NOW() FROM recipes WHERE slug IN ('poulet-citron-et-herbes', 'salade-mediterraneenne', 'risotto-parmesan-et-champignons', 'crepes-sucrees', 'gaufres-maison', 'quiche-lorraine-maison');
 
 INSERT INTO recipe_comments (recipe_id, author_name, content, status, visitor_hash, created_at, updated_at)
 SELECT id, 'Claire', 'Recette tres claire, parfaite pour un repas en famille.', 'approved', SHA2(CONCAT(slug, '-comment-claire'), 256), NOW(), NOW()
-FROM recipes WHERE slug IN ('veloute-de-potimarron', 'fondant-au-chocolat');
+FROM recipes WHERE slug IN ('veloute-de-potimarron', 'fondant-au-chocolat', 'couscous-aux-legumes', 'quiche-lorraine-maison', 'crepes-sucrees');
 
 INSERT INTO recipe_comments (recipe_id, author_name, content, status, visitor_hash, created_at, updated_at)
 SELECT id, 'Nadia', 'J ai suivi les etapes sans difficulte, le resultat etait vraiment gourmand.', 'approved', SHA2(CONCAT(slug, '-comment-nadia'), 256), NOW(), NOW()
-FROM recipes WHERE slug IN ('poulet-citron-et-herbes', 'pates-cremeuses-aux-champignons');
+FROM recipes WHERE slug IN ('poulet-citron-et-herbes', 'pates-cremeuses-aux-champignons', 'lasagnes-bolognaise', 'tajine-poulet-olives-citron', 'tiramisu-classique');
 
 -- Utilisateur MySQL recommande pour le principe du moindre privilege :
 -- CREATE USER 'secure_recipes_user'@'%' IDENTIFIED BY 'mot_de_passe_fort_a_changer';

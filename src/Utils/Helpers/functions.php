@@ -172,6 +172,16 @@ function recipe_public_meta(?string $slug): array
         'burger-maison-gourmand' => ['category' => 'plats', 'label' => 'Plat', 'time' => '45 min', 'level' => 'Moyen', 'tag' => 'Week-end', 'servings' => '4 burgers', 'season' => 'Week-end'],
         'risotto-parmesan-et-champignons' => ['category' => 'plats', 'label' => 'Plat', 'time' => '35 min', 'level' => 'Moyen', 'tag' => 'Crémeux', 'servings' => '4 assiettes', 'season' => 'Crémeux'],
         'fondant-au-chocolat' => ['category' => 'desserts', 'label' => 'Dessert', 'time' => '22 min', 'level' => 'Facile', 'tag' => 'Gourmand', 'servings' => '6 fondants', 'season' => 'Gourmand'],
+        'couscous-aux-legumes' => ['category' => 'vegetarien', 'label' => 'Végétarien', 'time' => '55 min', 'level' => 'Facile', 'tag' => 'Soleil', 'servings' => '6 personnes', 'season' => 'Convivial'],
+        'crepes-sucrees' => ['category' => 'desserts', 'label' => 'Dessert', 'time' => '35 min', 'level' => 'Très facile', 'tag' => 'Goûter', 'servings' => '12 crêpes', 'season' => 'Goûter'],
+        'gaufres-maison' => ['category' => 'desserts', 'label' => 'Dessert', 'time' => '30 min', 'level' => 'Facile', 'tag' => 'Brunch', 'servings' => '8 gaufres', 'season' => 'Brunch'],
+        'lasagnes-bolognaise' => ['category' => 'plats', 'label' => 'Plat', 'time' => '1 h 15', 'level' => 'Moyen', 'tag' => 'Familial', 'servings' => '6 parts', 'season' => 'Réconfort'],
+        'quiche-lorraine-maison' => ['category' => 'plats', 'label' => 'Plat', 'time' => '50 min', 'level' => 'Facile', 'tag' => 'Classique', 'servings' => '6 parts', 'season' => 'Toute saison'],
+        'ratatouille-provencale' => ['category' => 'vegetarien', 'label' => 'Végétarien', 'time' => '50 min', 'level' => 'Facile', 'tag' => 'Provence', 'servings' => '4 assiettes', 'season' => 'Été'],
+        'salade-nicoise' => ['category' => 'entrees', 'label' => 'Entrée', 'time' => '25 min', 'level' => 'Facile', 'tag' => 'Fraîcheur', 'servings' => '4 assiettes', 'season' => 'Été'],
+        'soupe-lentilles-corail' => ['category' => 'entrees', 'label' => 'Entrée', 'time' => '30 min', 'level' => 'Très facile', 'tag' => 'Velouté', 'servings' => '4 bols', 'season' => 'Réconfort'],
+        'tajine-poulet-olives-citron' => ['category' => 'plats', 'label' => 'Plat', 'time' => '1 h', 'level' => 'Moyen', 'tag' => 'Mijoté', 'servings' => '4 personnes', 'season' => 'Partage'],
+        'tiramisu-classique' => ['category' => 'desserts', 'label' => 'Dessert', 'time' => '25 min + repos', 'level' => 'Facile', 'tag' => 'Italien', 'servings' => '6 parts', 'season' => 'Gourmand'],
     ];
 
     return array_merge($default, $meta[$slug ?? ''] ?? []);
