@@ -911,6 +911,75 @@ a {
   overflow-x: hidden;
 }
 
+.slide-top {
+  align-self: start;
+}
+
+.slide-summary-card {
+  border: 1px solid rgba(37, 99, 235, .08);
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, #fff, rgba(248, 251, 255, .9));
+  padding: 1.25rem;
+  box-shadow: 0 1rem 2.5rem rgba(18, 54, 84, .08);
+}
+
+.slide-guidance-card {
+  margin-top: 1.75rem;
+  border: 1px solid rgba(37, 99, 235, .1);
+  border-radius: 1.75rem;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .98), rgba(248, 251, 255, .96)),
+    #fff;
+  padding: clamp(1.25rem, 2vw, 2rem);
+  box-shadow: 0 1.25rem 3rem rgba(18, 54, 84, .1);
+}
+
+.slide-guidance-card__label {
+  flex: 0 0 12rem;
+}
+
+.slide-guidance-card__label span {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, .08);
+  color: var(--mm-blue);
+  font-size: .8rem;
+  font-weight: 900;
+  padding: .35rem .75rem;
+}
+
+.slide-guidance-card__body {
+  color: var(--mm-muted);
+  font-size: clamp(1rem, .9rem + .28vw, 1.18rem);
+  line-height: 1.9;
+}
+
+.slide-guidance-card__body p {
+  margin: 0;
+}
+
+.slide-guidance-card__body p + p {
+  margin-top: .95rem;
+}
+
+.slide-guidance-card--top {
+  margin-top: 0;
+  min-height: 100%;
+}
+
+.slide-guidance-card--top > .d-flex {
+  flex-direction: column !important;
+}
+
+.slide-guidance-card--top .slide-guidance-card__label {
+  flex: 0 0 auto;
+}
+
+body.is-presenter [data-audience-only] {
+  display: none !important;
+}
+
 .presentation-slide .row,
 .presentation-slide [class^="col-"],
 .presentation-slide [class*=" col-"] {
@@ -935,6 +1004,18 @@ a {
 
 .presentation-progress::-moz-progress-bar {
   background: linear-gradient(90deg, var(--mm-tomato), var(--mm-blue));
+}
+
+.presentation-navigation {
+  position: sticky;
+  top: 5.75rem;
+  z-index: 10;
+  border: 1px solid rgba(37, 99, 235, .08);
+  border-radius: 999px;
+  background: rgba(248, 251, 255, .88);
+  backdrop-filter: blur(14px);
+  padding: .55rem;
+  box-shadow: 0 1rem 2.5rem rgba(18, 54, 84, .08);
 }
 
 .stack-flow {

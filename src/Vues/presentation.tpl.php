@@ -14,12 +14,38 @@ function render_code_panel(string $title, string $file, string $code): void
     echo '</div>';
 }
 
+function render_guidance_panel(string $text, string $extraClass = ''): void
+{
+    $paragraphs = preg_split('/\R{2,}/', trim($text)) ?: [];
+    $class = trim($extraClass);
+
+    echo '<div class="slide-guidance-card' . ($class !== '' ? ' ' . e($class) : '') . '" data-presenter-only>';
+    echo '<div class="d-flex flex-column flex-lg-row align-items-lg-start gap-3">';
+    echo '<div class="slide-guidance-card__label">';
+    echo '<p class="kicker mb-1">Fil conducteur</p>';
+    echo '<span>Repère de soutenance</span>';
+    echo '</div>';
+    echo '<div class="slide-guidance-card__body">';
+
+    foreach ($paragraphs as $paragraph) {
+        echo '<p>' . e($paragraph) . '</p>';
+    }
+
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+}
+
 $slides = [
     [
         'kicker' => 'Ouverture',
         'title' => 'Mijoté Maison',
         'lead' => 'Projet final GRETA 92 : un site de recettes public avec un back-office administrateur sécurisé.',
-        'oral' => 'Je présente une application complète, pas seulement une maquette. Le visiteur consulte les recettes, et l’administrateur gère le contenu dans une zone protégée.',
+        'oral' => <<<'TEXT'
+Cette première slide sert à poser le cadre : le projet n’est pas une simple vitrine statique, mais une application web complète avec des données, des pages publiques et une administration.
+
+Je peux expliquer que le visiteur consulte uniquement les recettes, tandis que l’administrateur dispose d’un back-office séparé pour gérer le contenu. C’est exactement la logique demandée par le sujet : front-office public, back-office protégé et sécurité intégrée dès la conception.
+TEXT,
         'points' => ['Front-office public orienté recettes.', 'Back-office réservé aux administrateurs.', 'Sécurité intégrée dans le code PHP, la base et les formulaires.'],
         'files' => ['public/index.php', 'src/Controller/RecipeController.php', 'src/Controller/Admin/DashboardController.php'],
         'test' => 'Vérification : accueil, liste recettes, détail recette, login et dashboard répondent correctement.',
@@ -28,7 +54,11 @@ $slides = [
         'kicker' => 'Contexte',
         'title' => 'Le sujet demandé',
         'lead' => 'Le PDF demande une page d’accueil, une page recette, une page de connexion et un back-office admin.',
-        'oral' => 'Le site respecte la séparation attendue : la partie publique ne permet que la consultation, tandis que les actions sensibles sont dans le back-office.',
+        'oral' => <<<'TEXT'
+Cette slide relie directement le projet au PDF officiel. Le formateur attend trois pages publiques minimales : accueil, recette détaillée et connexion.
+
+Dans le projet, l’accueil présente le site et les recettes, la page recette affiche le détail complet, et la page connexion sert uniquement à accéder au back-office. Aucune inscription publique n’a été ajoutée, car le sujet précise qu’il n’existe qu’un rôle : admin.
+TEXT,
         'points' => ['Page d’accueil avec présentation et aperçu de recettes.', 'Page liste pour naviguer vers chaque recette.', 'Page recette détaillée séparée.', 'Page de connexion clairement nommée.'],
         'files' => ['public/index.php', 'src/Controller/RecipeController.php', 'src/Controller/AuthController.php', 'src/Vues/login.tpl.php'],
         'test' => 'Vérification : /, /recettes, /recette/veloute-de-potimarron et /connexion répondent en HTTP 200 via AltoRouter.',
@@ -37,7 +67,11 @@ $slides = [
         'kicker' => 'Objectif',
         'title' => 'Développer un vrai site sécurisé',
         'lead' => 'L’objectif est de montrer un produit utilisable et de prouver que les protections web sont comprises.',
-        'oral' => 'Chaque protection est visible dans le projet : il y a un fichier ou une fonction identifiable pour l’authentification, SQLi, XSS, CSRF, brute force et upload.',
+        'oral' => <<<'TEXT'
+L’objectif n’est pas seulement de dire que le site est sécurisé, mais de montrer où les protections sont réellement codées. Chaque risque demandé par le sujet correspond à une partie identifiable du projet.
+
+Pendant la soutenance, je peux passer de la fonctionnalité visible au fichier qui la protège : authentification, requêtes préparées, échappement, CSRF, limitation brute force et upload sécurisé. Cela rend la sécurité compréhensible et vérifiable par le jury.
+TEXT,
         'points' => ['Fonctionnalités réelles : CRUD recettes et admins.', 'Données stockées en MySQL.', 'Explications techniques appuyées par des extraits réels.'],
         'files' => ['src/Utils/Security/*', 'src/Repository/*', 'docs/rapport-securite.md'],
         'test' => 'Vérification : le rapport PDF et cette présentation citent les mêmes protections que le code.',
@@ -46,7 +80,11 @@ $slides = [
         'kicker' => 'Stack',
         'title' => 'PHP, MySQL, Bootstrap et JavaScript',
         'lead' => 'La stack suit le sujet officiel : PHP, HTML, JavaScript, Bootstrap et MySQL.',
-        'oral' => 'PHP orchestre les pages, PDO sécurise l’accès à MySQL, Bootstrap fournit les composants d’interface, et JavaScript ajoute l’interaction du carrousel et des filtres.',
+        'oral' => <<<'TEXT'
+Cette slide explique le rôle de chaque technologie sans entrer tout de suite dans le code. PHP reçoit la requête, choisit le contrôleur via AltoRouter, prépare les données et appelle la vue.
+
+MySQL stocke les recettes, les administrateurs et les journaux de connexion. PDO sert d’intermédiaire sécurisé entre PHP et MySQL grâce aux requêtes préparées. Bootstrap structure l’interface, et JavaScript reste limité aux interactions comme le carrousel de présentation ou certains comportements visuels.
+TEXT,
         'points' => ['PHP natif structuré, sans framework lourd.', 'MySQL avec PDO et requêtes préparées.', 'Bootstrap local, sans CDN, pour rester compatible avec la CSP.', 'JavaScript vanilla pour les interactions.'],
         'files' => ['package.json', 'public/assets/vendor/bootstrap', 'config/database.php'],
         'code' => [
@@ -68,7 +106,11 @@ PHP,
         'kicker' => 'Architecture',
         'title' => 'Architecture selon la méthode du prof',
         'lead' => 'Le projet reprend la logique front controller, routes propres, Apache/MAMP possible et MVC classique.',
-        'oral' => 'public/index.php est le point d’entrée principal. Il utilise AltoRouter comme dans la méthode du prof pour envoyer chaque URL vers un contrôleur. Les contrôleurs préparent les données, les modèles appellent les repositories PDO, et les vues affichent le HTML.',
+        'oral' => <<<'TEXT'
+Cette slide est importante pour montrer que le projet suit la logique MVC vue en cours. Apache, MAMP, XAMPP, LAMP ou le serveur PHP envoient la requête vers public/index.php, qui devient le point d’entrée unique.
+
+AltoRouter analyse ensuite l’URL et appelle le bon contrôleur. Le contrôleur prépare les données, le modèle ou repository interroge MySQL avec PDO, puis la vue affiche le HTML. Cette organisation évite les pages PHP isolées et rend le projet plus propre à maintenir.
+TEXT,
         'points' => ['URLs propres : /recettes, /recette/{slug}, /connexion, /presentation, /conformite, /stack.', 'public/.htaccess active la réécriture sous Apache/MAMP, XAMPP ou LAMP.', 'src/Controller, src/Model et src/Vues suivent le MVC classique.', 'Le back-office passe aussi par AltoRouter.'],
         'files' => ['public/index.php', 'public/.htaccess', 'src/Controller/*', 'src/Model/*', 'src/Vues/*'],
         'code' => [
@@ -107,7 +149,11 @@ APACHE,
         'kicker' => 'Front-office',
         'title' => 'La partie publique',
         'lead' => 'Le visiteur voit une page d’accueil, une liste de recettes et une page détaillée par recette.',
-        'oral' => 'Le front-office ressemble à un vrai site de recettes. Il affiche les données en lecture seule et ne propose aucune action sensible.',
+        'oral' => <<<'TEXT'
+Ici, je montre la partie que voit un visiteur classique. Elle doit ressembler à un vrai site de recettes : navigation simple, images, titres, descriptions courtes, page détail, recherche et filtres.
+
+La sécurité se voit surtout dans ce que le visiteur ne peut pas faire : il peut consulter, chercher et lire, mais il ne peut ni créer, ni modifier, ni supprimer une recette. Toutes les données affichées viennent de MySQL et sont échappées avant d’arriver dans le HTML.
+TEXT,
         'points' => ['Accueil avec présentation du site.', 'Recettes populaires basées sur les vues.', 'Recherche serveur, filtres catégorie et pagination.', 'Notes étoiles, commentaires approuvés et page impression dédiée.'],
         'files' => ['public/index.php', 'src/Controller/RecipeController.php', 'src/Vues/recipes.tpl.php', 'src/Vues/recipe.tpl.php'],
         'code' => [
@@ -137,7 +183,11 @@ PHP,
         'kicker' => 'Back-office',
         'title' => 'La partie administrateur',
         'lead' => 'Le back-office permet de gérer les recettes et les administrateurs après connexion.',
-        'oral' => 'Toutes les actions sensibles passent par des formulaires POST avec CSRF. Le public ne peut pas créer, modifier ou supprimer.',
+        'oral' => <<<'TEXT'
+Cette slide présente la partie réservée aux administrateurs. Le back-office sert à gérer le contenu réel du site : recettes, images, administrateurs, commentaires et journal sécurité.
+
+La séparation avec le front-office est essentielle : une action sensible n’est disponible qu’après connexion admin. Les créations, modifications et suppressions passent par des formulaires POST avec un token CSRF, ce qui répond directement à la partie sécurité du sujet.
+TEXT,
         'points' => ['Dashboard avec statistiques et journal sécurité.', 'CRUD recettes avec upload image.', 'Aperçu avant publication et duplication en brouillon.', 'Modération des commentaires lecteurs.', 'Journal sécurité filtrable par type, recherche, dates, avec export CSV.'],
         'files' => ['src/Controller/Admin/*', 'src/Vues/admin/*', 'src/Repository/SecurityLogRepository.php'],
         'test' => 'Vérification : accès /admin/dashboard sans session redirige vers /connexion ; duplication crée un brouillon et écrit un log consultable dans /admin/journal-securite.',
@@ -146,7 +196,11 @@ PHP,
         'kicker' => 'Authentification',
         'title' => 'Protéger l’accès admin',
         'lead' => 'Le mot de passe n’est jamais stocké en clair, et la session est régénérée après connexion.',
-        'oral' => 'La connexion vérifie un hash avec password_verify. Ensuite login_admin() régénère l’identifiant de session pour limiter la fixation de session. Les anciens hashes peuvent être réhachés automatiquement vers l’algorithme courant.',
+        'oral' => <<<'TEXT'
+Cette slide explique comment l’accès au back-office est protégé. Le mot de passe administrateur n’est jamais comparé en clair : PHP vérifie le mot de passe saisi avec password_verify face au hash stocké en base.
+
+Après une connexion réussie, la session est régénérée avec session_regenerate_id(true). Cela limite les risques de fixation de session. Le projet prévoit aussi un rehash automatique si un ancien hash doit être remis au standard courant.
+TEXT,
         'points' => ['Argon2id utilisé pour les nouveaux mots de passe si disponible.', 'password_verify() utilisé au login.', 'Rehash automatique si un ancien hash est détecté.', 'session_regenerate_id(true) après succès.', 'require_admin() protège les pages admin.'],
         'files' => ['src/Controller/AuthController.php', 'src/Utils/Security/auth.php', 'src/Controller/Admin/AdminUserController.php'],
         'code' => [
@@ -196,7 +250,11 @@ PHP,
         'kicker' => 'Injection SQL',
         'title' => 'Empêcher une saisie de devenir du SQL',
         'lead' => 'Les variables utilisateur ne sont jamais concaténées dans les requêtes.',
-        'oral' => 'Les repositories utilisent PDO prepare et execute. Le SQL garde des marqueurs comme :slug, et les valeurs sont envoyées séparément.',
+        'oral' => <<<'TEXT'
+Cette slide sert à expliquer simplement l’injection SQL. Une attaque SQLi cherche à transformer une saisie utilisateur en morceau de requête SQL.
+
+Dans le projet, les repositories utilisent prepare() et execute() : la requête SQL est préparée avec des marqueurs, puis les valeurs sont envoyées séparément. Même si un utilisateur saisit une chaîne malveillante, elle reste une valeur de paramètre et ne devient pas du SQL exécutable.
+TEXT,
         'points' => ['prepare() prépare la requête.', 'execute() injecte les valeurs comme paramètres.', 'PDO::ATTR_EMULATE_PREPARES désactivé.', 'Même logique pour lecture, création, modification et suppression.'],
         'files' => ['src/Repository/RecipeRepository.php', 'src/Repository/AdminRepository.php'],
         'code' => [
@@ -221,7 +279,11 @@ PHP,
         'kicker' => 'XSS et CSP',
         'title' => 'Afficher les données sans exécuter de script',
         'lead' => 'Les données issues de la base sont échappées avec e() et la CSP limite les scripts.',
-        'oral' => 'La protection XSS se fait au moment de l’affichage. Si une recette contient du HTML ou du JavaScript, il est transformé en texte visible et non exécuté.',
+        'oral' => <<<'TEXT'
+Cette slide explique la différence entre stocker une donnée et l’afficher. Une attaque XSS devient dangereuse quand une donnée issue de l’utilisateur est réinjectée dans la page comme du HTML ou du JavaScript.
+
+Le projet utilise la fonction e() au moment de l’affichage pour transformer les caractères spéciaux en texte inoffensif. La CSP ajoute une deuxième barrière : même si une erreur d’affichage existe quelque part, les scripts autorisés restent fortement limités.
+TEXT,
         'points' => ['htmlspecialchars avec ENT_QUOTES.', 'Aucun HTML brut autorisé dans les recettes.', 'CSP centralisée dans headers.php.', 'Scripts limités aux fichiers locaux.'],
         'files' => ['src/Utils/Helpers/functions.php', 'src/Vues/recipe.tpl.php', 'src/Utils/Security/headers.php'],
         'code' => [
@@ -249,7 +311,11 @@ PHP,
         'kicker' => 'CSRF',
         'title' => 'Vérifier l’intention avant une action sensible',
         'lead' => 'Chaque formulaire sensible contient un token aléatoire vérifié côté serveur.',
-        'oral' => 'Un site externe ne peut pas deviner le token stocké en session. Sans token valide, l’action est refusée avant toute modification.',
+        'oral' => <<<'TEXT'
+Cette slide montre pourquoi le CSRF est important sur un back-office. Sans protection, un administrateur connecté pourrait être piégé par une page externe qui déclenche une action à sa place.
+
+Le projet ajoute un token CSRF dans chaque formulaire sensible. Au moment de recevoir la requête POST, le serveur compare le token envoyé avec celui stocké en session. Si le token est absent ou invalide, l’action est arrêtée avant toute modification en base.
+TEXT,
         'points' => ['Token généré avec random_bytes().', 'Champ caché csrf_token dans les formulaires.', 'hash_equals() pour comparer.', 'Suppressions uniquement en POST.'],
         'files' => ['src/Utils/Security/csrf.php', 'src/Controller/Admin/RecipeAdminController.php', 'src/Controller/Admin/AdminUserController.php'],
         'code' => [
@@ -281,7 +347,11 @@ PHP,
         'kicker' => 'Brute force',
         'title' => 'Limiter les essais répétés sur le login',
         'lead' => 'Les tentatives de connexion sont journalisées et le login est bloqué après plusieurs échecs récents.',
-        'oral' => 'Le but est de ralentir un robot qui teste beaucoup de mots de passe. Le blocage se base sur les échecs récents liés à l’email et à l’IP.',
+        'oral' => <<<'TEXT'
+Cette slide explique la défense contre les attaques par force brute. Le risque est qu’un robot essaye rapidement beaucoup de mots de passe sur la page de connexion.
+
+Le projet enregistre les tentatives de connexion avec l’email tenté, l’adresse IP, le succès ou l’échec et la date. Après plusieurs échecs récents, la connexion est temporairement bloquée. Le message reste volontairement générique pour ne pas révéler si l’email existe.
+TEXT,
         'points' => ['Table login_attempts.', 'Email, IP, user agent, succès ou échec.', 'Blocage après 5 échecs sur 15 minutes.', 'Message générique au login.'],
         'files' => ['src/Utils/Security/brute_force.php', 'src/Repository/LoginAttemptRepository.php', 'src/Controller/AuthController.php'],
         'code' => [
@@ -308,7 +378,11 @@ PHP,
         'kicker' => 'Upload sécurisé',
         'title' => 'Accepter seulement de vraies images',
         'lead' => 'L’upload contrôle la taille, l’extension, le type MIME réel et le nom du fichier.',
-        'oral' => 'On ne réutilise jamais le nom envoyé par l’utilisateur. Le fichier est renommé avec random_bytes et seules les extensions image autorisées passent.',
+        'oral' => <<<'TEXT'
+Cette slide montre que l’upload n’est pas traité comme un simple déplacement de fichier. Un upload mal sécurisé peut permettre d’envoyer un fichier exécutable ou un fichier déguisé en image.
+
+Le projet vérifie l’extension, le type MIME réel, la taille et le dossier de destination. Le nom original n’est jamais utilisé directement : un nom aléatoire est généré pour éviter les collisions, les chemins manipulés et les noms dangereux.
+TEXT,
         'points' => ['Extensions autorisées : jpg, jpeg, png, webp.', 'MIME réel vérifié avec finfo.', 'Taille limitée à 2 Mo.', 'Nom de fichier aléatoire.'],
         'files' => ['src/Utils/Security/upload.php', 'public/uploads/recipes/.htaccess'],
         'code' => [
@@ -338,7 +412,11 @@ PHP,
         'kicker' => 'Validation serveur',
         'title' => 'Refuser les données incohérentes',
         'lead' => 'La validation côté serveur protège même si le navigateur est contourné.',
-        'oral' => 'Les champs obligatoires et les longueurs sont contrôlés avant insertion ou modification en base. C’est complémentaire à l’échappement.',
+        'oral' => <<<'TEXT'
+Cette slide rappelle qu’il ne faut pas faire confiance uniquement au navigateur. Même si un formulaire HTML impose des champs obligatoires, un utilisateur peut envoyer une requête modifiée à la main.
+
+Le projet valide donc les données côté serveur avant insertion ou modification. Les champs obligatoires, les longueurs, les emails et les mots de passe sont contrôlés. Cette validation réduit les données incohérentes et complète les protections XSS et SQLi.
+TEXT,
         'points' => ['Titre obligatoire et limité.', 'Description courte limitée.', 'Ingrédients et étapes obligatoires.', 'Email admin validé côté serveur.'],
         'files' => ['src/Utils/Validation/recipe_validation.php', 'src/Utils/Validation/admin_validation.php'],
         'code' => [
@@ -364,7 +442,11 @@ PHP,
         'kicker' => 'Tests',
         'title' => 'Ce qui a été vérifié',
         'lead' => 'Les tests manuels, HTTP, MySQL et PHPUnit couvrent les routes principales, les CRUD et les protections.',
-        'oral' => 'J’ai testé l’application avec une vraie base MySQL temporaire, puis ajouté une suite PHPUnit pour vérifier automatiquement les fonctions sensibles et les repositories.',
+        'oral' => <<<'TEXT'
+Cette slide sert à rassurer le jury sur le fait que le projet a été vérifié dans des conditions proches du réel. Les pages ne sont pas seulement écrites : elles ont été lancées, testées avec MySQL et vérifiées avec des scénarios de sécurité.
+
+Les tests couvrent les routes publiques, la connexion admin, les protections CSRF, brute force, l’upload, les headers et les repositories. L’objectif est de montrer que chaque exigence importante du sujet est testable, pas seulement documentée.
+TEXT,
         'points' => ['29 tests MySQL réels passés.', '12 tests PHPUnit / 25 assertions.', 'Lint PHP complet sans erreur.', 'Assets Bootstrap locaux vérifiés.', 'CSP vérifiée dans les headers.'],
         'files' => ['README.md', 'docs/rapport-securite.md', 'tests/*'],
         'test' => 'Vérification : composer test, lint PHP complet, HTTP 200 sur les pages publiques et login admin fonctionnel.',
@@ -373,7 +455,11 @@ PHP,
         'kicker' => 'Conclusion',
         'title' => 'Résultat final',
         'lead' => 'Le projet démontre une application web complète, structurée, présentable et défendable techniquement.',
-        'oral' => 'La partie visible ressemble à un site de recettes, et la partie technique montre les protections demandées par le sujet. Chaque point important peut être relié à un fichier et à un extrait de code.',
+        'oral' => <<<'TEXT'
+Cette conclusion permet de résumer le projet en deux axes. Côté utilisateur, le site ressemble à une vraie plateforme de recettes avec navigation, images, recherche, détails et contenu lisible.
+
+Côté technique, les protections demandées par le sujet sont présentes dans le code et documentées avec des extraits réels. Le projet peut donc être présenté à la fois comme une application fonctionnelle et comme une démonstration de développement web sécurisé.
+TEXT,
         'points' => ['Sujet PDF respecté côté front-office et back-office.', 'Sécurité documentée avec extraits réels.', 'Page Conformité dédiée à la grille officielle.', 'Projet prêt à être présenté et testé.'],
         'files' => ['README.md', 'docs/rapport-securite-projet-final-greta92.pdf'],
         'test' => 'Vérification : présentation exploitable en mode carrousel, slide par slide.',
@@ -407,44 +493,61 @@ public_header('Présentation');
 
         <progress class="w-100 mb-4 presentation-progress" value="1" max="<?= count($slides) ?>" data-progress></progress>
 
+        <div class="presentation-navigation d-flex justify-content-between align-items-center gap-3 mb-4">
+            <button class="btn btn-outline-secondary" type="button" data-prev>Précédent</button>
+            <button class="btn btn-primary" type="button" data-next>Suivant</button>
+        </div>
+
         <div class="presentation-deck lux-card lux-card-lg overflow-hidden" data-deck>
             <?php foreach ($slides as $index => $slide): ?>
                 <article class="presentation-slide <?= $index === 0 ? 'd-grid' : 'd-none' ?> p-4 p-lg-5" data-slide>
-                    <div class="row g-4 g-xl-5">
-                        <div class="col-xl-5 d-flex flex-column justify-content-between gap-4">
-                            <div>
-                                <img class="site-logo mb-4" src="/assets/img/logo-mijote-maison.svg" alt="">
-                                <span class="badge rounded-pill text-bg-light border mb-4 px-3 py-2">Slide <?= $index + 1 ?></span>
-                                <p class="kicker text-herb"><?= e($slide['kicker']) ?></p>
+                    <div class="slide-top mb-4 mb-lg-5">
+                        <div class="row g-4 align-items-start">
+                            <div class="col-lg-7">
+                                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                                    <img class="site-logo" src="/assets/img/logo-mijote-maison.svg" alt="">
+                                    <span class="badge rounded-pill text-bg-light border px-3 py-2">Slide <?= $index + 1 ?></span>
+                                    <p class="kicker text-herb mb-0"><?= e($slide['kicker']) ?></p>
+                                </div>
                                 <h2 class="display-5 fw-black text-ink mb-3"><?= e($slide['title']) ?></h2>
-                                <p class="lead text-secondary lh-lg"><?= e($slide['lead']) ?></p>
+                                <p class="lead text-secondary lh-lg mb-0"><?= e($slide['lead']) ?></p>
                             </div>
-                            <div class="rounded-4 bg-white border p-4 shadow-sm" data-presenter-only>
-                                <p class="kicker mb-2">Fil conducteur</p>
-                                <p class="mb-0 text-secondary lh-lg"><?= e($slide['oral']) ?></p>
+                            <div class="col-lg-5">
+                                <div class="slide-summary-card h-100" data-audience-only>
+                                    <p class="kicker mb-2">Repère rapide</p>
+                                    <p class="mb-0 text-secondary"><?= e($slide['test']) ?></p>
+                                </div>
+                                <?php render_guidance_panel($slide['oral'], 'slide-guidance-card--top h-100'); ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-xl-5">
+                            <div class="lux-card h-100 p-4 bg-white">
+                                <p class="kicker mb-3">Points clés</p>
+                                <ul class="list-unstyled vstack gap-3 mb-0 text-secondary">
+                                    <?php foreach ($slide['points'] as $point): ?>
+                                        <li class="d-flex gap-2"><span class="text-primary fw-black">•</span><span><?= e($point) ?></span></li>
+                                    <?php endforeach; ?>
+                                </ul>
                             </div>
                         </div>
 
                         <div class="col-xl-7">
                             <div class="row g-4">
-                                <div class="col-lg-6">
-                                    <div class="lux-card h-100 p-4 bg-white">
-                                        <p class="kicker mb-3">Points clés</p>
-                                        <ul class="list-unstyled vstack gap-3 mb-0 text-secondary">
-                                            <?php foreach ($slide['points'] as $point): ?>
-                                                <li class="d-flex gap-2"><span class="text-primary fw-black">•</span><span><?= e($point) ?></span></li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-5">
                                     <div class="lux-card h-100 p-4 bg-white">
                                         <p class="kicker text-herb mb-3">Fichiers concernés</p>
-                                        <div class="d-flex flex-wrap gap-2 mb-4">
+                                        <div class="d-flex flex-wrap gap-2 mb-0">
                                             <?php foreach ($slide['files'] as $file): ?>
                                                 <span class="badge-soft"><?= e($file) ?></span>
                                             <?php endforeach; ?>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7">
+                                    <div class="lux-card h-100 p-4 bg-white">
                                         <p class="kicker mb-2">Preuve de test</p>
                                         <p class="small text-secondary lh-lg mb-0"><?= e($slide['test']) ?></p>
                                     </div>
@@ -467,11 +570,6 @@ public_header('Présentation');
                     </div>
                 </article>
             <?php endforeach; ?>
-        </div>
-
-        <div class="d-flex justify-content-between gap-3 mt-4">
-            <button class="btn btn-outline-secondary" type="button" data-prev>Précédent</button>
-            <button class="btn btn-primary" type="button" data-next>Suivant</button>
         </div>
     </div>
 </section>
