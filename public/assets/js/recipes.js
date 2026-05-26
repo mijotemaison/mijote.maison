@@ -24,5 +24,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   search.addEventListener('input', render);
-  render();
 });
