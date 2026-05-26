@@ -10,6 +10,14 @@ function nav_link(string $href, string $label): string
     return '<a class="' . $state . '" href="' . e($href) . '">' . e($label) . '</a>';
 }
 
+function footer_link(string $href, string $label): string
+{
+    $isActive = is_nav_active($href);
+    $state = $isActive ? 'footer-link active' : 'footer-link';
+
+    return '<a class="' . $state . '" href="' . e($href) . '">' . e($label) . '</a>';
+}
+
 function public_header(string $title, ?array $og = null): void
 {
     $faviconUrl = e(versioned_asset('assets/img/favicon.svg'));
@@ -105,24 +113,53 @@ HTML;
 
 function public_footer(): void
 {
+    $year = e((string) date('Y'));
     echo <<<HTML
 </main>
 <footer class="site-footer">
     <div class="container py-5">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-6 d-flex align-items-center gap-3">
-            <img class="site-logo" src="/assets/img/logo-mijote-maison.svg" alt="">
-            <div>
-                <p class="brand-title fs-5 mb-1">Mijoté Maison</p>
-                <p class="text-muted small mb-0">Des recettes simples pour cuisiner avec plaisir.</p>
-            </div>
-        </div>
-            <div class="col-lg-6 text-lg-end">
-                <p class="text-uppercase small fw-bold text-muted mb-2">Recettes familiales · Plats maison · Desserts gourmands</p>
-                <div class="d-flex flex-wrap gap-3 justify-content-lg-end small fw-bold">
-                    <a href="/mentions-legales">Mentions légales</a>
-                    <a href="/politique-confidentialite">Politique de confidentialité</a>
+        <div class="footer-panel">
+            <div class="row g-4 align-items-start">
+                <div class="col-lg-4">
+                    <a href="/" class="d-inline-flex align-items-center gap-3 footer-brand">
+                        <img class="site-logo" src="/assets/img/logo-mijote-maison.svg" alt="">
+                        <span>
+                            <span class="brand-title d-block fs-4">Mijoté Maison</span>
+                            <span class="brand-subtitle d-block mt-1">Recettes de saison</span>
+                        </span>
+                    </a>
+                    <p class="text-muted mt-3 mb-0">Des recettes familiales, simples et généreuses pour cuisiner avec plaisir.</p>
                 </div>
+                <div class="col-sm-6 col-lg-4">
+                    <p class="footer-title">Navigation</p>
+                    <nav class="footer-nav" aria-label="Navigation pied de page">
+HTML;
+    echo footer_link('/', 'Accueil');
+    echo footer_link('/recettes', 'Recettes');
+    echo footer_link('/a-propos', 'À propos');
+    echo footer_link('/presentation', 'Présentation');
+    echo footer_link('/conformite', 'Conformité');
+    echo footer_link('/stack', 'Stack');
+    if (is_admin_authenticated()) {
+        echo footer_link('/admin/dashboard', 'Back-office');
+    } else {
+        echo footer_link('/connexion', 'Connexion');
+    }
+    echo <<<HTML
+                    </nav>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <p class="footer-title">Projet</p>
+                    <p class="text-muted mb-3">Projet factice réalisé dans le cadre d’une formation.</p>
+                    <div class="footer-legal">
+                        <a href="/mentions-legales">Mentions légales</a>
+                        <a href="/politique-confidentialite">Politique de confidentialité</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© {$year} Mijoté Maison</span>
+                <span>Recettes familiales · Plats maison · Desserts gourmands</span>
             </div>
         </div>
     </div>
