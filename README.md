@@ -193,6 +193,7 @@ python3 docs/generate_security_pdf.py                 # régénère le rapport P
 
 - Source : `docs/rapport-securite.md`
 - PDF final : `docs/rapport-securite-projet-final-greta92.pdf`
+- Vérification conformité sujet officiel : `docs/verification-conformite-sujet-officiel.md`
 
 Le rapport contient les protections et des extraits réels du code du projet.
 

@@ -33,7 +33,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - `src/Utils/Security/` contient les protections (auth, CSRF, brute force, upload, headers + nonce CSP).
 - `src/Repository/` contient les requêtes PDO.
 - `src/Utils/Validation/` contient les validations serveur.
-- `docs/` contient le rapport.
+- `docs/` contient le rapport de securite et la verification de conformite au sujet officiel.
 
 ## Methode du prof / MVC classique
 
