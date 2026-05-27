@@ -90,9 +90,6 @@ HTML;
     echo nav_link('/', 'Accueil');
     echo nav_link('/recettes', 'Recettes');
     echo nav_link('/a-propos', 'À propos');
-    echo nav_link('/presentation', 'Présentation');
-    echo nav_link('/conformite', 'Conformité');
-    echo nav_link('/stack', 'Stack');
     if (is_admin_authenticated()) {
         echo nav_link('/admin/dashboard', 'Back-office');
     } else {
@@ -103,8 +100,19 @@ HTML;
             </div>
         </div>
     </nav>
-    <div class="formation-banner text-center py-2 px-3">
-        Projet factice réalisé dans le cadre d’une formation.
+    <div class="presentation-subnav">
+        <div class="container py-2">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-end gap-2 gap-lg-3">
+                <span class="presentation-subnav-label">Support de présentation</span>
+                <nav class="presentation-subnav-links" aria-label="Navigation support de présentation">
+HTML;
+    echo nav_link('/presentation', 'Présentation');
+    echo nav_link('/conformite', 'Conformité');
+    echo nav_link('/stack', 'Stack');
+    echo <<<HTML
+                </nav>
+            </div>
+        </div>
     </div>
 </header>
 <main id="main">
@@ -137,9 +145,6 @@ HTML;
     echo footer_link('/', 'Accueil');
     echo footer_link('/recettes', 'Recettes');
     echo footer_link('/a-propos', 'À propos');
-    echo footer_link('/presentation', 'Présentation');
-    echo footer_link('/conformite', 'Conformité');
-    echo footer_link('/stack', 'Stack');
     if (is_admin_authenticated()) {
         echo footer_link('/admin/dashboard', 'Back-office');
     } else {
@@ -150,7 +155,13 @@ HTML;
                 </div>
                 <div class="col-sm-6 col-lg-4">
                     <p class="footer-title">Projet</p>
-                    <p class="text-muted mb-3">Projet factice réalisé dans le cadre d’une formation.</p>
+                    <div class="footer-legal mb-3">
+HTML;
+    echo footer_link('/presentation', 'Présentation');
+    echo footer_link('/conformite', 'Conformité');
+    echo footer_link('/stack', 'Stack');
+    echo <<<HTML
+                    </div>
                     <div class="footer-legal">
                         <a href="/mentions-legales">Mentions légales</a>
                         <a href="/politique-confidentialite">Politique de confidentialité</a>

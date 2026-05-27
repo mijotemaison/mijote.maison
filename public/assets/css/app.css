@@ -127,14 +127,43 @@ a {
   box-shadow: 0 8px 24px rgba(22, 32, 50, .08);
 }
 
-.formation-banner {
-  background: rgba(238, 246, 255, .82);
-  color: rgba(22, 32, 50, .62);
-  border-top: 1px solid rgba(219, 231, 245, .8);
-  font-size: .72rem;
-  font-weight: 800;
-  letter-spacing: .14em;
+.presentation-subnav {
+  border-top: 1px solid rgba(219, 231, 245, .7);
+  background: rgba(248, 251, 255, .84);
+}
+
+.presentation-subnav-label {
+  color: rgba(22, 32, 50, .48);
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .16em;
   text-transform: uppercase;
+}
+
+.presentation-subnav-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  border: 1px solid rgba(219, 231, 245, .88);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .86);
+  padding: .25rem;
+  box-shadow: 0 8px 24px rgba(22, 32, 50, .05);
+}
+
+.presentation-subnav-links .nav-link {
+  border-radius: 999px;
+  color: rgba(22, 32, 50, .58);
+  font-size: .82rem;
+  font-weight: 800;
+  padding: .42rem .75rem;
+}
+
+.presentation-subnav-links .nav-link:hover,
+.presentation-subnav-links .nav-link.active {
+  color: var(--mm-blue-dark);
+  background: rgba(238, 246, 255, .95);
+  box-shadow: none;
 }
 
 .site-footer {
