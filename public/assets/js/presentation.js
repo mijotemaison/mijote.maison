@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         slide.classList.remove('is-leaving');
       }
     });
-    if (counter) counter.textContent = `Slide ${i + 1} / ${slides.length}`;
+    if (counter) counter.textContent = `Page ${i + 1} / ${slides.length}`;
     if (progress) progress.value = i + 1;
     const active = slides[i];
     if (active && document.activeElement && active.contains(document.activeElement) === false) {

@@ -2,8 +2,9 @@
     <div class="container py-lg-3">
         <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-3 mb-4">
             <div>
-                <span class="kicker mb-2" data-counter>Slide 1 / <?= count($slides) ?></span>
+                <span class="kicker mb-2" data-counter>Page 1 / <?= count($slides) ?></span>
                 <h1 class="section-title mb-0">Présentation jury</h1>
+                <p class="text-secondary mb-0 mt-2">Découpage en 3 parties de 10 minutes pour une soutenance de 30 minutes.</p>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <div class="presenter-bar" data-presenter-bar>
@@ -23,6 +24,24 @@
 
         <progress class="w-100 mb-4 presentation-progress" value="1" max="<?= count($slides) ?>" data-progress></progress>
 
+        <?php if (!empty($presentationParts)): ?>
+            <div class="presentation-plan mb-4" aria-label="Répartition de la soutenance">
+                <?php foreach ($presentationParts as $part): ?>
+                    <section class="presentation-plan__item">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                            <div>
+                                <p class="kicker text-herb mb-1">Partie <?= e($part['number']) ?> · <?= e($part['duration']) ?></p>
+                                <h2 class="h5 fw-black mb-1"><?= e($part['speaker']) ?></h2>
+                            </div>
+                            <span class="badge-soft"><?= e($part['slides']) ?></span>
+                        </div>
+                        <p class="fw-bold text-ink mb-2"><?= e($part['title']) ?></p>
+                        <p class="small text-secondary lh-lg mb-0"><?= e($part['objective']) ?></p>
+                    </section>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
         <div class="presentation-navigation d-flex justify-content-between align-items-center gap-3 mb-4">
             <button class="btn btn-outline-secondary" type="button" data-prev>Précédent</button>
             <button class="btn btn-primary" type="button" data-next>Suivant</button>
@@ -30,13 +49,17 @@
 
         <div class="presentation-deck lux-card lux-card-lg overflow-hidden" data-deck>
             <?php foreach ($slides as $index => $slide): ?>
+                <?php $part = $slide['part'] ?? null; ?>
                 <article class="presentation-slide <?= $index === 0 ? 'd-grid' : 'd-none' ?> p-4 p-lg-5" data-slide>
                     <div class="slide-top mb-4 mb-lg-5">
                         <div class="row g-4 align-items-start">
                             <div class="col-lg-7">
                                 <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
                                     <img class="site-logo" src="/assets/img/logo-mijote-maison.svg" alt="">
-                                    <span class="badge rounded-pill text-bg-light border px-3 py-2">Slide <?= $index + 1 ?></span>
+                                    <span class="badge rounded-pill text-bg-light border px-3 py-2">Page <?= $index + 1 ?> / <?= count($slides) ?></span>
+                                    <?php if ($part): ?>
+                                        <span class="badge rounded-pill text-bg-primary px-3 py-2">Partie <?= e($part['number']) ?> · <?= e($part['speaker']) ?></span>
+                                    <?php endif; ?>
                                     <p class="kicker text-herb mb-0"><?= e($slide['kicker']) ?></p>
                                 </div>
                                 <h2 class="display-5 fw-black text-ink mb-3"><?= e($slide['title']) ?></h2>
@@ -98,6 +121,14 @@
                             <?php endif; ?>
                         </div>
                     </div>
+
+                    <?php if ($part): ?>
+                        <footer class="slide-page-footer mt-4 pt-3">
+                            <span>Page <?= $index + 1 ?> / <?= count($slides) ?></span>
+                            <span>Partie <?= e($part['number']) ?> : <?= e($part['title']) ?></span>
+                            <span><?= e($part['speaker']) ?> · <?= e($part['duration']) ?></span>
+                        </footer>
+                    <?php endif; ?>
                 </article>
             <?php endforeach; ?>
         </div>
