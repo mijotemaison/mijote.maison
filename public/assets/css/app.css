@@ -927,6 +927,79 @@ a {
   border-color: var(--mm-blue);
 }
 
+.presentation-section {
+  min-height: 100vh;
+}
+
+.presentation-body .site-header {
+  display: none;
+}
+
+.presentation-body .site-footer {
+  display: none;
+}
+
+.presentation-shell {
+  display: grid;
+  grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  max-width: 1840px;
+  margin: 0 auto;
+}
+
+.presentation-sidebar {
+  position: sticky;
+  top: 1rem;
+  display: grid;
+  gap: 1rem;
+  max-height: calc(100vh - 6rem);
+  overflow: auto;
+  overflow-x: hidden;
+  border: 1px solid rgba(37, 99, 235, .08);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, .94);
+  padding: 1rem;
+  box-shadow: 0 1rem 2.5rem rgba(18, 54, 84, .08);
+}
+
+.presentation-sidebar h1 {
+  font-size: clamp(2rem, 1.35rem + 1vw, 2.65rem);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.presentation-sidebar .presenter-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: .45rem;
+  width: 100%;
+  padding: .45rem;
+  border-radius: 1.25rem;
+  box-shadow: none;
+}
+
+.presenter-bar__timer {
+  align-self: center;
+  color: var(--mm-ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.presentation-side-links {
+  display: grid;
+  gap: .6rem;
+}
+
+.presentation-side-links .btn,
+.presentation-navigation .btn {
+  width: 100%;
+}
+
+.presentation-stage {
+  min-width: 0;
+}
+
 .presentation-deck {
   position: relative;
   background: rgba(255, 255, 255, .96);
@@ -1036,15 +1109,14 @@ body.is-presenter [data-audience-only] {
 }
 
 .presentation-navigation {
-  position: sticky;
-  top: 5.75rem;
-  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .65rem;
   border: 1px solid rgba(37, 99, 235, .08);
-  border-radius: 999px;
+  border-radius: 1.25rem;
   background: rgba(248, 251, 255, .88);
   backdrop-filter: blur(14px);
   padding: .55rem;
-  box-shadow: 0 1rem 2.5rem rgba(18, 54, 84, .08);
 }
 
 .stack-flow {
@@ -1096,6 +1168,44 @@ body:not(.is-presenter) [data-presenter-only] {
     width: 280px;
     position: sticky;
     top: 0;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .presentation-shell {
+    grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+  }
+
+  .presentation-sidebar {
+    top: 4rem;
+    padding: .85rem;
+  }
+
+  .presentation-sidebar .presenter-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .presentation-shell {
+    display: block;
+  }
+
+  .presentation-sidebar {
+    position: static;
+    max-height: none;
+    margin-bottom: 1rem;
+  }
+
+  .presentation-side-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 575.98px) {
+  .presentation-side-links,
+  .presentation-navigation {
+    grid-template-columns: 1fr;
   }
 }
 

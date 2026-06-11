@@ -60,13 +60,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function preservePagePosition(y) {
-    window.requestAnimationFrame(() => {
+    const restore = () => {
       window.scrollTo({ top: y, left: window.scrollX, behavior: 'auto' });
-    });
+    };
+    restore();
+    window.requestAnimationFrame(restore);
+    window.setTimeout(restore, 0);
   }
 
-  function show(i, preserveScroll = false) {
-    const y = window.scrollY;
+  function show(i, preserveScroll = false, scrollY = window.scrollY) {
+    const y = scrollY;
     slides.forEach((slide, k) => {
       const active = k === i;
       slide.classList.toggle('d-none', !active);
@@ -77,14 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     if (counter) counter.textContent = `Page ${i + 1} / ${slides.length}`;
     if (progress) progress.value = i + 1;
-    const active = slides[i];
-    if (active && document.activeElement && active.contains(document.activeElement) === false) {
-      // léger focus management — uniquement si l'utilisateur n'est pas sur un input
-      const tag = (document.activeElement.tagName || '').toLowerCase();
-      if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-        active.focus({ preventScroll: true });
-      }
-    }
     if (preserveScroll) {
       preservePagePosition(y);
     }
@@ -93,16 +88,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function go(delta) {
     const target = Math.min(Math.max(index + delta, 0), slides.length - 1);
     if (target === index) return;
+    const y = 0;
     if (reduce) {
       index = target;
-      show(index, true);
+      show(index, true, y);
       return;
     }
     const current = slides[index];
     if (current) current.classList.add('is-leaving');
     window.setTimeout(() => {
       index = target;
-      show(index, true);
+      show(index, true, y);
     }, 200);
   }
 

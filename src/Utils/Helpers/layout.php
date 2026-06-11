@@ -35,6 +35,8 @@ function public_header(string $title, ?array $og = null): void
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = (string) ($_SERVER['HTTP_HOST'] ?? 'localhost');
     $reqUri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+    $path = (string) (parse_url($reqUri, PHP_URL_PATH) ?: '/');
+    $bodyClass = $path === '/presentation' ? 'presentation-body' : '';
     $ogUrl = e($scheme . '://' . $host . $reqUri);
     if (str_starts_with($ogImage, '/')) {
         $ogImage = e($scheme . '://' . $host) . $ogImage;
@@ -69,7 +71,7 @@ function public_header(string $title, ?array $og = null): void
     <script src="{$recipesJsUrl}" defer></script>
     <script src="{$toastsJsUrl}" defer></script>
 </head>
-<body>
+<body class="{$bodyClass}">
 <a class="skip-link" href="#main">Aller au contenu</a>
 <header class="site-header sticky-top">
     <nav class="navbar navbar-expand-xl">
