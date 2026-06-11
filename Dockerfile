@@ -15,4 +15,4 @@ COPY . .
 
 EXPOSE 1234
 
-CMD ["php", "-S", "0.0.0.0:1234", "-t", "public", "public/index.php"]
+CMD ["sh", "./bin/start-railway.sh"]

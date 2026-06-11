@@ -233,11 +233,13 @@ public/assets/
 
 Le projet est préparé pour un déploiement Railway. Les variables d'environnement nécessaires sont décrites dans `.env.example`.
 
-Le serveur doit pointer vers `public/`. `railway.json` et `Procfile` utilisent :
+Le serveur doit pointer vers `public/`. `railway.json`, `Procfile` et `Dockerfile` utilisent :
 
 ```bash
-php -S 0.0.0.0:$PORT -t public public/index.php
+sh ./bin/start-railway.sh
 ```
+
+Le script lit la variable `PORT` injectée par Railway et utilise `1234` par défaut en local.
 
 Pour la base de données Railway :
 
