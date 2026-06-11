@@ -25,6 +25,7 @@
       "src/Utils/Helpers/functions.php",
       "src/Utils/Helpers/flash.php",
       "src/Utils/Helpers/layout.php",
+      "src/Utils/Helpers/pedagogy.php",
       "src/Utils/Security/headers.php",
       "src/Utils/Security/auth.php",
       "src/Utils/Security/csrf.php",

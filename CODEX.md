@@ -26,8 +26,10 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - `public/index.php` est le point d'entrée unique AltoRouter pour le front-office et le back-office.
 - `public/.htaccess` permet a Apache/MAMP de renvoyer les URLs non-fichiers vers `public/index.php`.
 - `src/Controller/` contient les controleurs MVC publics et les controleurs admin.
+- `src/Controller/PresentationController.php`, `src/Controller/ConformiteController.php` et `src/Controller/StackController.php` préparent les données des pages pédagogiques.
 - `src/Model/` contient les modeles MVC publics qui appellent les repositories PDO.
 - `src/Vues/` contient les vues PHP publiques et admin.
+- `src/Data/` contient les jeux de données statiques transmis aux vues pédagogiques par leurs contrôleurs.
 - `config/` contient la configuration.
 - `src/Utils/Helpers/` contient les fonctions transverses (`e()`, `public_header()`, `nav_link()`, `render_flash()`, etc.).
 - `src/Utils/Security/` contient les protections (auth, CSRF, brute force, upload, headers + nonce CSP).
@@ -47,6 +49,7 @@ Le site propose des recettes de cuisine au public et un back-office réservé au
 - DocumentRoot MAMP/Apache = dossier `public/`.
 - Environnements cites par le prof : macOS = MAMP, Windows = WAMP/XAMPP/Laragon, Linux = LAMP.
 - Page `/conformite` = preuve jury : grille officielle sans colonne points, reponse du projet, fichiers, extraits reels du code et explications.
+- `AbstractController` centralise les layouts avec `renderPublic()`, `renderAdmin()` et `renderPrint()`. Les contrôleurs n’appellent plus directement header/footer.
 
 ## Conventions de code
 
@@ -103,6 +106,20 @@ Avec les URLs propres, utiliser de preference :
 ```bash
 php -S 127.0.0.1:8888 -t public public/index.php
 ```
+
+Alternative Docker locale :
+
+```bash
+docker compose up --build
+```
+
+URL : `http://localhost:1234`. MySQL Docker expose `3307` en local et importe `database.sql` au premier démarrage du volume.
+
+## Améliorations V2 à ne pas confondre avec le périmètre actuel
+
+- Validation par email lors du changement d’email administrateur : à réaliser plus tard avec Mailtrap ou Symfony Mailer.
+- Anti-DDoS complet : relève d’un proxy, WAF, hébergeur ou rate limiting réseau. Le projet PHP couvre la brute force login, pas un DDoS réseau complet.
+- Les logs applicatifs restent en base dans `security_logs`; ne pas recréer un double système de fichiers dans `storage/logs`.
 
 ## Variables d'environnement
 

@@ -51,8 +51,7 @@ final class RecipeController extends AbstractController
             $baseParams['category'] = $category;
         }
 
-        \public_header('Recettes');
-        $this->render('recipes', compact(
+        $this->renderPublic('Recettes', 'recipes', compact(
             'recipes',
             'ratingSummaries',
             'dbError',
@@ -102,11 +101,11 @@ final class RecipeController extends AbstractController
         $meta = $recipe ? \recipe_public_meta($recipe['slug'] ?? null) : null;
         [$og, $jsonLd] = $this->recipeSeoData($recipe, $meta, $ratingSummary);
 
-        \public_header($recipe['title'] ?? 'Recette', $og);
+        $jsonLdHtml = '';
         if ($jsonLd) {
-            echo '<script type="application/ld+json" nonce="' . \e(\csp_nonce()) . '">' . json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
+            $jsonLdHtml = '<script type="application/ld+json" nonce="' . \e(\csp_nonce()) . '">' . json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
         }
-        $this->render('recipe', compact('recipe', 'error', 'ratingSummary', 'userRating', 'comments', 'meta'));
+        $this->renderPublic($recipe['title'] ?? 'Recette', 'recipe', compact('recipe', 'error', 'ratingSummary', 'userRating', 'comments', 'meta'), $og, $jsonLdHtml);
     }
 
     public function printable(?string $slug = null): void
@@ -123,7 +122,7 @@ final class RecipeController extends AbstractController
         }
 
         $meta = $recipe ? \recipe_public_meta($recipe['slug'] ?? null) : null;
-        $this->render('recipe_print', compact('recipe', 'error', 'meta'));
+        $this->renderPrint('recipe_print', compact('recipe', 'error', 'meta'));
     }
 
     private function handlePublicRecipeAction(\PDO $pdo, RecipeInteraction $interactionModel, array $recipe): void

@@ -98,4 +98,3 @@
         <?php endif; ?>
     </div>
 </section>
-<?php public_footer(); ?>

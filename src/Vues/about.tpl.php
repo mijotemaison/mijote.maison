@@ -44,4 +44,3 @@
         </div>
     </div>
 </section>
-<?php public_footer(); ?>

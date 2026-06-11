@@ -43,8 +43,7 @@ final class DashboardController extends AbstractController
             $error = 'Base de donnees indisponible.';
         }
 
-        \admin_header('Dashboard');
-        $this->render('admin/dashboard', compact(
+        $this->renderAdmin('Dashboard', 'admin/dashboard', compact(
             'recipeCount',
             'adminCount',
             'pendingCommentCount',
@@ -53,6 +52,5 @@ final class DashboardController extends AbstractController
             'latestSecurityLogs',
             'error'
         ));
-        \admin_footer();
     }
 }

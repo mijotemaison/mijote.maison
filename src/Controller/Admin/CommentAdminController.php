@@ -31,9 +31,7 @@ final class CommentAdminController extends AbstractController
             $error = 'Base de donnees indisponible.';
         }
 
-        \admin_header('Commentaires');
-        $this->render('admin/comments', compact('comments', 'error'));
-        \admin_footer();
+        $this->renderAdmin('Commentaires', 'admin/comments', compact('comments', 'error'));
     }
 
     private function handleAction(PDO $pdo, RecipeInteractionRepository $repo): void

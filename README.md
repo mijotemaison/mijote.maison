@@ -20,6 +20,7 @@ La stack est alignée avec le sujet officiel : PHP, HTML, CSS, JavaScript, Boots
 - Google Fonts (Fraunces + Inter + JetBrains Mono) servis via une CSP nonce.
 - Point d'entrée unique AltoRouter (`public/index.php`) + URLs propres compatibles Apache/MAMP, XAMPP, LAMP et Railway.
 - Architecture MVC classique demandée en cours : `src/Controller`, `src/Model`, `src/Vues`.
+- Contrôleurs dédiés pour les pages pédagogiques : `PresentationController`, `ConformiteController`, `StackController`.
 
 ## Fonctionnalités front-office
 
@@ -121,6 +122,16 @@ cp .env.example .env
 php -S 127.0.0.1:8888 -t public public/index.php
 ```
 
+## Docker local
+
+Une alternative à MAMP/XAMPP/LAMP est fournie pour lancer PHP et MySQL dans des conteneurs :
+
+```bash
+docker compose up --build
+```
+
+Le site est ensuite disponible sur `http://localhost:1234`. Le service MySQL Docker expose le port local `3307` et importe `database.sql` au premier démarrage du volume.
+
 Configurer `.env` selon votre MySQL :
 
 ```bash
@@ -151,6 +162,8 @@ Le projet suit maintenant la logique vue en cours :
 - **URLs principales** : `/`, `/recettes`, `/recette/{slug}`, `/connexion`, `/presentation`, `/conformite`, `/stack`, `/admin/dashboard`.
 - **Page conformité** : `/conformite` justifie chaque critère du sujet avec preuves de code.
 - **MVC classique** : `src/Controller` et `src/Controller/Admin` préparent les données, `src/Model` appelle les repositories PDO, `src/Vues` affiche le HTML.
+- **Rendu centralisé** : `AbstractController` fournit `renderPublic()`, `renderAdmin()` et `renderPrint()` pour éviter de répéter les appels header/footer dans chaque contrôleur.
+- **Pages pédagogiques MVC** : `/presentation`, `/conformite` et `/stack` passent par des contrôleurs dédiés; leurs données sont préparées hors des vues.
 - **Back-office routé** : l'admin passe par AltoRouter (`/admin/dashboard`, `/admin/recettes`, `/admin/administrateurs`) et non par des fichiers PHP directs.
 - **Repositories conservés** : `src/Repository` garde les requêtes PDO préparées pour ne pas dupliquer l'accès SQL.
 
@@ -251,6 +264,13 @@ php scripts/cleanup_security_data.php --days=90 --dry-run
 ```
 
 Le script supprime les entrées anciennes de `security_logs` et `login_attempts`, puis journalise l'action avec l'événement `maintenance_cleanup`. La valeur par défaut vient de `LOG_RETENTION_DAYS`.
+
+Le journal applicatif du projet est volontairement centralisé en base dans `security_logs`. Il n’y a plus de journal applicatif maintenu en parallèle dans `storage/logs`.
+
+## Améliorations V2 documentées
+
+- Validation d’un changement d’email administrateur par lien email, par exemple avec Mailtrap ou Symfony Mailer.
+- Protection anti-DDoS réelle via Railway, proxy, WAF ou rate limiting en amont. PHP gère la brute force applicative, mais ne remplace pas une protection réseau.
 
 ## Tests automatisés
 

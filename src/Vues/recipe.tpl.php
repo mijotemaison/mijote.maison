@@ -202,4 +202,3 @@
         </section>
     </article>
 <?php endif; ?>
-<?php public_footer(); ?>

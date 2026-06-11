@@ -33,42 +33,21 @@ final class SiteController extends AbstractController
             $dbError = 'Impossible de charger les recettes pour le moment.';
         }
 
-        \public_header('Accueil');
-        $this->render('home', compact('recipes', 'popularRecipes', 'ratingSummaries', 'totalRecipes', 'dbError'));
+        $this->renderPublic('Accueil', 'home', compact('recipes', 'popularRecipes', 'ratingSummaries', 'totalRecipes', 'dbError'));
     }
 
     public function about(): void
     {
-        \public_header('À propos');
-        $this->render('about');
-    }
-
-    public function presentation(): void
-    {
-        $this->render('presentation');
-    }
-
-    public function conformite(): void
-    {
-        $this->render('conformite');
-    }
-
-    public function stack(): void
-    {
-        $this->render('stack');
+        $this->renderPublic('À propos', 'about');
     }
 
     public function legalNotice(): void
     {
-        \public_header('Mentions légales');
-        $this->render('legal_notice');
-        \public_footer();
+        $this->renderPublic('Mentions légales', 'legal_notice');
     }
 
     public function privacyPolicy(): void
     {
-        \public_header('Politique de confidentialité');
-        $this->render('privacy_policy');
-        \public_footer();
+        $this->renderPublic('Politique de confidentialité', 'privacy_policy');
     }
 }

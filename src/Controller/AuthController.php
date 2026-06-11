@@ -19,8 +19,7 @@ final class AuthController extends AbstractController
             $this->handleLogin();
         }
 
-        \public_header('Page de connexion');
-        $this->render('login');
+        $this->renderPublic('Page de connexion', 'login');
     }
 
     public function logout(): void
@@ -49,6 +48,7 @@ final class AuthController extends AbstractController
             \record_login_attempt($pdo, $email, (bool) $valid);
 
             if (!$valid) {
+                usleep(random_int(250000, 1200000));
                 \record_security_event($pdo, 'login_failed', 'Tentative de connexion admin refusee.', $email);
                 \flash('error', 'Identifiants invalides.');
                 \redirect('/connexion');

@@ -64,8 +64,7 @@ final class SecurityLogAdminController extends AbstractController
             $this->exportCsv($securityLogRepo, $filters);
         }
 
-        \admin_header('Journal securite');
-        $this->render('admin/security_logs', compact(
+        $this->renderAdmin('Journal securite', 'admin/security_logs', compact(
             'filters',
             'logs',
             'eventTypes',
@@ -75,7 +74,6 @@ final class SecurityLogAdminController extends AbstractController
             'queryParams',
             'error'
         ));
-        \admin_footer();
     }
 
     private function handleCleanup(PDO $pdo, SecurityLogRepository $securityLogRepo, LoginAttemptRepository $loginAttemptRepo): void

@@ -8,9 +8,12 @@ use App\Controller\Admin\DashboardController;
 use App\Controller\Admin\RecipeAdminController;
 use App\Controller\Admin\SecurityLogAdminController;
 use App\Controller\AuthController;
+use App\Controller\ConformiteController;
 use App\Controller\ErreurController;
+use App\Controller\PresentationController;
 use App\Controller\RecipeController;
 use App\Controller\SiteController;
+use App\Controller\StackController;
 
 require_once __DIR__ . '/../src/bootstrap.php';
 
@@ -33,9 +36,9 @@ $router->map('GET|POST', '/recette/[*:slug]', [RecipeController::class, 'show'],
 $router->map('GET|POST', '/connexion', [AuthController::class, 'login'], 'login');
 $router->map('GET', '/deconnexion', [AuthController::class, 'logout'], 'logout');
 $router->map('GET', '/a-propos', [SiteController::class, 'about'], 'about');
-$router->map('GET', '/presentation', [SiteController::class, 'presentation'], 'presentation');
-$router->map('GET', '/conformite', [SiteController::class, 'conformite'], 'conformite');
-$router->map('GET', '/stack', [SiteController::class, 'stack'], 'stack');
+$router->map('GET', '/presentation', [PresentationController::class, 'index'], 'presentation');
+$router->map('GET', '/conformite', [ConformiteController::class, 'index'], 'conformite');
+$router->map('GET', '/stack', [StackController::class, 'index'], 'stack');
 $router->map('GET', '/mentions-legales', [SiteController::class, 'legalNotice'], 'legal_notice');
 $router->map('GET', '/politique-confidentialite', [SiteController::class, 'privacyPolicy'], 'privacy_policy');
 

@@ -24,9 +24,7 @@ final class AdminUserController extends AbstractController
             $error = 'Base de donnees indisponible.';
         }
 
-        \admin_header('Administrateurs');
-        $this->render('admin/admins/index', compact('admins', 'error', 'currentAdminId'));
-        \admin_footer();
+        $this->renderAdmin('Administrateurs', 'admin/admins/index', compact('admins', 'error', 'currentAdminId'));
     }
 
     public function create(): void
@@ -43,15 +41,17 @@ final class AdminUserController extends AbstractController
 
             if (!$errors) {
                 try {
-                    $repo = new AdminRepository(\db());
+                    $pdo = \db();
+                    $repo = new AdminRepository($pdo);
                     if ($repo->emailExists($data['email'])) {
                         $errors['email'] = 'Cet email est deja utilise.';
                     } else {
-                        $repo->create([
+                        $newId = $repo->create([
                             'username' => $data['username'],
                             'email' => $data['email'],
                             'password_hash' => \admin_password_hash($data['password']),
                         ]);
+                        \record_security_event($pdo, 'admin_created', 'Administrateur #' . $newId . ' ajoute : ' . (string) $data['email'], \current_admin_email());
                         \flash('success', 'Administrateur ajoute.');
                         \redirect('/admin/administrateurs');
                     }
@@ -61,16 +61,15 @@ final class AdminUserController extends AbstractController
             }
         }
 
-        \admin_header('Ajouter un administrateur');
-        $this->render('admin/admins/create', compact('errors', 'admin'));
-        \admin_footer();
+        $this->renderAdmin('Ajouter un administrateur', 'admin/admins/create', compact('errors', 'admin'));
     }
 
     public function edit(string|int $id): void
     {
         \require_admin();
 
-        $repo = new AdminRepository(\db());
+        $pdo = \db();
+        $repo = new AdminRepository($pdo);
         $admin = $repo->find((int) $id);
         if (!$admin) {
             \flash('error', 'Administrateur introuvable.');
@@ -95,6 +94,7 @@ final class AdminUserController extends AbstractController
                             'password_hash' => $data['password'] !== '' ? \admin_password_hash($data['password']) : null,
                         ];
                         $repo->update((int) $admin['id'], $payload);
+                        \record_security_event($pdo, 'admin_updated', 'Administrateur #' . (int) $admin['id'] . ' modifie : ' . (string) $data['email'], \current_admin_email());
                         if ((int) $admin['id'] === (int) ($_SESSION['admin_id'] ?? 0)) {
                             $_SESSION['admin_email'] = $data['email'];
                             $_SESSION['admin_username'] = $data['username'];
@@ -108,9 +108,7 @@ final class AdminUserController extends AbstractController
             }
         }
 
-        \admin_header('Modifier un administrateur');
-        $this->render('admin/admins/edit', compact('errors', 'admin'));
-        \admin_footer();
+        $this->renderAdmin('Modifier un administrateur', 'admin/admins/edit', compact('errors', 'admin'));
     }
 
     public function delete(string|int $id): void
@@ -118,7 +116,8 @@ final class AdminUserController extends AbstractController
         \require_admin();
         \require_valid_csrf();
 
-        $repo = new AdminRepository(\db());
+        $pdo = \db();
+        $repo = new AdminRepository($pdo);
         $adminId = (int) $id;
 
         if ($repo->count() <= 1) {
@@ -138,6 +137,7 @@ final class AdminUserController extends AbstractController
         }
 
         $repo->delete($adminId);
+        \record_security_event($pdo, 'admin_deleted', 'Administrateur #' . $adminId . ' supprime : ' . (string) $admin['email'], \current_admin_email());
         \flash('success', 'Administrateur supprime.');
         \redirect('/admin/administrateurs');
     }

@@ -23,9 +23,7 @@ final class RecipeAdminController extends AbstractController
             $error = 'Base de donnees indisponible.';
         }
 
-        \admin_header('Recettes');
-        $this->render('admin/recipes/index', compact('recipes', 'error'));
-        \admin_footer();
+        $this->renderAdmin('Recettes', 'admin/recipes/index', compact('recipes', 'error'));
     }
 
     public function create(): void
@@ -46,10 +44,12 @@ final class RecipeAdminController extends AbstractController
 
             if (!$errors) {
                 try {
-                    $repo = new RecipeRepository(\db());
+                    $pdo = \db();
+                    $repo = new RecipeRepository($pdo);
                     $data['slug'] = $repo->uniqueSlug(\make_slug($data['title']));
                     $data['image_path'] = $upload['path'];
-                    $repo->create($data);
+                    $newId = $repo->create($data);
+                    \record_security_event($pdo, 'recipe_created', 'Recette #' . $newId . ' creee : ' . (string) $data['title'], \current_admin_email());
                     \flash('success', 'Recette creee avec succes.');
                     \redirect('/admin/recettes');
                 } catch (Throwable) {
@@ -59,16 +59,15 @@ final class RecipeAdminController extends AbstractController
             }
         }
 
-        \admin_header('Creer une recette');
-        $this->render('admin/recipes/create', compact('errors', 'recipe'));
-        \admin_footer();
+        $this->renderAdmin('Creer une recette', 'admin/recipes/create', compact('errors', 'recipe'));
     }
 
     public function edit(string|int $id): void
     {
         \require_admin();
 
-        $repo = new RecipeRepository(\db());
+        $pdo = \db();
+        $repo = new RecipeRepository($pdo);
         $recipe = $repo->find((int) $id);
         if (!$recipe) {
             \flash('error', 'Recette introuvable.');
@@ -92,6 +91,7 @@ final class RecipeAdminController extends AbstractController
                     $data['slug'] = $repo->uniqueSlug(\make_slug($data['title']), (int) $recipe['id']);
                     $data['image_path'] = $newImage;
                     $repo->update((int) $recipe['id'], $data);
+                    \record_security_event($pdo, 'recipe_updated', 'Recette #' . (int) $recipe['id'] . ' modifiee : ' . (string) $data['title'], \current_admin_email());
                     if ($upload['path']) {
                         \delete_recipe_image($recipe['image_path']);
                     }
@@ -104,9 +104,7 @@ final class RecipeAdminController extends AbstractController
             }
         }
 
-        \admin_header('Modifier une recette');
-        $this->render('admin/recipes/edit', compact('errors', 'recipe'));
-        \admin_footer();
+        $this->renderAdmin('Modifier une recette', 'admin/recipes/edit', compact('errors', 'recipe'));
     }
 
     public function preview(string|int $id): void
@@ -123,9 +121,7 @@ final class RecipeAdminController extends AbstractController
 
         $meta = \recipe_public_meta($recipe['slug'] ?? null);
 
-        \admin_header('Apercu recette');
-        $this->render('admin/recipes/preview', compact('recipe', 'meta'));
-        \admin_footer();
+        $this->renderAdmin('Apercu recette', 'admin/recipes/preview', compact('recipe', 'meta'));
     }
 
     public function delete(string|int $id): void

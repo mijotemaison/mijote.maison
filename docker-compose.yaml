@@ -1,0 +1,39 @@
+services:
+  web:
+    build: .
+    ports:
+      - "1234:1234"
+    environment:
+      APP_ENV: local
+      APP_URL: http://localhost:1234
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: secure_recipes_greta92
+      DB_USER: root
+      DB_PASSWORD: root
+    volumes:
+      - .:/var/www/html
+      - vendor_data:/var/www/html/vendor
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: secure_recipes_greta92
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/01-database.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:
+  vendor_data:
