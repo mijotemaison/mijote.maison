@@ -244,7 +244,8 @@ Le script lit la variable `PORT` injectée par Railway et utilise `1234` par dé
 Pour la base de données Railway :
 
 - Ajouter un service **MySQL** dans le projet Railway.
-- Importer `database.sql` dans MySQL.
+- Au démarrage, `scripts/bootstrap_database.php` importe automatiquement `database.sql` si la table `recipes` n'existe pas encore ou ne contient aucune recette publiée.
+- L'import manuel de `database.sql` reste possible si vous voulez contrôler l'initialisation vous-même.
 - Si `database.sql` a déjà été importé avant l'ajout de nouvelles recettes, lancer `php scripts/seed_additional_recipes.php` avec les variables Railway configurées.
 - Vérifier les variables côté service web :
   - `APP_ENV=production`
